@@ -1,0 +1,129 @@
+﻿<Window x:Class="GazeTrackingAttentionDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GazeTrackingAttentionDemo"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+        mc:Ignorable="d"
+        Title="MainWindow" 
+        WindowState="Maximized"
+        Width="1920"
+        Height="1080"
+        WindowStyle="None">
+    <Window.Resources>
+        <!--<local:MethodToValueConverter x:Key="MethodToValueConverter"/>-->
+        <!--<ObjectDataProvider ObjectType="{x:Type local:RealSize}"
+                            MethodName="InchesToDIP" x:Key="inchesToDipWidth">
+            <ObjectDataProvider.MethodParameters>
+                <system:Double>8.27</system:Double>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider ObjectType="{x:Type local:RealSize}"
+                            MethodName="InchesToDIP" x:Key="inchesToDipHeight">
+            <ObjectDataProvider.MethodParameters>
+                <system:Double>11.69</system:Double>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>-->
+        <ObjectDataProvider ObjectType="{x:Type local:BuildA4}"
+                            MethodName="getA4Width" x:Key="a4width">
+        </ObjectDataProvider>
+        <ObjectDataProvider ObjectType="{x:Type local:BuildA4}"
+                            MethodName="getA4Height" x:Key="a4height">
+        </ObjectDataProvider>
+    </Window.Resources>
+    <Grid ShowGridLines="True" x:Name="layoutRoot">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition SharedSizeGroup="A"></ColumnDefinition>
+            <ColumnDefinition Width="auto" SharedSizeGroup="A"></ColumnDefinition>
+            <ColumnDefinition SharedSizeGroup="A"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <!--<Grid.RowDefinitions>
+            <RowDefinition SharedSizeGroup="B"></RowDefinition>
+            <RowDefinition Height="auto" SharedSizeGroup="B"></RowDefinition>
+            <RowDefinition SharedSizeGroup="B"></RowDefinition>
+        </Grid.RowDefinitions>-->
+        <!--<TextBox x:Name="DocumentArea"
+                 Width="{Binding Source={StaticResource a4width, diag:PresentationTraceSources.TraceLevel=High}}" 
+                 Height="{Binding Source={StaticResource a4height}}" 
+                 BorderBrush="Black"
+                 BorderThickness="1" 
+                 SnapsToDevicePixels="True"
+                 HorizontalContentAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 FontSize="50"
+                 IsReadOnly="True"
+                 >PLACE DOCUMENT HERE</TextBox>-->
+        <UniformGrid Grid.Column="1" Columns="1" x:Name="DocumentArea"
+                 Width="{Binding Source={StaticResource a4width, diag:PresentationTraceSources.TraceLevel=High}}" 
+                 Height="{Binding Source={StaticResource a4height}}" 
+                 SnapsToDevicePixels="True"
+                 VerticalAlignment="Stretch"
+                 >
+            <!--<RichTextBox.Background>
+                <ImageBrush ImageSource="C:\Users\wmcca\Downloads\page.jpg"/>
+            </RichTextBox.Background>-->
+            <RichTextBox>
+                <FlowDocument>
+                    <Paragraph>
+                        <Run Text="This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a "/>
+                        <Run FontFamily="Calibri" Text="paragraph "/>
+                        <Run Text="of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a "/>
+                        <Run FontFamily="Calibri" Text="paragraph "/>
+                        <Run Text="of text written using font size 12. This is a paragraph of text written using font size 12. "/>
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+            <RichTextBox FontSize="18" FontFamily="Calibri">
+                <FlowDocument>
+                    <Paragraph>
+                        <Run Text="This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. "/>
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+            <RichTextBox FontSize="36" FontFamily="Calibri">
+                <FlowDocument>
+                    <Paragraph>
+                        <Run Text="This is a paragraph of text written using font size 36. This is a paragraph of text written using font size 36. This is a paragraph of text written using font size 36. "/>
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+            <RichTextBox FontSize="48">
+                <FlowDocument>
+                    <Paragraph>
+                        <Run Text="This is a paragraph of text written using font size 48. This is a paragraph of text written using font size 48."/>
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+
+
+        </UniformGrid>
+        <Button Grid.Column="0" x:Name="Begin" Content="Begin" HorizontalAlignment="Left" Height="76" Margin="164,458,0,0" VerticalAlignment="Top" Width="252" Click="Begin_Click"/>
+        <Button Grid.Column="0" x:Name="End" Content="End" HorizontalAlignment="Left" Height="76" Margin="164,539,0,0" VerticalAlignment="Top" Width="252" Click="End_Click" IsEnabled="False"/>
+        <Button Grid.Column="0" x:Name="Render" Content="Render (DEBUG ONLY)" HorizontalAlignment="Left" Height="76" Margin="164,620,0,0" VerticalAlignment="Top" Width="252" Click="Render_Click" IsEnabled="False"/>
+        <Button Grid.Column="0" x:Name="Callibrate" Content="Callibrate" HorizontalAlignment="Left" Height="76" Margin="164,296,0,0" VerticalAlignment="Top" Width="252" Click="Callibrate_Click"/>
+        <Canvas Grid.Column="0" x:Name="mainCanvas"/>
+        <Button Grid.Column="0" x:Name="Test_Callibration" Content="Test Callibration" HorizontalAlignment="Left" Height="76" Margin="164,377,0,0" VerticalAlignment="Top" Width="252" Click="Test_Click"/>
+        <Button x:Name="Reset" Content="Reset" HorizontalAlignment="Left" Height="76" Margin="164,701,0,0" VerticalAlignment="Top" Width="252" Click="Reset_Click"/>
+        <Button x:Name="Exit" Content="Exit" HorizontalAlignment="Left" Height="76" Margin="164,782,0,0" VerticalAlignment="Top" Width="252" Click="Exit_Click"/>
+        <Slider HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Slider x:Name="DisplaySlider" Grid.Column="2" HorizontalAlignment="Center" Margin="0,0,0,2" VerticalAlignment="Center" Height="28" Width="500" RenderTransformOrigin="0.5,0.5" Grid.ColumnSpan="2" ValueChanged="DisplayTime_ValueChanged">
+            <Slider.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="90"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Slider.RenderTransform>
+        </Slider>
+        <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,890,0,0" VerticalAlignment="Top" Checked="Gaze_CheckBox_Checked" Unchecked="Gaze_CheckBox_Unchecked" IsChecked="True"/>
+        <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,910,0,0" VerticalAlignment="Top" Checked="Fixation_CheckBox_Checked" Unchecked="Fixation_CheckBox_Unchecked"/>
+        <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,930,0,0" VerticalAlignment="Top" Checked="Saccade_CheckBox_Checked" Unchecked="Saccade_CheckBox_Unchecked"/>
+        <CheckBox x:Name="All_CheckBox" Content="All&#xD;&#xA;" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,950,0,0" VerticalAlignment="Top" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked"/>
+        <TextBox x:Name="DisplaySlider_Value" Grid.Column="2" HorizontalAlignment="Left" Height="16" Margin="241.5,860,0,0" TextWrapping="Wrap" Text="{Binding Path=Value, ElementName=DisplaySlider}" VerticalAlignment="Top" Width="86"/>
+        <Label x:Name="Visualisation_Header" Content="Visualisation&#xD;&#xA;" Grid.Column="2" HorizontalAlignment="Left" Margin="251.5,251,0,0" VerticalAlignment="Top"/>
+    </Grid>
+</Window>
+

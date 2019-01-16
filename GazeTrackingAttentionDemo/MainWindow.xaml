@@ -33,37 +33,19 @@
                             MethodName="getA4Height" x:Key="a4height">
         </ObjectDataProvider>
     </Window.Resources>
-    <Grid ShowGridLines="True" x:Name="layoutRoot">
+    <Grid ShowGridLines="False" x:Name="layoutRoot">
         <Grid.ColumnDefinitions>
             <ColumnDefinition SharedSizeGroup="A"></ColumnDefinition>
             <ColumnDefinition Width="auto" SharedSizeGroup="A"></ColumnDefinition>
             <ColumnDefinition SharedSizeGroup="A"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <!--<Grid.RowDefinitions>
-            <RowDefinition SharedSizeGroup="B"></RowDefinition>
-            <RowDefinition Height="auto" SharedSizeGroup="B"></RowDefinition>
-            <RowDefinition SharedSizeGroup="B"></RowDefinition>
-        </Grid.RowDefinitions>-->
-        <!--<TextBox x:Name="DocumentArea"
-                 Width="{Binding Source={StaticResource a4width, diag:PresentationTraceSources.TraceLevel=High}}" 
-                 Height="{Binding Source={StaticResource a4height}}" 
-                 BorderBrush="Black"
-                 BorderThickness="1" 
-                 SnapsToDevicePixels="True"
-                 HorizontalContentAlignment="Center"
-                 VerticalContentAlignment="Center"
-                 FontSize="50"
-                 IsReadOnly="True"
-                 >PLACE DOCUMENT HERE</TextBox>-->
+
         <UniformGrid Grid.Column="1" Columns="1" x:Name="DocumentArea"
                  Width="{Binding Source={StaticResource a4width, diag:PresentationTraceSources.TraceLevel=High}}" 
                  Height="{Binding Source={StaticResource a4height}}" 
                  SnapsToDevicePixels="True"
                  VerticalAlignment="Stretch"
                  >
-            <!--<RichTextBox.Background>
-                <ImageBrush ImageSource="C:\Users\wmcca\Downloads\page.jpg"/>
-            </RichTextBox.Background>-->
             <RichTextBox>
                 <FlowDocument>
                     <Paragraph>
@@ -96,9 +78,8 @@
                     </Paragraph>
                 </FlowDocument>
             </RichTextBox>
-
-
         </UniformGrid>
+
         <Button Grid.Column="0" x:Name="Begin" Content="Begin" HorizontalAlignment="Left" Height="76" Margin="164,458,0,0" VerticalAlignment="Top" Width="252" Click="Begin_Click"/>
         <Button Grid.Column="0" x:Name="End" Content="End" HorizontalAlignment="Left" Height="76" Margin="164,539,0,0" VerticalAlignment="Top" Width="252" Click="End_Click" IsEnabled="False"/>
         <Button Grid.Column="0" x:Name="Render" Content="Render (DEBUG ONLY)" HorizontalAlignment="Left" Height="76" Margin="164,620,0,0" VerticalAlignment="Top" Width="252" Click="Render_Click" IsEnabled="False"/>
@@ -107,23 +88,72 @@
         <Button Grid.Column="0" x:Name="Test_Callibration" Content="Test Callibration" HorizontalAlignment="Left" Height="76" Margin="164,377,0,0" VerticalAlignment="Top" Width="252" Click="Test_Click"/>
         <Button x:Name="Reset" Content="Reset" HorizontalAlignment="Left" Height="76" Margin="164,701,0,0" VerticalAlignment="Top" Width="252" Click="Reset_Click"/>
         <Button x:Name="Exit" Content="Exit" HorizontalAlignment="Left" Height="76" Margin="164,782,0,0" VerticalAlignment="Top" Width="252" Click="Exit_Click"/>
-        <Slider HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <Slider x:Name="DisplaySlider" Grid.Column="2" HorizontalAlignment="Center" Margin="0,0,0,2" VerticalAlignment="Center" Height="28" Width="500" RenderTransformOrigin="0.5,0.5" Grid.ColumnSpan="2" ValueChanged="DisplayTime_ValueChanged">
-            <Slider.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="90"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Slider.RenderTransform>
-        </Slider>
-        <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,890,0,0" VerticalAlignment="Top" Checked="Gaze_CheckBox_Checked" Unchecked="Gaze_CheckBox_Unchecked" IsChecked="True"/>
-        <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,910,0,0" VerticalAlignment="Top" Checked="Fixation_CheckBox_Checked" Unchecked="Fixation_CheckBox_Unchecked"/>
-        <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,930,0,0" VerticalAlignment="Top" Checked="Saccade_CheckBox_Checked" Unchecked="Saccade_CheckBox_Unchecked"/>
-        <CheckBox x:Name="All_CheckBox" Content="All&#xD;&#xA;" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,950,0,0" VerticalAlignment="Top" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked"/>
-        <TextBox x:Name="DisplaySlider_Value" Grid.Column="2" HorizontalAlignment="Left" Height="16" Margin="241.5,860,0,0" TextWrapping="Wrap" Text="{Binding Path=Value, ElementName=DisplaySlider}" VerticalAlignment="Top" Width="86"/>
-        <Label x:Name="Visualisation_Header" Content="Visualisation&#xD;&#xA;" Grid.Column="2" HorizontalAlignment="Left" Margin="251.5,251,0,0" VerticalAlignment="Top"/>
+        <!--<Slider HorizontalAlignment="Left" VerticalAlignment="Top"/>-->
+
+        <Grid Grid.Column="2" ShowGridLines="False" x:Name="ControlSubGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition SharedSizeGroup="A"></ColumnDefinition>
+                <ColumnDefinition Width="auto" SharedSizeGroup="A"></ColumnDefinition>
+                <ColumnDefinition SharedSizeGroup="A"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition SharedSizeGroup="A"></RowDefinition>
+                <RowDefinition SharedSizeGroup="A"></RowDefinition>
+                <RowDefinition SharedSizeGroup="A"></RowDefinition>
+                <RowDefinition SharedSizeGroup="A"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Label x:Name="Timeline_Label" Content="Timeline" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Height="26" Width="54"></Label>
+            <Slider x:Name="DisplaySlider" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Height="20" Width="500" HorizontalAlignment="Center"
+                    >
+                <Slider.RenderTransform>
+                   <RotateTransform CenterX="250" CenterY="10" Angle="90"></RotateTransform>
+                </Slider.RenderTransform>
+            </Slider>
+            <TextBox x:Name="DisplaySlider_Value"  Grid.Column="0" Grid.Row="3"  HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=Value, ElementName=DisplaySlider}" Margin="101,42,99,203" Height="24" Width="84"/>
+
+
+            <Border Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" Padding="50">
+                <StackPanel Orientation="Vertical">
+                    <Label x:Name="Visualisation_Header" Content="Visualisation;" Height="40"/>
+                    <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Checked="Gaze_CheckBox_Checked" Unchecked="Gaze_CheckBox_Unchecked" IsChecked="True"/>
+                    <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Checked="Fixation_CheckBox_Checked" Unchecked="Fixation_CheckBox_Unchecked"/>
+                    <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top" Checked="Saccade_CheckBox_Checked" Unchecked="Saccade_CheckBox_Unchecked"/>
+                    <CheckBox x:Name="All_CheckBox" Content="All&#xD;&#xA;" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2" Grid.Row="2" VerticalAlignment="Center" Padding="50">
+                <StackPanel Orientation="Vertical">
+                    <Label x:Name="Markup_Tools_Header" Content="Markup Tools" Height="40"/>
+                    <Label Content="Attentiveness"/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton></RadioButton>
+                        <RadioButton></RadioButton>
+                        <RadioButton></RadioButton>
+                        <RadioButton></RadioButton>
+                        <RadioButton></RadioButton>
+                    </StackPanel>
+                    <Label Content="Effort"/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton></RadioButton>
+                        <RadioButton></RadioButton>
+                        <RadioButton></RadioButton>
+                        <RadioButton></RadioButton>
+                        <RadioButton></RadioButton>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!--<Label x:Name="Visualisation_Header" Content="Visualisation&#xD;&#xA;" Grid.Column="2" HorizontalAlignment="Left" Margin="251.5,251,0,0" VerticalAlignment="Top"/>
+            <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,841,0,0" VerticalAlignment="Top" Checked="Gaze_CheckBox_Checked" Unchecked="Gaze_CheckBox_Unchecked" IsChecked="True"/>
+            <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,861,0,0" VerticalAlignment="Top" Checked="Fixation_CheckBox_Checked" Unchecked="Fixation_CheckBox_Unchecked"/>
+            <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,881,0,0" VerticalAlignment="Top" Checked="Saccade_CheckBox_Checked" Unchecked="Saccade_CheckBox_Unchecked"/>
+            <CheckBox x:Name="All_CheckBox" Content="All&#xD;&#xA;" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,901,0,0" VerticalAlignment="Top" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked"/>
+            <TextBox x:Name="DisplaySlider_Value" Grid.Column="2" HorizontalAlignment="Left" Height="16" Margin="241.5,811,0,0" TextWrapping="Wrap" Text="{Binding Path=Value, ElementName=DisplaySlider}" VerticalAlignment="Top" Width="86"/>-->
+
+        </Grid>
     </Grid>
 </Window>
 

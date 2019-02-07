@@ -1,4 +1,4 @@
-﻿<Window x:Class="GazeTrackingAttentionDemo.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,153 +6,230 @@
         xmlns:local="clr-namespace:GazeTrackingAttentionDemo"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="GazeTrackingAttentionDemo.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" 
         WindowState="Maximized"
         Width="1920"
         Height="1080"
-        WindowStyle="None">
+        WindowStyle="None"
+        >
     <Window.Resources>
-        <!--<local:MethodToValueConverter x:Key="MethodToValueConverter"/>-->
-        <!--<ObjectDataProvider ObjectType="{x:Type local:RealSize}"
-                            MethodName="InchesToDIP" x:Key="inchesToDipWidth">
-            <ObjectDataProvider.MethodParameters>
-                <system:Double>8.27</system:Double>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-        <ObjectDataProvider ObjectType="{x:Type local:RealSize}"
-                            MethodName="InchesToDIP" x:Key="inchesToDipHeight">
-            <ObjectDataProvider.MethodParameters>
-                <system:Double>11.69</system:Double>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>-->
-        <ObjectDataProvider ObjectType="{x:Type local:BuildA4}"
-                            MethodName="getA4Width" x:Key="a4width">
-        </ObjectDataProvider>
-        <ObjectDataProvider ObjectType="{x:Type local:BuildA4}"
-                            MethodName="getA4Height" x:Key="a4height">
-        </ObjectDataProvider>
+        <ObjectDataProvider ObjectType="{x:Type local:BuildDocumentDisplay}"
+                            MethodName="getA4Width" x:Key="a4width"/>
+        <ObjectDataProvider ObjectType="{x:Type local:BuildDocumentDisplay}"
+                            MethodName="getA4Height" x:Key="a4height"/>
+        <ObjectDataProvider ObjectType="{x:Type local:BuildDocumentDisplay}"
+                            MethodName="getMarginWidth" x:Key="marginWidth"/>
+        <ObjectDataProvider ObjectType="{x:Type local:BuildDocumentDisplay}"
+                            MethodName="getMarginHeight" x:Key="marginHeight"/>
     </Window.Resources>
-    <Grid ShowGridLines="False" x:Name="layoutRoot">
+
+    <Grid ShowGridLines="False" x:Name="layoutRoot" Background="LightGray">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition SharedSizeGroup="A"></ColumnDefinition>
-            <ColumnDefinition Width="auto" SharedSizeGroup="A"></ColumnDefinition>
-            <ColumnDefinition SharedSizeGroup="A"></ColumnDefinition>
+            <ColumnDefinition  Width="4*" SharedSizeGroup="A"/>
+            <ColumnDefinition SharedSizeGroup="B"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition SharedSizeGroup="B"/>
+            <ColumnDefinition Width="4*" SharedSizeGroup="A"/>
         </Grid.ColumnDefinitions>
 
-        <UniformGrid Grid.Column="1" Columns="1" x:Name="DocumentArea"
-                 Width="{Binding Source={StaticResource a4width, diag:PresentationTraceSources.TraceLevel=High}}" 
-                 Height="{Binding Source={StaticResource a4height}}" 
-                 SnapsToDevicePixels="True"
-                 VerticalAlignment="Stretch"
-                 >
-            <RichTextBox>
-                <FlowDocument>
-                    <Paragraph>
-                        <Run Text="This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a "/>
-                        <Run FontFamily="Calibri" Text="paragraph "/>
-                        <Run Text="of text written using font size 12. This is a paragraph of text written using font size 12. This is a paragraph of text written using font size 12. This is a "/>
-                        <Run FontFamily="Calibri" Text="paragraph "/>
-                        <Run Text="of text written using font size 12. This is a paragraph of text written using font size 12. "/>
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
-            <RichTextBox FontSize="18" FontFamily="Calibri">
-                <FlowDocument>
-                    <Paragraph>
-                        <Run Text="This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. This is a paragraph of text written using font size 24. "/>
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
-            <RichTextBox FontSize="36" FontFamily="Calibri">
-                <FlowDocument>
-                    <Paragraph>
-                        <Run Text="This is a paragraph of text written using font size 36. This is a paragraph of text written using font size 36. This is a paragraph of text written using font size 36. "/>
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
-            <RichTextBox FontSize="48">
-                <FlowDocument>
-                    <Paragraph>
-                        <Run Text="This is a paragraph of text written using font size 48. This is a paragraph of text written using font size 48."/>
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
-        </UniformGrid>
+        <Label x:Name="InitMessage" Grid.Column="2" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center">Awaiting Test Start...</Label>
 
-        <Button Grid.Column="0" x:Name="Begin" Content="Begin" HorizontalAlignment="Left" Height="76" Margin="164,458,0,0" VerticalAlignment="Top" Width="252" Click="Begin_Click"/>
-        <Button Grid.Column="0" x:Name="End" Content="End" HorizontalAlignment="Left" Height="76" Margin="164,539,0,0" VerticalAlignment="Top" Width="252" Click="End_Click" IsEnabled="False"/>
-        <Button Grid.Column="0" x:Name="Render" Content="Render (DEBUG ONLY)" HorizontalAlignment="Left" Height="76" Margin="164,620,0,0" VerticalAlignment="Top" Width="252" Click="Render_Click" IsEnabled="False"/>
-        <Button Grid.Column="0" x:Name="Callibrate" Content="Callibrate" HorizontalAlignment="Left" Height="76" Margin="164,296,0,0" VerticalAlignment="Top" Width="252" Click="Callibrate_Click"/>
-        <Canvas Grid.Column="0" x:Name="mainCanvas"/>
-        <Button Grid.Column="0" x:Name="Test_Callibration" Content="Test Callibration" HorizontalAlignment="Left" Height="76" Margin="164,377,0,0" VerticalAlignment="Top" Width="252" Click="Test_Click"/>
-        <Button x:Name="Reset" Content="Reset" HorizontalAlignment="Left" Height="76" Margin="164,701,0,0" VerticalAlignment="Top" Width="252" Click="Reset_Click"/>
-        <Button x:Name="Exit" Content="Exit" HorizontalAlignment="Left" Height="76" Margin="164,782,0,0" VerticalAlignment="Top" Width="252" Click="Exit_Click"/>
-        <!--<Slider HorizontalAlignment="Left" VerticalAlignment="Top"/>-->
-
-        <Grid Grid.Column="2" ShowGridLines="False" x:Name="ControlSubGrid">
+        <Grid x:Name="CenterSubGrid" ShowGridLines="True" Grid.Column="2" Width="{Binding Source={StaticResource a4width}}" Height="{Binding Source={StaticResource a4height}}" Background="White">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition SharedSizeGroup="A"></ColumnDefinition>
-                <ColumnDefinition Width="auto" SharedSizeGroup="A"></ColumnDefinition>
-                <ColumnDefinition SharedSizeGroup="A"></ColumnDefinition>
+                <ColumnDefinition Width="{Binding Source={StaticResource marginWidth}}"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="{Binding Source={StaticResource marginWidth}}"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="{Binding Source={StaticResource marginHeight}}"/>
+                <RowDefinition/>
+                <RowDefinition Height="{Binding Source={StaticResource marginHeight}}"/>
+            </Grid.RowDefinitions>
+
+            <Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="mainCanvas"/>
+            <!--<Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="gazeCanvas"/>
+            <Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="fixationCanvas"/>
+            <Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="saccadeCanvas"/>-->
+
+            <!--<UniformGrid Grid.Column="1" Grid.Row="1" Columns="1" x:Name="DocumentArea">-->
+            <RichTextBox x:Name="PageText" x:FieldModifier="public" BorderThickness="0" Grid.Column="1" Grid.Row="1" FontSize="18" FontFamily="Calibri" IsReadOnly="True" Cursor="Arrow" PreviewMouseDown="RtbMouseDown" MouseMove="RtbMouseMove">
+                <FlowDocument>
+                    <Paragraph x:Name="p1">
+               ;         <Run x:Name="p1text" Text="TEST1"></Run>
+                    </Paragraph>
+                    <Paragraph x:Name="p2">
+                        <Run x:Name="p2text" Text="TEST2"></Run>
+                    </Paragraph>
+                    <Paragraph x:Name="p3">
+                        <Run x:Name="p3text" Text="TEST3"></Run>
+                    </Paragraph>
+                    <Paragraph x:Name="p4">
+                        <Run x:Name="p4text" Text="TEST4"></Run>
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+        </Grid>
+
+        <Grid x:Name="MenuSubGrid" Background="White">
+            <StackPanel x:Name="Menu" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Button x:Name="Load" Content="Load Document" Height="76" Width="252" Margin="5" Click="Load_Click"></Button>
+                <Button x:Name="Begin" Content="Begin" Height="76" Width="252" Margin="5" Click="Begin_Click"/>
+                <Button x:Name="End" Content="End" Height="76" Width="252" Margin="5" Click="End_Click" IsEnabled="False"/>
+                <Button x:Name="Render" Content="Render" Height="76" Width="252" Margin="5" Click="Render_Click" IsEnabled="False"/>
+                <Button x:Name="Callibrate" Content="Callibrate" Height="76" Width="252" Margin="5" Click="Callibrate_Click"/>
+                <Button x:Name="Test_Callibration" Content="Test Callibration" Height="76" Width="252" Margin="5" Click="Test_Click"/>
+                <Button x:Name="Reset" Content="Reset" Height="76" Width="252" Margin="5" Click="Reset_Click"/>
+                <Button x:Name="Exit" Content="Exit" Height="76" Width="252" Margin="5" Click="Exit_Click"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid x:Name="MarkupSubGrid" Grid.Column="4" ShowGridLines="False" Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition SharedSizeGroup="A"/>
+                <ColumnDefinition SharedSizeGroup="A"/>
+                <ColumnDefinition SharedSizeGroup="A"/>
+                <ColumnDefinition SharedSizeGroup="A"/>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
-                <RowDefinition SharedSizeGroup="A"></RowDefinition>
-                <RowDefinition SharedSizeGroup="A"></RowDefinition>
-                <RowDefinition SharedSizeGroup="A"></RowDefinition>
-                <RowDefinition SharedSizeGroup="A"></RowDefinition>
+                <RowDefinition SharedSizeGroup="A"/>
+                <RowDefinition SharedSizeGroup="A"/>
+                <RowDefinition SharedSizeGroup="A"/>
+                <RowDefinition SharedSizeGroup="A"/>
+                <RowDefinition SharedSizeGroup="A"/>
+                <RowDefinition SharedSizeGroup="A"/>
+                <RowDefinition SharedSizeGroup="A"/>
+                <RowDefinition SharedSizeGroup="A"/>
+                <RowDefinition SharedSizeGroup="A"/>
+                <RowDefinition SharedSizeGroup="A"/>
+
             </Grid.RowDefinitions>
 
-            <Label x:Name="Timeline_Label" Content="Timeline" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Height="26" Width="54"></Label>
-            <Slider x:Name="DisplaySlider" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Height="20" Width="500" HorizontalAlignment="Center"
-                    >
-                <Slider.RenderTransform>
-                   <RotateTransform CenterX="250" CenterY="10" Angle="90"></RotateTransform>
-                </Slider.RenderTransform>
-            </Slider>
-            <TextBox x:Name="DisplaySlider_Value"  Grid.Column="0" Grid.Row="3"  HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=Value, ElementName=DisplaySlider}" Margin="101,42,99,203" Height="24" Width="84"/>
+            <GroupBox x:Name="playback_group" Header="Playback" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="4" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
+                <Grid Margin="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition SharedSizeGroup="A"/>
+                        <ColumnDefinition  SharedSizeGroup="A"/>
+                        <ColumnDefinition  SharedSizeGroup="A"/>
+                    </Grid.ColumnDefinitions>
 
+                    <Grid.RowDefinitions>
+                        <RowDefinition SharedSizeGroup="A"/>
+                        <RowDefinition SharedSizeGroup="A"/>
+                        <RowDefinition SharedSizeGroup="A"/>
+                        <RowDefinition SharedSizeGroup="A"/>
+                        <RowDefinition SharedSizeGroup="A"/>
+                        <RowDefinition SharedSizeGroup="A"/>
+                    </Grid.RowDefinitions>
 
-            <Border Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" Padding="50">
-                <StackPanel Orientation="Vertical">
-                    <Label x:Name="Visualisation_Header" Content="Visualisation;" Height="40"/>
-                    <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Checked="Gaze_CheckBox_Checked" Unchecked="Gaze_CheckBox_Unchecked" IsChecked="True"/>
-                    <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Checked="Fixation_CheckBox_Checked" Unchecked="Fixation_CheckBox_Unchecked"/>
-                    <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top" Checked="Saccade_CheckBox_Checked" Unchecked="Saccade_CheckBox_Unchecked"/>
-                    <CheckBox x:Name="All_CheckBox" Content="All&#xD;&#xA;" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked"/>
-                </StackPanel>
-            </Border>
+                    <Slider Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Center"></Slider>
+                    <Button Grid.Row="5" Content="Play"></Button>
 
-            <Border Grid.Column="2" Grid.Row="2" VerticalAlignment="Center" Padding="50">
-                <StackPanel Orientation="Vertical">
-                    <Label x:Name="Markup_Tools_Header" Content="Markup Tools" Height="40"/>
-                    <Label Content="Attentiveness"/>
-                    <StackPanel Orientation="Horizontal">
-                        <RadioButton></RadioButton>
-                        <RadioButton></RadioButton>
-                        <RadioButton></RadioButton>
-                        <RadioButton></RadioButton>
-                        <RadioButton></RadioButton>
+                </Grid>
+
+            </GroupBox>
+
+            <GroupBox x:Name="visualisation_group" Header="Visualisation" Grid.Column="1" Grid.Row="4" Grid.RowSpan="3" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
+                <UniformGrid>
+                    <StackPanel Orientation="Vertical">
+                        <Label>Display</Label>
+                        <Viewbox Height="20" HorizontalAlignment="Left">
+                            <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Checked="Gaze_CheckBox_Checked" Unchecked="Gaze_CheckBox_Unchecked" IsChecked="True"/>
+                        </Viewbox>
+                        <Viewbox Height="20" HorizontalAlignment="Left">
+                            <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Checked="Fixation_CheckBox_Checked" Unchecked="Fixation_CheckBox_Unchecked"/>
+                        </Viewbox>
+                        <Viewbox Height="20" HorizontalAlignment="Left">
+                            <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top" Checked="Saccade_CheckBox_Checked" Unchecked="Saccade_CheckBox_Unchecked"/>
+                        </Viewbox>
+                        <Viewbox Height="20" HorizontalAlignment="Left">
+                            <CheckBox x:Name="All_CheckBox" Content="All" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked"/>
+                        </Viewbox>
                     </StackPanel>
-                    <Label Content="Effort"/>
-                    <StackPanel Orientation="Horizontal">
-                        <RadioButton></RadioButton>
-                        <RadioButton></RadioButton>
-                        <RadioButton></RadioButton>
-                        <RadioButton></RadioButton>
-                        <RadioButton></RadioButton>
+                    <!--add key and hilight interface-->
+                </UniformGrid>
+
+            </GroupBox>
+
+            <GroupBox x:Name="markup_group" Header="Markup" Grid.Column="1" Grid.Row="7" Grid.RowSpan="3" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <!--<StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Right" Width="289">-->
+                    <TextBlock Foreground="Red" FontSize="20" Grid.Row="0" Grid.ColumnSpan="2"> &lt;no element selected&gt;</TextBlock>
+                    <Label Grid.Row="1" Content="Attentiveness" Grid.ColumnSpan="2"/>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Grid.ColumnSpan="2">
+                        <Viewbox Height="25">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                        <Viewbox Height="25">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                        <Viewbox Height="25">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                        <Viewbox Height="25">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                        <Viewbox Height="25">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
                     </StackPanel>
-                </StackPanel>
-            </Border>
+                    <Label Grid.Row="3" Content="Effort" Grid.ColumnSpan="2"/>
+                    <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="2">
+                        <Viewbox Height="25">
+                            <RadioButton GroupName="Effort"/>
+                        </Viewbox>
+                        <Viewbox Height="25">
+                            <RadioButton GroupName="Effort"/>
+                        </Viewbox>
+                        <Viewbox Height="25">
+                            <RadioButton GroupName="Effort"/>
+                        </Viewbox>
+                        <Viewbox Height="25">
+                            <RadioButton GroupName="Effort"/>
+                        </Viewbox>
+                        <Viewbox Height="25">
+                            <RadioButton GroupName="Effort"/>
+                        </Viewbox>
+                    </StackPanel>
+                    <Label Grid.Row="5" Grid.ColumnSpan="2">Comments</Label>
+                    <TextBox Grid.Row="6"  Margin="2,2,2,2" Grid.ColumnSpan="2"></TextBox>
+                </Grid>
+            </GroupBox>
 
-            <!--<Label x:Name="Visualisation_Header" Content="Visualisation&#xD;&#xA;" Grid.Column="2" HorizontalAlignment="Left" Margin="251.5,251,0,0" VerticalAlignment="Top"/>
-            <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,841,0,0" VerticalAlignment="Top" Checked="Gaze_CheckBox_Checked" Unchecked="Gaze_CheckBox_Unchecked" IsChecked="True"/>
-            <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,861,0,0" VerticalAlignment="Top" Checked="Fixation_CheckBox_Checked" Unchecked="Fixation_CheckBox_Unchecked"/>
-            <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,881,0,0" VerticalAlignment="Top" Checked="Saccade_CheckBox_Checked" Unchecked="Saccade_CheckBox_Unchecked"/>
-            <CheckBox x:Name="All_CheckBox" Content="All&#xD;&#xA;" Grid.Column="2" HorizontalAlignment="Left" Margin="241.5,901,0,0" VerticalAlignment="Top" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked"/>
-            <TextBox x:Name="DisplaySlider_Value" Grid.Column="2" HorizontalAlignment="Left" Height="16" Margin="241.5,811,0,0" TextWrapping="Wrap" Text="{Binding Path=Value, ElementName=DisplaySlider}" VerticalAlignment="Top" Width="86"/>-->
+            <GroupBox x:Name="timeline_group" Grid.Row="0" Grid.RowSpan="10" Header="Timeline" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
+                <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <xctk:RangeSlider x:Name="DisplaySlider" Grid.Row="0"  RenderTransformOrigin="0.5,0.5"  VerticalAlignment="Center" HorizontalAlignment="Center" Margin="-460,480,-457.5,486.5" Width="979" Height="22">
+                        <xctk:RangeSlider.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="90"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </xctk:RangeSlider.RenderTransform>
+                    </xctk:RangeSlider>
 
+                    <TextBox x:Name="DisplaySlider_Value" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Bottom"
+ TextWrapping="Wrap" Height="24" Width="22"/>
+                    <!--Text="{Binding Value, ElementName=DisplaySlider}"-->
+
+                </Grid>
+            </GroupBox>
         </Grid>
     </Grid>
 </Window>

@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace GazeTrackingAttentionDemo
 {
     /// <summary>
-    /// Interaction logic for Window2.xaml
+    /// Interaction logic for ControlWindow.xaml
     /// </summary>
-    public partial class Window2 : Window
+    public partial class ControlWindow : Window
     {
-        public Window2()
+        public ControlWindow()
         {
             InitializeComponent();
         }

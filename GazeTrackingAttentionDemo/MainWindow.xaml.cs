@@ -158,42 +158,31 @@ namespace GazeTrackingAttentionDemo
         private void Gaze_CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             showGaze = true;
-            render();
         }
 
         private void Gaze_CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             showGaze = false;
-            render();
-
         }
 
         private void Fixation_CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             showFixations = true;
-            render();
-
         }
 
         private void Fixation_CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             showFixations = false;
-            render();
-
         }
 
         private void Saccade_CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             showSaccades = true;
-            render();
-
         }
 
         private void Saccade_CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             showSaccades = false;
-            render();
-
         }
 
         private void All_CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -201,8 +190,6 @@ namespace GazeTrackingAttentionDemo
             Saccade_CheckBox.IsChecked = true;
             Fixation_CheckBox.IsChecked = true;
             Gaze_CheckBox.IsChecked = true;
-            render();
-
         }
 
         private void All_CheckBox_Unchecked(object sender, RoutedEventArgs e)
@@ -210,8 +197,6 @@ namespace GazeTrackingAttentionDemo
             Saccade_CheckBox.IsChecked = false;
             Fixation_CheckBox.IsChecked = false;
             Gaze_CheckBox.IsChecked = false;
-            render();
-
         }
 
         private void Load_Click(object sender, RoutedEventArgs e)
@@ -255,6 +240,8 @@ namespace GazeTrackingAttentionDemo
 
         private void render()
         {
+            StackTrace stackTrace = new StackTrace();
+            Console.WriteLine("I was called by " + stackTrace.GetFrame(1).GetMethod().Name);
             mainCanvas.Children.Clear();
             //if (State.fixations.Count == 0)
             //{
@@ -273,6 +260,7 @@ namespace GazeTrackingAttentionDemo
                         Fixation f = (Fixation)session.currentTestResults.fixationData[i];
                         //if (f.startPoint.timeStamp <= displayTime)
                         {
+                        Console.WriteLine("duration " + f.duration);
                         renderEllipse(this.CenterSubGrid.PointFromScreen(f.centroid.toPoint()), Color.FromArgb(127, Colors.Blue.R, Colors.Blue.G, Colors.Blue.B), i, Math.Log(Math.Sqrt(f.duration/Math.PI)));
                         }
                     }
@@ -487,6 +475,11 @@ namespace GazeTrackingAttentionDemo
                 Console.WriteLine("WARN: line failed to render");
             }
         }
+
+        private void CheckBox_Clicked(object sender, RoutedEventArgs e)
+        {
+            render();
+        }
     }
 
     //Calculate sizes to draw a full sized A4 page 
@@ -575,23 +568,27 @@ namespace GazeTrackingAttentionDemo
             _fixationDataStream.Begin((x, y, timestamp) =>
             {
                 f.startPoint = new DataPoint(x, y, timestamp);
-                Console.WriteLine("Fixation started at X:{0} Y:{1} Device timestamp: {2} Windows timestamp: {3} ", x, y, timestamp);
+                Console.WriteLine("Fixation started at X:{0} Y:{1} Device timestamp: {2}", x, y, timestamp);
             });
             _fixationDataStream.Data((x, y, timestamp) =>
             {
                 f.points.Add(new DataPoint(x, y, timestamp));
-                Console.WriteLine("During fixation at X:{0} Y:{1} Device timestamp: {2} Windows timestamp: {3} ", x, y, timestamp);
+                Console.WriteLine("During fixation at X:{0} Y:{1} Device timestamp: {2}", x, y, timestamp);
 
             });
             _fixationDataStream.End((x, y, timestamp) =>
             {
                 f.endPoint = new DataPoint(x, y, timestamp);
-                if(Double.IsNaN(f.endPoint.rawX) && Double.IsNaN(f.endPoint.rawY))
+                if (Double.IsNaN(f.endPoint.rawX) && Double.IsNaN(f.endPoint.rawY))
                 {
                     Console.WriteLine("NOT A VALID FIXATION, DISCARDED");
                 }
-                Console.WriteLine("Fixation finished at X:{0} Y:{1} Device timestamp: {2} Windows timestamp: {3} ", x, y, timestamp);
-                session.currentTestResults.fixationData.Add(f);
+                else
+                {
+                    Console.WriteLine("Fixation finished at X:{0} Y:{1} Device timestamp: {2}", x, y, timestamp);
+                    session.currentTestResults.fixationData.Add(f);
+                }
+                f.completeFixation();
                 f = new Fixation();
             });
 
@@ -844,6 +841,8 @@ namespace GazeTrackingAttentionDemo
             //}
 
             //get average x and y coordinates
+
+
             double xsum = 0;
             double ysum = 0;
             int numPoints = 0;
@@ -868,9 +867,11 @@ namespace GazeTrackingAttentionDemo
 
             centroid = new DataPoint((xsum / numPoints), (ysum / numPoints));
 
+            duration = endPoint.timeStamp - startPoint.timeStamp;
+
                 //double cx = xsum / points.Count + 2;
                 //double cy = ysum / points.Count + 2;
-                //centroid = new DataPoint(cx, cy);
+                //centroid = new DataPoint(cx, cy);W
             }
         //}
 

@@ -57,16 +57,16 @@
             <RichTextBox x:Name="PageText" x:FieldModifier="public" BorderThickness="0" Grid.Column="1" Grid.Row="1" FontSize="18" FontFamily="Calibri" IsReadOnly="True" Cursor="Arrow" PreviewMouseDown="RtbMouseDown" MouseMove="RtbMouseMove">
                 <FlowDocument>
                     <Paragraph x:Name="p1">
-               ;         <Run x:Name="p1text" Text="TEST1"></Run>
+                        <Run x:Name="p1text" Text="TEST1"/>
                     </Paragraph>
                     <Paragraph x:Name="p2">
-                        <Run x:Name="p2text" Text="TEST2"></Run>
+                        <Run x:Name="p2text" Text="TEST2"/>
                     </Paragraph>
                     <Paragraph x:Name="p3">
-                        <Run x:Name="p3text" Text="TEST3"></Run>
+                        <Run x:Name="p3text" Text="TEST3"/>
                     </Paragraph>
                     <Paragraph x:Name="p4">
-                        <Run x:Name="p4text" Text="TEST4"></Run>
+                        <Run x:Name="p4text" Text="TEST4"/>
                     </Paragraph>
                 </FlowDocument>
             </RichTextBox>
@@ -136,16 +136,16 @@
                     <StackPanel Orientation="Vertical">
                         <Label>Display</Label>
                         <Viewbox Height="20" HorizontalAlignment="Left">
-                            <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Checked="Gaze_CheckBox_Checked" Unchecked="Gaze_CheckBox_Unchecked" IsChecked="True"/>
+                            <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Checked="Gaze_CheckBox_Checked" Unchecked="Gaze_CheckBox_Unchecked" Click="CheckBox_Clicked"  IsChecked="True"/>
                         </Viewbox>
                         <Viewbox Height="20" HorizontalAlignment="Left">
-                            <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Checked="Fixation_CheckBox_Checked" Unchecked="Fixation_CheckBox_Unchecked"/>
+                            <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Checked="Fixation_CheckBox_Checked" Unchecked="Fixation_CheckBox_Unchecked" Click="CheckBox_Clicked" />
                         </Viewbox>
                         <Viewbox Height="20" HorizontalAlignment="Left">
-                            <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top" Checked="Saccade_CheckBox_Checked" Unchecked="Saccade_CheckBox_Unchecked"/>
+                            <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top" Checked="Saccade_CheckBox_Checked" Unchecked="Saccade_CheckBox_Unchecked" Click="CheckBox_Clicked" />
                         </Viewbox>
                         <Viewbox Height="20" HorizontalAlignment="Left">
-                            <CheckBox x:Name="All_CheckBox" Content="All" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked"/>
+                            <CheckBox x:Name="All_CheckBox" Content="All" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked" Click="CheckBox_Clicked" />
                         </Viewbox>
                     </StackPanel>
                     <!--add key and hilight interface-->

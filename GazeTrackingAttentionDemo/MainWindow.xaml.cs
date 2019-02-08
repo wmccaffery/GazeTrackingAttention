@@ -261,7 +261,7 @@ namespace GazeTrackingAttentionDemo
                         //if (f.startPoint.timeStamp <= displayTime)
                         {
                         Console.WriteLine("duration " + f.duration);
-                        renderEllipse(this.CenterSubGrid.PointFromScreen(f.centroid.toPoint()), Color.FromArgb(127, Colors.Blue.R, Colors.Blue.G, Colors.Blue.B), i, Math.Log(Math.Sqrt(f.duration/Math.PI)));
+                        renderEllipse(this.CenterSubGrid.PointFromScreen(f.centroid.toPoint()), Color.FromArgb(127, Colors.Blue.R, Colors.Blue.G, Colors.Blue.B), i,Math.Sqrt(f.duration/100/Math.PI));
                         }
                     }
                 }
@@ -460,11 +460,22 @@ namespace GazeTrackingAttentionDemo
         {
             try
             {
+                Point p1 = new Point();
+                Point p2 = new Point();
+
+                p1.X = line.X1;
+                p1.Y = line.Y1;
+                p2.X = line.X2;
+                p2.Y = line.Y2;
+
+                Point p1_fixed = this.CenterSubGrid.PointFromScreen(p1);
+                Point p2_fixed = this.CenterSubGrid.PointFromScreen(p2);
+
                 Line l = new Line();
-                l.X1 = line.X1;
-                l.X2 = line.X2;
-                l.Y1 = line.Y1;
-                l.Y2 = line.Y2;
+                l.X1 = p1_fixed.X;
+                l.X2 = p2_fixed.X;
+                l.Y1 = p1_fixed.Y;
+                l.Y2 = p2_fixed.Y;
                 l.Stroke = new SolidColorBrush(c);
                 l.StrokeThickness = 2;
                 mainCanvas.Children.Add(l);
@@ -565,30 +576,40 @@ namespace GazeTrackingAttentionDemo
 
             //store fixation
             Fixation f = new Fixation();
-            _fixationDataStream.Begin((x, y, timestamp) =>
+            long startTime = -1;
+            long endTime = -1;
+
+            _fixationDataStream
+                .Begin((x, y, timestamp) =>
             {
+                
                 f.startPoint = new DataPoint(x, y, timestamp);
                 Console.WriteLine("Fixation started at X:{0} Y:{1} Device timestamp: {2}", x, y, timestamp);
-            });
-            _fixationDataStream.Data((x, y, timestamp) =>
+                startTime = Stopwatch.GetTimestamp();
+            })
+                 .Data((x, y, timestamp) =>
             {
                 f.points.Add(new DataPoint(x, y, timestamp));
                 Console.WriteLine("During fixation at X:{0} Y:{1} Device timestamp: {2}", x, y, timestamp);
 
-            });
-            _fixationDataStream.End((x, y, timestamp) =>
+            })
+                .End((x, y, timestamp) =>
             {
+                endTime = Stopwatch.GetTimestamp();
                 f.endPoint = new DataPoint(x, y, timestamp);
-                if (Double.IsNaN(f.endPoint.rawX) && Double.IsNaN(f.endPoint.rawY))
+                if ((Double.IsNaN(f.endPoint.rawX) && Double.IsNaN(f.endPoint.rawY)) || startTime == -1) 
                 {
                     Console.WriteLine("NOT A VALID FIXATION, DISCARDED");
                 }
                 else
                 {
+                    Console.WriteLine("Fixation started at " + f.startPoint.timeStamp);
                     Console.WriteLine("Fixation finished at X:{0} Y:{1} Device timestamp: {2}", x, y, timestamp);
                     session.currentTestResults.fixationData.Add(f);
                 }
+                f.duration = endTime - startTime;
                 f.completeFixation();
+                findSaccade();
                 f = new Fixation();
             });
 
@@ -653,10 +674,10 @@ namespace GazeTrackingAttentionDemo
                 s.hlength = s.X2 - s.X1;
                 s.vlength = s.Y2 - s.Y1;
                 s.size = Math.Sqrt(Math.Pow(s.hlength, 2) + Math.Pow(s.vlength, 2));
-                s.start = f1.endPoint.timeStamp;
-                s.end = f2.startPoint.timeStamp;
-                s.duration = f2.startPoint.timeStamp - f1.endPoint.timeStamp;
-                //session.currentTestResults.Saccades.Add(s);
+                //s.start = f1.endPoint.timeStamp;
+                //s.end = f2.startPoint.timeStamp;
+                //s.duration = f2.startPoint.timeStamp - f1.endPoint.timeStamp;
+                session.currentTestResults.SaccadeData.Add(s);
 
                 Console.WriteLine("NEW SACCADE: \n" +
                 "size:{0}\n" +
@@ -866,8 +887,6 @@ namespace GazeTrackingAttentionDemo
             
 
             centroid = new DataPoint((xsum / numPoints), (ysum / numPoints));
-
-            duration = endPoint.timeStamp - startPoint.timeStamp;
 
                 //double cx = xsum / points.Count + 2;
                 //double cy = ysum / points.Count + 2;

@@ -57,16 +57,16 @@
             <RichTextBox x:Name="PageText" x:FieldModifier="public" BorderThickness="0" Grid.Column="1" Grid.Row="1" FontSize="18" FontFamily="Calibri" IsReadOnly="True" Cursor="Arrow" PreviewMouseDown="RtbMouseDown" MouseMove="RtbMouseMove">
                 <FlowDocument>
                     <Paragraph x:Name="p1">
-                        <Run x:Name="p1text" Text="TEST1"/>
+                        <Run x:Name="p1text" Text="Hayabusa 2 reached asteroid Ryugu in June 2018 after a three-and-a-half-year journey from Earth. It will descend to the surface and attempt to grab the sample from a pre-chosen site. The spacecraft will return to Earth with the samples in 2020 after its exploration of Ryugu is complete. Jaxa officials had to delay the touchdown last October, after they found the asteroid's surface was more rugged than expected."/>
                     </Paragraph>
                     <Paragraph x:Name="p2">
-                        <Run x:Name="p2text" Text="TEST2"/>
+                        <Run x:Name="p2text" Text="During sample collection, the spacecraft will approach the 1km-wide asteroid with an instrument called the sampler horn. On touchdown, a 5g projectile made of the metal tantalum is fired into the rocky surface at 300m/s. The particles kicked up by the impact will be caught by a specially-designed section of the sampler horn."/>
                     </Paragraph>
                     <Paragraph x:Name="p3">
-                        <Run x:Name="p3text" Text="TEST3"/>
+                        <Run x:Name="p3text" Text="Hayabusa 2 will begin descending to the surface on 21 February (local time) and should touch down around 08:00 on the 22nd. In September, Hayabusa 2 deployed two robotic &quot;hoppers&quot; that propelled themselves across the surface of Ryugu, sending back images and other data. Then, in October, the &quot;mothership&quot; despatched a French-German instrument package called Mascot to the surface."/>
                     </Paragraph>
                     <Paragraph x:Name="p4">
-                        <Run x:Name="p4text" Text="TEST4"/>
+                        <Run x:Name="p4text" Text="Later this year, perhaps in March or April, Jaxa plans to detonate an explosive charge that will punch a crater into the surface of Ryugu. Hayabusa-2 would then descend into the crater to collect fresh samples of material that have not been altered by aeons of exposure to the environment of space."/>
                     </Paragraph>
                 </FlowDocument>
             </RichTextBox>

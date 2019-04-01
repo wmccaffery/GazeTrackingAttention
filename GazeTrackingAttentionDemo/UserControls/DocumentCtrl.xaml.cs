@@ -10,6 +10,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 		public DocumentCtrl()
 		{
 			InitializeComponent();
+			
 			this.DataContext = this;
 		}
 
@@ -36,27 +37,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			public double DocumentHeight { get => _documentHeight;}
 			public double DocumentMarginWidth { get => _documentMarginWidth;}
 			public double DocumentMarginHeight { get => _documentMarginHeight;}
-
-
-			//public double getA4Width()
-			//{
-			//	return _a4Width * (_xScreenRes / _xScreenDPI);
-			//}
-
-			//public double getA4Height()
-			//{
-			//	return _a4Height * (_yScreenRes / _yScreenDPI);
-			//}
-
-			//public double getMarginWidth()
-			//{
-			//	return _a4MarginSize * (_xScreenRes / _xScreenDPI) - 10;
-			//}
-
-			//public double getMarginHeight()
-			//{
-			//	return _a4MarginSize * (_yScreenRes / _yScreenDPI) - 10;
-			//}
-		
 	}
+
+
 }

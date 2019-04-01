@@ -15,25 +15,41 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Tobii.Interaction;
+using UserControl = System.Windows.Controls.UserControl;
+
 namespace GazeTrackingAttentionDemo
 {
 
 
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        Boolean test;
-        Boolean showGaze;
-        Boolean showFixations;
-        Boolean showSaccades;
-        Boolean dataRecorded;
+	/// <summary>
+	/// Interaction logic for MainWindow.xaml
+	/// </summary>
+	public partial class MainWindow : Window
+	{
+		enum State {Wait, Setup, Test, ReadyToRecord, Recording, DoneRecording, Markup}
+		//Wait: time between tests
+		//Setup: user creation and initial calibration
+		//Test: testing user calibration
+		//ReadyToRecord: ready to start recording data
+		//Recording: data is being recorded
+		//DoneRecording: data has been recorded
+		//Markup: data is being annotated
 
-        GazeStreamReader fd;
-        Mode mode;
-        Session session;
-        TestSet testSet;
+		Boolean showGaze;
+		Boolean showFixations;
+		Boolean showSaccades;
+		Boolean dataRecorded;
+
+		State state  = State.ReadyToRecord; //TODO INITIAL VALUE IS CURRENTLY SET FOR DEBUGGING
+
+		UserControl document = new UserControls.DocumentCtrl();
+		UserControl test = new UserControls.TestCalibrationCtrl();
+		UserControl markup = new UserControls.MarkupCtrl();
+
+
+		GazeStreamReader fd;
+		Session session;
+		TestSet testSet;
 
 		public Collection<EncoderDevice> VideoDevices { get; set; }
 		public Collection<EncoderDevice> AudioDevices { get; set; }
@@ -42,58 +58,48 @@ namespace GazeTrackingAttentionDemo
 		//double displayTime;
 
 		public MainWindow()
-        {
-
-
+		{
+			//set window to start on the second monitor
 			this.WindowStartupLocation = WindowStartupLocation.Manual;
-
-			//Screen s2 = Screen.AllScreens.Where(s => !s.Primary).FirstOrDefault();
-			Screen s2 = Screen.AllScreens[0];
+			Screen s2 = Screen.AllScreens[0]; //Screen.AllScreens.Where(s => !s.Primary).FirstOrDefault();
 			System.Drawing.Rectangle r2 = s2.WorkingArea;
 			this.Top = r2.Top;
 			this.Left = r2.Left;
 			this.Width = r2.Width;
 			this.Height = r2.Height;
-			
+
+			this.DataContext = this;
 
 			InitializeComponent();
 
+			//find available audio and video devices for webcam
 			VideoDevices = EncoderDevices.FindDevices(EncoderDeviceType.Video);
 			AudioDevices = EncoderDevices.FindDevices(EncoderDeviceType.Audio);
 
 			init();
 
-			//Initialize second window
-			SourceInitialized += (s, a) =>
-			{
-				ControlWindow ctrlwin = new ControlWindow();
-				ctrlwin.Owner = this;
-				ctrlwin.Show();
-			};
+			//Create child window
+			//SourceInitialized += (s, a) =>
+			//{
+			//	ControlWindow ctrlwin = new ControlWindow();
+			//	ctrlwin.Owner = this;
+			//	ctrlwin.Show();
+			//};
+
+			centerView.Content = document;
 		}
 
 		public void init()
-        {
-            session = new Session();
-            fd = new GazeStreamReader(session);
-            //Render.IsEnabled = false;
-            //Begin.IsEnabled = true;
-            //End.IsEnabled = false;
-            //Test_Callibration.IsEnabled = true;
-            //Callibrate.IsEnabled = true;
-            //Reset.IsEnabled = true;
-            //mainCanvas.Children.Clear();
-
-			this.DataContext = this;
-
-			//WebcamViewer.StartRecording();
-			//WebcamViewer.StartPreview();
-
-
-
-			//MenuSubGrid.Visibility = Visibility.Hidden;
-			//CenterSubGrid.Visibility = Visibility.Hidden;
-			//MarkupSubGrid.Visibility = Visibility.Hidden;
+		{
+			session = new Session();
+			fd = new GazeStreamReader(session);
+			//Render.IsEnabled = false;
+			//Begin.IsEnabled = true;
+			//End.IsEnabled = false;
+			//Test_Callibration.IsEnabled = true;
+			//Callibrate.IsEnabled = true;
+			//Reset.IsEnabled = true;
+			//mainCanvas.Children.Clear();
 
 
 			//MarkupSubGrid.Visibility = Visibility.Hidden;
@@ -107,65 +113,118 @@ namespace GazeTrackingAttentionDemo
 			//Visualisation_Header.Visibility = Visibility.Hidden;
 
 
-			test = false;
-
-        }
+		}
 
 		public void onLoad(object sender, RoutedEventArgs e)
 		{
 			this.WindowState = WindowState.Maximized;
+			this.KeyDown += new System.Windows.Input.KeyEventHandler(MainWindow_KeyDown);
+
 		}
 
-		private void Exit_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Application.Current.Shutdown();
-        }
+		//private void Exit_Click(object sender, RoutedEventArgs e)
+		//{
+		//	System.Windows.Application.Current.Shutdown();
+		//}
 
-        public void Test_Click(object sender, RoutedEventArgs e)
-        {
-            if (test)
-            {
-                test = false;
-                init();
-            }
-            else
-            {
-                test = true;
-            }
-            //render();
+		//public void Test_Click(object sender, RoutedEventArgs e)
+		//{
+		//	if (test)
+		//	{
+		//		test = false;
+		//		init();
+		//	}
+		//	else
+		//	{
+		//		test = true;
+		//	}
+		//render();
 
-            //PageText.Visibility = Visibility.Hidden;
+		//PageText.Visibility = Visibility.Hidden;
 
-        }
+		//}
 
-        private void Begin_Click(object sender, RoutedEventArgs e)
-        {
-            //fd = new DataReader();
-            fd.readFixationStream();
-            fd.readGazeStream();
-            //End.IsEnabled = true;
-            //Begin.Visibility = Visibility.Collapsed;
-        }
+		//private void Begin_Click(object sender, RoutedEventArgs e)
+		//{
+		//	//fd = new DataReader();
+		//	fd.readFixationStream();
+		//	fd.readGazeStream();
+		//	//End.IsEnabled = true;
+		//	//Begin.Visibility = Visibility.Collapsed;
+		//}
 
-        private void End_Click(object sender, RoutedEventArgs e)
-        {
-            fd.Dispose();
-            //Render.IsEnabled = true;
-            //Begin.IsEnabled = false;
-            //End.IsEnabled = false;
-            //Test_Callibration.IsEnabled = false;
-            //Callibrate.IsEnabled = false;
-            DisplaySlider.Maximum = session.currentTestResults.endTime;
-            DisplaySlider.Minimum = session.currentTestResults.startTime;
-            dataRecorded = true;
+		private void End_Click(object sender, RoutedEventArgs e)
+		{
+			fd.Dispose();
+			//Render.IsEnabled = true;
+			//Begin.IsEnabled = false;
+			//End.IsEnabled = false;
+			//Test_Callibration.IsEnabled = false;
+			//Callibrate.IsEnabled = false;
+			DisplaySlider.Maximum = session.currentTestResults.endTime;
+			DisplaySlider.Minimum = session.currentTestResults.startTime;
+			dataRecorded = true;
 
 
-        }
+		}
 
-        private void Callibrate_Click(object sender, RoutedEventArgs e)
-        {
-            fd.callibrate();
-        }
+		private void Callibrate_Click(object sender, RoutedEventArgs e)
+		{
+			fd.callibrate();
+		}
+
+		private void MainWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+		{
+			//if (e.Key == Key.A)
+			//{
+			//	Environment.Exit(0);
+			//}
+			switch (e.Key)
+			{
+				case Key.R:
+					//Reset
+					init();
+					break;
+				case Key.E:
+					//Exit
+					Environment.Exit(0);
+					break;
+				case Key.N:
+					//Next
+					//load next doc
+					break;
+				case Key.S:
+					//Start/Stop recording data
+					if (state == State.ReadyToRecord)
+					{
+						fd.readFixationStream();
+						fd.readGazeStream();
+						state = State.Recording;
+					}
+					else if (state == State.Recording)
+					{
+						fd.Dispose();
+						state = State.DoneRecording;
+					}
+					break;
+				case Key.C:
+					//calibrate
+					break;
+				case Key.T:
+					//test calibration
+					if (state == State.ReadyToRecord)
+					{
+						centerView.Content = test;
+						state = State.Test;
+					}
+					else if (state == State.Test)
+					{
+						centerView.Content = document;
+						state = State.ReadyToRecord;
+					}
+					break;
+			}
+		}
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
@@ -408,106 +467,6 @@ namespace GazeTrackingAttentionDemo
 		//    mainCanvas.Children.Add(e);
 		//}
 
-		//private void renderTestTargets()
-		//{
-		//    var field = PageText;
-		//    UIElement container = VisualTreeHelper.GetParent(field) as UIElement;
-		//    Point viewerSource = field.TranslatePoint(new Point(0, 0), container);
-		//    double elementHeight = field.ActualHeight;
-		//    double elementWidth = field.ActualWidth;
-
-		//    Point s1 = viewerSource;
-		//    Point s2 = new Point(viewerSource.X, viewerSource.Y + elementHeight);
-		//    Point s3 = new Point(viewerSource.X, viewerSource.Y + elementHeight / 2);
-		//    Point s4 = new Point(viewerSource.X, viewerSource.Y + elementHeight / 4);
-		//    Point s5 = new Point(viewerSource.X, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
-
-		//    Point s6 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y);
-		//    Point s7 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y + elementHeight / 2);
-		//    Point s8 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y + elementHeight / 4);
-		//    Point s9 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
-		//    Point s10 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y + elementHeight);
-
-		//    Point s11 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y);
-		//    Point s12 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y + elementHeight / 2);
-		//    Point s13 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y + elementHeight / 4);
-		//    Point s14 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
-		//    Point s15 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y + elementHeight);
-
-		//    Point s16 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y);
-		//    Point s17 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y + elementHeight / 2);
-		//    Point s18 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y + elementHeight / 4);
-		//    Point s19 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
-		//    Point s20 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y + elementHeight);
-
-		//    Point s21 = new Point(viewerSource.X + elementWidth, viewerSource.Y);
-		//    Point s22 = new Point(viewerSource.X + elementWidth, viewerSource.Y + elementHeight / 2);
-		//    Point s23 = new Point(viewerSource.X + elementWidth, viewerSource.Y + elementHeight / 4);
-		//    Point s24 = new Point(viewerSource.X + elementWidth, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
-		//    Point s25 = new Point(viewerSource.X + elementWidth, viewerSource.Y + elementHeight);
-
-
-		//    drawTestTarget(s1);
-		//    drawTestTarget(s2);
-		//    drawTestTarget(s3);
-		//    drawTestTarget(s4);
-		//    drawTestTarget(s5);
-		//    drawTestTarget(s6);
-		//    drawTestTarget(s7);
-		//    drawTestTarget(s8);
-		//    drawTestTarget(s9);
-		//    drawTestTarget(s10);
-		//    drawTestTarget(s11);
-		//    drawTestTarget(s12);
-		//    drawTestTarget(s13);
-		//    drawTestTarget(s14);
-		//    drawTestTarget(s15);
-		//    drawTestTarget(s16);
-		//    drawTestTarget(s17);
-		//    drawTestTarget(s18);
-		//    drawTestTarget(s19);
-		//    drawTestTarget(s20);
-		//    drawTestTarget(s21);
-		//    drawTestTarget(s22);
-		//    drawTestTarget(s23);
-		//    drawTestTarget(s24);
-		//    drawTestTarget(s25);
-		//}
-
-		//private void drawTestTarget(Point p)
-		//{
-		//    //add number
-		//    Ellipse r = new Ellipse();
-		//    r.Height = 10;
-		//    r.Width = 10;
-
-		//    SolidColorBrush mySolidColorBrush = new SolidColorBrush(Colors.Black);
-
-		//    r.Fill = mySolidColorBrush;
-
-		//    //myEllipse.StrokeThickness = 2;
-
-		//    Canvas.SetLeft(r, p.X - (r.Width / 2));
-		//    Canvas.SetTop(r, p.Y - (r.Height / 2));
-
-		//    mainCanvas.Children.Add(r);
-
-		//    Ellipse r2 = new Ellipse();
-		//    r2.Height = 50;
-		//    r2.Width = 50;
-
-		//    SolidColorBrush mySolidColorBrush2 = new SolidColorBrush(Colors.Transparent);
-
-		//    r2.Fill = mySolidColorBrush2;
-
-		//    r2.Stroke = Brushes.Black;
-
-		//    Canvas.SetLeft(r2, p.X - (r2.Width / 2));
-		//    Canvas.SetTop(r2, p.Y - (r2.Height / 2));
-
-		//    mainCanvas.Children.Add(r2);
-		//}
-
 		//private void renderLine(Saccade line, Color c)
 		//{
 		//    try
@@ -724,12 +683,6 @@ namespace GazeTrackingAttentionDemo
                 }
             }
         }
-    }
-
-    //TODO use to link interface and code
-    public enum Mode
-    {
-        Idle, Tracking, Markup, Test
     }
 
     //

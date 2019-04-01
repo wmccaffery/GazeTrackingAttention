@@ -125,29 +125,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="UserControls\AnnotationCtrl.xaml.cs">
-      <DependentUpon>AnnotationCtrl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\MarkupCtrl.xaml.cs">
       <DependentUpon>MarkupCtrl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\PlaybackCtrl.xaml.cs">
-      <DependentUpon>PlaybackCtrl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\TimelineCtrl.xaml.cs">
-      <DependentUpon>TimelineCtrl.xaml</DependentUpon>
+    <Compile Include="UserControls\TestCalibrationCtrl.xaml.cs">
+      <DependentUpon>TestCalibrationCtrl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\UserCtrl.xaml.cs">
       <DependentUpon>UserCtrl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\VisualisationCtrl.xaml.cs">
-      <DependentUpon>VisualisationCtrl.xaml</DependentUpon>
-    </Compile>
     <Page Include="ControlWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\AnnotationCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -177,19 +164,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\PlaybackCtrl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\TimelineCtrl.xaml">
+    <Page Include="UserControls\TestCalibrationCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\UserCtrl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\VisualisationCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -29,8 +29,11 @@
 
         <Label x:Name="InitMessage" Grid.Column="2" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center">Awaiting Test Start...</Label>
 
-        <usrCtrls:DocumentCtrl Grid.Column="2"/>
-        
+        <!--<usrCtrls:DocumentCtrl Grid.Column="2"/>-->
+        <!--<ContentPresenter Grid.Column="2" Content="{Binding Path = CurrentView}">-->
+        <ContentControl Grid.Column="2" x:Name="centerView"/>
+
+
         <Grid x:Name="MarkupSubGrid" Grid.Column="4" ShowGridLines="False" Background="White">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition SharedSizeGroup="A"/>
@@ -53,7 +56,7 @@
 
             </Grid.RowDefinitions>
 
-            <GroupBox x:Name="playback_group" Header="Playback" FontSize="18" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="4" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
+            <GroupBox x:Name="playback_group" Header="Playback" FontSize="18" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="4" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="15">
                 <Grid Margin="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition SharedSizeGroup="A"/>
@@ -131,7 +134,7 @@
 
             </GroupBox>
 
-            <GroupBox x:Name="visualisation_group" Header="Visualisation" Grid.Column="1" Grid.Row="4" Grid.RowSpan="2" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
+            <GroupBox x:Name="visualisation_group" Header="Visualisation" Grid.Column="1" Grid.Row="4" Grid.RowSpan="2" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="15">
                 <UniformGrid>
                     <StackPanel Orientation="Vertical">
                         <Label>Display</Label>
@@ -147,13 +150,14 @@
                         <Viewbox Height="30" HorizontalAlignment="Left">
                             <CheckBox x:Name="All_CheckBox" Content="All" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked" Click="CheckBox_Clicked" />
                         </Viewbox>
+                        <Button Height="30" FontSize="20" Margin="60,5,60,0">Render</Button>
                     </StackPanel>
                     <!--add key and highlight interface-->
                 </UniformGrid>
 
             </GroupBox>
 
-            <GroupBox x:Name="markup_group" Header="Markup" FontSize="18" Grid.Column="1" Grid.Row="6" Grid.RowSpan="4" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
+            <GroupBox x:Name="markup_group" Header="Markup" FontSize="18" Grid.Column="1" Grid.Row="6" Grid.RowSpan="4" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="15">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>

@@ -1,15 +1,20 @@
-﻿using System;
+﻿
+using Microsoft.Expression.Encoder.Devices;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Tobii.Interaction;
-
 namespace GazeTrackingAttentionDemo
 {
 
@@ -30,57 +35,88 @@ namespace GazeTrackingAttentionDemo
         Session session;
         TestSet testSet;
 
+		public Collection<EncoderDevice> VideoDevices { get; set; }
+		public Collection<EncoderDevice> AudioDevices { get; set; }
 
 
-        //double displayTime;
+		//double displayTime;
 
-        public MainWindow()
+		public MainWindow()
         {
-            InitializeComponent();
 
-            init();
 
-            //ControlWindow cw = new ControlWindow();
-            //cw.Owner = this;
-            //cw.Show();
-            //ControlWindow cw = new ControlWindow();
-            //cw.Owner = this;
-            //cw.Show();
-        }
+			this.WindowStartupLocation = WindowStartupLocation.Manual;
 
-        public void init()
+			//Screen s2 = Screen.AllScreens.Where(s => !s.Primary).FirstOrDefault();
+			Screen s2 = Screen.AllScreens[1];
+			System.Drawing.Rectangle r2 = s2.WorkingArea;
+			this.Top = r2.Top;
+			this.Left = r2.Left;
+			this.Width = r2.Width;
+			this.Height = r2.Height;
+			
+
+			InitializeComponent();
+
+			VideoDevices = EncoderDevices.FindDevices(EncoderDeviceType.Video);
+			AudioDevices = EncoderDevices.FindDevices(EncoderDeviceType.Audio);
+
+			init();
+
+			//Initialize second window
+			SourceInitialized += (s, a) =>
+			{
+				ControlWindow ctrlwin = new ControlWindow();
+				ctrlwin.Owner = this;
+				ctrlwin.Show();
+			};
+		}
+
+		public void init()
         {
             session = new Session();
             fd = new GazeStreamReader(session);
-            Render.IsEnabled = false;
-            Begin.IsEnabled = true;
-            End.IsEnabled = false;
-            Test_Callibration.IsEnabled = true;
-            Callibrate.IsEnabled = true;
-            Reset.IsEnabled = true;
-            mainCanvas.Children.Clear();
+            //Render.IsEnabled = false;
+            //Begin.IsEnabled = true;
+            //End.IsEnabled = false;
+            //Test_Callibration.IsEnabled = true;
+            //Callibrate.IsEnabled = true;
+            //Reset.IsEnabled = true;
+            //mainCanvas.Children.Clear();
 
-            //MenuSubGrid.Visibility = Visibility.Hidden;
-            //CenterSubGrid.Visibility = Visibility.Hidden;
-            //MarkupSubGrid.Visibility = Visibility.Hidden;
-            
+			this.DataContext = this;
 
-            //MarkupSubGrid.Visibility = Visibility.Hidden;
-            //DocumentArea.Visibility = Visibility.Visible;
-            //DisplaySlider.Visibility = Visibility.Hidden;
-            //DisplaySlider_Value.Visibility = Visibility.Hidden;
-            //All_CheckBox.Visibility = Visibility.Hidden;
-            //Saccade_CheckBox.Visibility = Visibility.Hidden;
-            //Fixation_CheckBox.Visibility = Visibility.Hidden;
-            //Gaze_CheckBox.Visibility = Visibility.Hidden;
-            //Visualisation_Header.Visibility = Visibility.Hidden;
+			//WebcamViewer.StartRecording();
+			//WebcamViewer.StartPreview();
 
 
-            test = false;
+
+			//MenuSubGrid.Visibility = Visibility.Hidden;
+			//CenterSubGrid.Visibility = Visibility.Hidden;
+			//MarkupSubGrid.Visibility = Visibility.Hidden;
+
+
+			//MarkupSubGrid.Visibility = Visibility.Hidden;
+			//DocumentArea.Visibility = Visibility.Visible;
+			//DisplaySlider.Visibility = Visibility.Hidden;
+			//DisplaySlider_Value.Visibility = Visibility.Hidden;
+			//All_CheckBox.Visibility = Visibility.Hidden;
+			//Saccade_CheckBox.Visibility = Visibility.Hidden;
+			//Fixation_CheckBox.Visibility = Visibility.Hidden;
+			//Gaze_CheckBox.Visibility = Visibility.Hidden;
+			//Visualisation_Header.Visibility = Visibility.Hidden;
+
+
+			test = false;
 
         }
 
-        private void Exit_Click(object sender, RoutedEventArgs e)
+		public void onLoad(object sender, RoutedEventArgs e)
+		{
+			this.WindowState = WindowState.Maximized;
+		}
+
+		private void Exit_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Application.Current.Shutdown();
         }
@@ -96,9 +132,9 @@ namespace GazeTrackingAttentionDemo
             {
                 test = true;
             }
-            render();
+            //render();
 
-            PageText.Visibility = Visibility.Hidden;
+            //PageText.Visibility = Visibility.Hidden;
 
         }
 
@@ -107,18 +143,18 @@ namespace GazeTrackingAttentionDemo
             //fd = new DataReader();
             fd.readFixationStream();
             fd.readGazeStream();
-            End.IsEnabled = true;
+            //End.IsEnabled = true;
             //Begin.Visibility = Visibility.Collapsed;
         }
 
         private void End_Click(object sender, RoutedEventArgs e)
         {
             fd.Dispose();
-            Render.IsEnabled = true;
-            Begin.IsEnabled = false;
-            End.IsEnabled = false;
-            Test_Callibration.IsEnabled = false;
-            Callibrate.IsEnabled = false;
+            //Render.IsEnabled = true;
+            //Begin.IsEnabled = false;
+            //End.IsEnabled = false;
+            //Test_Callibration.IsEnabled = false;
+            //Callibrate.IsEnabled = false;
             DisplaySlider.Maximum = session.currentTestResults.endTime;
             DisplaySlider.Minimum = session.currentTestResults.startTime;
             dataRecorded = true;
@@ -136,7 +172,23 @@ namespace GazeTrackingAttentionDemo
             init();
         }
 
-        private void Render_Click(object sender, RoutedEventArgs e)
+		private void btnPlay_Click(object sender, RoutedEventArgs e)
+		{
+
+			player.Play();
+		}
+
+		private void btnPause_Click(object sender, RoutedEventArgs e)
+		{
+			player.Pause();
+		}
+
+		private void btnStop_Click(object sender, RoutedEventArgs e)
+		{
+			player.Stop();
+		}
+
+		private void Render_Click(object sender, RoutedEventArgs e)
         {
             //DisplaySlider.Value = DisplaySlider.Maximum;
             DisplaySlider.Visibility = Visibility.Visible;
@@ -146,13 +198,13 @@ namespace GazeTrackingAttentionDemo
             Fixation_CheckBox.Visibility = Visibility.Visible;
             Gaze_CheckBox.Visibility = Visibility.Visible;
             //Visualisation_Header.Visibility = Visibility.Visible;
-            render();
+            //render();
         }
 
         private void DisplayTime_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             //displayTime = DisplaySlider.Value;
-            render();
+            //render();
         }
 
         private void Gaze_CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -199,333 +251,299 @@ namespace GazeTrackingAttentionDemo
             Gaze_CheckBox.IsChecked = false;
         }
 
-        private void Load_Click(object sender, RoutedEventArgs e)
-        {
-            //select document to load 
-
-            //load paragraphs into document text area
-
-            //make use of rtb load function?
-            p1text.Text = "THIS IS PARAGRAPH 1";
-            p2text.Text = "THIS IS PARAGRAPH 2";
-            p3text.Text = "THIS IS PARAGRAPH 3";
-            p4text.Text = "THIS IS PARAGRAPH 4";
-
-
-        }
-
-        private void RtbMouseMove(object sender, MouseEventArgs e)
-        {
-            RichTextBox rtb = sender as RichTextBox;
-            rtb.Focus();
-            Point point = Mouse.GetPosition(rtb);
-
-            TextPointer tp = rtb.GetPositionFromPoint(point, true);
-            Paragraph p = tp.Paragraph;
-
-            TextPointer start = p.ContentStart;
-            TextPointer end = p.ContentEnd;
-
-            rtb.Selection.Select(start, end);
-        }
-
-        private void RtbMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            Console.WriteLine("Triggered");
-            RichTextBox rtb = sender as RichTextBox;
-            TextPointer start = rtb.Selection.Start;
-            Paragraph p = start.Paragraph;
-            Console.WriteLine("paragraph " + p.Name + " selected");
-        }
-
-        private void render()
-        {
-            StackTrace stackTrace = new StackTrace();
-            Console.WriteLine("I was called by " + stackTrace.GetFrame(1).GetMethod().Name);
-            mainCanvas.Children.Clear();
-            //if (State.fixations.Count == 0)
-            //{
-            //    Console.WriteLine("nothing to render");
-            //}
-                if (test)
-                {
-                    renderTestTargets();
-                }
-
-                if (showFixations)
-                {
-                    //double durationSum = 0;
-                    for (int i = 0; i < session.currentTestResults.fixationData.Count; i++)
-                    {
-                        Fixation f = (Fixation)session.currentTestResults.fixationData[i];
-                        //if (f.startPoint.timeStamp <= displayTime)
-                        {
-                        Console.WriteLine("duration " + f.duration);
-                        renderEllipse(this.CenterSubGrid.PointFromScreen(f.centroid.toPoint()), Color.FromArgb(127, Colors.Blue.R, Colors.Blue.G, Colors.Blue.B), i,Math.Sqrt(f.duration/100/Math.PI));
-                        }
-                    }
-                }
-
-                if (showSaccades)
-                {
-                    foreach (Saccade l in session.currentTestResults.SaccadeData)
-                    {
-                        {
-                            //if (l.start <= displayTime)
-                            renderLine(l, Colors.Black);
-                        }
-                    }
-                }
-
-                if (showGaze)
-                {
-                    foreach (DataPoint p in session.currentTestResults.rawGazeData)
-                    {
-                    //if (p.timeStamp <= displayTime)
-                    //{
-                            //renderEllipse(p.toPoint(), Colors.Red, 5);
-                            Point pt = this.CenterSubGrid.PointFromScreen(p.toPoint());
-                            renderEllipse(pt, Colors.Gold, 5);
-                        //}
-                    }
-                }
-            }
-
-
-        private void renderEllipse(Point p, Color c, int num, double radius)
-        {
-            //draw ellipse
-            Ellipse e = new Ellipse();
-
-            SolidColorBrush mySolidColorBrush = new SolidColorBrush(c);
-
-            e.Fill = mySolidColorBrush;
+		private void Load_Click(object sender, RoutedEventArgs e)
+		{
+			//    //select document to load 
+
+			//    //load paragraphs into document text area
+
+			//    //make use of rtb load function?
+			//    p1text.Text = "THIS IS PARAGRAPH 1";
+			//    p2text.Text = "THIS IS PARAGRAPH 2";
+			//    p3text.Text = "THIS IS PARAGRAPH 3";
+			//    p4text.Text = "THIS IS PARAGRAPH 4";
+
+
+		}
+
+		//private void RtbMouseMove(object sender, MouseEventArgs e)
+		//{
+		//    RichTextBox rtb = sender as RichTextBox;
+		//    rtb.Focus();
+		//    Point point = Mouse.GetPosition(rtb);
+
+		//    TextPointer tp = rtb.GetPositionFromPoint(point, true);
+		//    Paragraph p = tp.Paragraph;
+
+		//    TextPointer start = p.ContentStart;
+		//    TextPointer end = p.ContentEnd;
+
+		//    rtb.Selection.Select(start, end);
+		//}
+
+		//private void RtbMouseDown(object sender, MouseButtonEventArgs e)
+		//{
+		//    Console.WriteLine("Triggered");
+		//    RichTextBox rtb = sender as RichTextBox;
+		//    TextPointer start = rtb.Selection.Start;
+		//    Paragraph p = start.Paragraph;
+		//    Console.WriteLine("paragraph " + p.Name + " selected");
+		//}
+
+		//private void render()
+		//{
+		//    StackTrace stackTrace = new StackTrace();
+		//    Console.WriteLine("I was called by " + stackTrace.GetFrame(1).GetMethod().Name);
+		//    mainCanvas.Children.Clear();
+		//    //if (State.fixations.Count == 0)
+		//    //{
+		//    //    Console.WriteLine("nothing to render");
+		//    //}
+		//        if (test)
+		//        {
+		//            renderTestTargets();
+		//        }
+
+		//        if (showFixations)
+		//        {
+		//            //double durationSum = 0;
+		//            for (int i = 0; i < session.currentTestResults.fixationData.Count; i++)
+		//            {
+		//                Fixation f = (Fixation)session.currentTestResults.fixationData[i];
+		//                //if (f.startPoint.timeStamp <= displayTime)
+		//                {
+		//                Console.WriteLine("duration " + f.duration);
+		//                renderEllipse(this.CenterSubGrid.PointFromScreen(f.centroid.toPoint()), Color.FromArgb(127, Colors.Blue.R, Colors.Blue.G, Colors.Blue.B), i,Math.Sqrt(f.duration/100/Math.PI));
+		//                }
+		//            }
+		//        }
+
+		//        if (showSaccades)
+		//        {
+		//            foreach (Saccade l in session.currentTestResults.SaccadeData)
+		//            {
+		//                {
+		//                    //if (l.start <= displayTime)
+		//                    renderLine(l, Colors.Black);
+		//                }
+		//            }
+		//        }
+
+		//        if (showGaze)
+		//        {
+		//            foreach (DataPoint p in session.currentTestResults.rawGazeData)
+		//            {
+		//            //if (p.timeStamp <= displayTime)
+		//            //{
+		//                    //renderEllipse(p.toPoint(), Colors.Red, 5);
+		//                    Point pt = this.CenterSubGrid.PointFromScreen(p.toPoint());
+		//                    renderEllipse(pt, Colors.Gold, 5);
+		//                //}
+		//            }
+		//        }
+		//    }
+
+
+		//private void renderEllipse(Point p, Color c, int num, double radius)
+		//{
+		//    //draw ellipse
+		//    Ellipse e = new Ellipse();
+
+		//    SolidColorBrush mySolidColorBrush = new SolidColorBrush(c);
+
+		//    e.Fill = mySolidColorBrush;
 
-            //myEllipse.StrokeThickness = 2;
+		//    //myEllipse.StrokeThickness = 2;
 
-            e.Stroke = Brushes.Black;
+		//    e.Stroke = Brushes.Black;
 
-            e.Width = radius;
+		//    e.Width = radius;
 
-            e.Height = radius;
-
-
-            Canvas.SetLeft(e, p.X - (e.Width / 2));
-            Canvas.SetTop(e, p.Y - (e.Height / 2));
-
-            mainCanvas.Children.Add(e);
-
-            //add number
-            TextBlock t = new TextBlock();
-            t.Text = "" + num;
-            t.Foreground = new SolidColorBrush(Colors.White);
-            t.Height = 25;
-            t.Width = 25;
-            t.TextAlignment = TextAlignment.Center;
-            t.VerticalAlignment = VerticalAlignment.Center;
-            t.FontSize = 20;
-            t.FontWeight = FontWeights.Bold;
-            //t.Background = new SolidColorBrush(Colors.Red);
-
-            Canvas.SetLeft(t, p.X - (t.Width / 2));
-            Canvas.SetTop(t, p.Y - (t.Height / 2));
-
-            mainCanvas.Children.Add(t);
-        }
-
-        private void renderEllipse(Point p, Color c, double radius)
-        {
-            //draw ellipse
-            Ellipse e = new Ellipse();
-
-            SolidColorBrush mySolidColorBrush = new SolidColorBrush(c);
-
-            e.Fill = mySolidColorBrush;
-
-            //myEllipse.StrokeThickness = 2;
-
-            e.Stroke = Brushes.Black;
-
-            e.Width = radius;
-
-            e.Height = radius;
-
-            Canvas.SetLeft(e, p.X - (e.Width / 2));
-            Canvas.SetTop(e, p.Y - (e.Height / 2));
-
-            mainCanvas.Children.Add(e);
-        }
+		//    e.Height = radius;
+
+
+		//    Canvas.SetLeft(e, p.X - (e.Width / 2));
+		//    Canvas.SetTop(e, p.Y - (e.Height / 2));
+
+		//    mainCanvas.Children.Add(e);
+
+		//    //add number
+		//    TextBlock t = new TextBlock();
+		//    t.Text = "" + num;
+		//    t.Foreground = new SolidColorBrush(Colors.White);
+		//    t.Height = 25;
+		//    t.Width = 25;
+		//    t.TextAlignment = TextAlignment.Center;
+		//    t.VerticalAlignment = VerticalAlignment.Center;
+		//    t.FontSize = 20;
+		//    t.FontWeight = FontWeights.Bold;
+		//    //t.Background = new SolidColorBrush(Colors.Red);
+
+		//    Canvas.SetLeft(t, p.X - (t.Width / 2));
+		//    Canvas.SetTop(t, p.Y - (t.Height / 2));
+
+		//    mainCanvas.Children.Add(t);
+		//}
+
+		//private void renderEllipse(Point p, Color c, double radius)
+		//{
+		//    //draw ellipse
+		//    Ellipse e = new Ellipse();
+
+		//    SolidColorBrush mySolidColorBrush = new SolidColorBrush(c);
+
+		//    e.Fill = mySolidColorBrush;
+
+		//    //myEllipse.StrokeThickness = 2;
+
+		//    e.Stroke = Brushes.Black;
+
+		//    e.Width = radius;
+
+		//    e.Height = radius;
+
+		//    Canvas.SetLeft(e, p.X - (e.Width / 2));
+		//    Canvas.SetTop(e, p.Y - (e.Height / 2));
+
+		//    mainCanvas.Children.Add(e);
+		//}
 
-        private void renderTestTargets()
-        {
-            var field = PageText;
-            UIElement container = VisualTreeHelper.GetParent(field) as UIElement;
-            Point viewerSource = field.TranslatePoint(new Point(0, 0), container);
-            double elementHeight = field.ActualHeight;
-            double elementWidth = field.ActualWidth;
+		//private void renderTestTargets()
+		//{
+		//    var field = PageText;
+		//    UIElement container = VisualTreeHelper.GetParent(field) as UIElement;
+		//    Point viewerSource = field.TranslatePoint(new Point(0, 0), container);
+		//    double elementHeight = field.ActualHeight;
+		//    double elementWidth = field.ActualWidth;
 
-            Point s1 = viewerSource;
-            Point s2 = new Point(viewerSource.X, viewerSource.Y + elementHeight);
-            Point s3 = new Point(viewerSource.X, viewerSource.Y + elementHeight / 2);
-            Point s4 = new Point(viewerSource.X, viewerSource.Y + elementHeight / 4);
-            Point s5 = new Point(viewerSource.X, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
-
-            Point s6 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y);
-            Point s7 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y + elementHeight / 2);
-            Point s8 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y + elementHeight / 4);
-            Point s9 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
-            Point s10 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y + elementHeight);
-
-            Point s11 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y);
-            Point s12 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y + elementHeight / 2);
-            Point s13 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y + elementHeight / 4);
-            Point s14 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
-            Point s15 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y + elementHeight);
-
-            Point s16 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y);
-            Point s17 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y + elementHeight / 2);
-            Point s18 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y + elementHeight / 4);
-            Point s19 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
-            Point s20 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y + elementHeight);
-
-            Point s21 = new Point(viewerSource.X + elementWidth, viewerSource.Y);
-            Point s22 = new Point(viewerSource.X + elementWidth, viewerSource.Y + elementHeight / 2);
-            Point s23 = new Point(viewerSource.X + elementWidth, viewerSource.Y + elementHeight / 4);
-            Point s24 = new Point(viewerSource.X + elementWidth, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
-            Point s25 = new Point(viewerSource.X + elementWidth, viewerSource.Y + elementHeight);
-
-
-            drawTestTarget(s1);
-            drawTestTarget(s2);
-            drawTestTarget(s3);
-            drawTestTarget(s4);
-            drawTestTarget(s5);
-            drawTestTarget(s6);
-            drawTestTarget(s7);
-            drawTestTarget(s8);
-            drawTestTarget(s9);
-            drawTestTarget(s10);
-            drawTestTarget(s11);
-            drawTestTarget(s12);
-            drawTestTarget(s13);
-            drawTestTarget(s14);
-            drawTestTarget(s15);
-            drawTestTarget(s16);
-            drawTestTarget(s17);
-            drawTestTarget(s18);
-            drawTestTarget(s19);
-            drawTestTarget(s20);
-            drawTestTarget(s21);
-            drawTestTarget(s22);
-            drawTestTarget(s23);
-            drawTestTarget(s24);
-            drawTestTarget(s25);
-        }
-
-        private void drawTestTarget(Point p)
-        {
-            //add number
-            Ellipse r = new Ellipse();
-            r.Height = 10;
-            r.Width = 10;
-
-            SolidColorBrush mySolidColorBrush = new SolidColorBrush(Colors.Black);
-
-            r.Fill = mySolidColorBrush;
-
-            //myEllipse.StrokeThickness = 2;
-
-            Canvas.SetLeft(r, p.X - (r.Width / 2));
-            Canvas.SetTop(r, p.Y - (r.Height / 2));
-
-            mainCanvas.Children.Add(r);
-
-            Ellipse r2 = new Ellipse();
-            r2.Height = 50;
-            r2.Width = 50;
-
-            SolidColorBrush mySolidColorBrush2 = new SolidColorBrush(Colors.Transparent);
-
-            r2.Fill = mySolidColorBrush2;
-
-            r2.Stroke = Brushes.Black;
-
-            Canvas.SetLeft(r2, p.X - (r2.Width / 2));
-            Canvas.SetTop(r2, p.Y - (r2.Height / 2));
-
-            mainCanvas.Children.Add(r2);
-        }
-
-        private void renderLine(Saccade line, Color c)
-        {
-            try
-            {
-                Point p1 = new Point();
-                Point p2 = new Point();
-
-                p1.X = line.X1;
-                p1.Y = line.Y1;
-                p2.X = line.X2;
-                p2.Y = line.Y2;
-
-                Point p1_fixed = this.CenterSubGrid.PointFromScreen(p1);
-                Point p2_fixed = this.CenterSubGrid.PointFromScreen(p2);
-
-                Line l = new Line();
-                l.X1 = p1_fixed.X;
-                l.X2 = p2_fixed.X;
-                l.Y1 = p1_fixed.Y;
-                l.Y2 = p2_fixed.Y;
-                l.Stroke = new SolidColorBrush(c);
-                l.StrokeThickness = 2;
-                mainCanvas.Children.Add(l);
-            }
-            catch (Exception e)
-            {
-                //the bug that caused this should have been patched out
-                Console.WriteLine("WARN: line failed to render");
-            }
-        }
-
-        private void CheckBox_Clicked(object sender, RoutedEventArgs e)
-        {
-            render();
-        }
-    }
-
-    //Calculate sizes to draw a full sized A4 page 
-    public class BuildDocumentDisplay
-    {
-        double a4Width = 8.27;
-        double a4Height = 11.69;
-        double a4MarginSize = 1;
-        double xScreenRes = 1920;
-        double yScreenRes = 1200;
-        double xScreenDPI = 20.4;
-        double yScreenDPI = 12.8;
-
-        public double getA4Width()
-        {
-            return a4Width * (xScreenRes / xScreenDPI);
-        }
-
-        public double getA4Height()
-        {
-            return a4Height * (yScreenRes / yScreenDPI);
-        }
-
-        public double getMarginWidth()
-        {
-            return a4MarginSize * (xScreenRes / xScreenDPI);
-        }
-
-        public double getMarginHeight()
-        {
-            return a4MarginSize * (yScreenRes / yScreenDPI);
-        }
-    }
-
-
+		//    Point s1 = viewerSource;
+		//    Point s2 = new Point(viewerSource.X, viewerSource.Y + elementHeight);
+		//    Point s3 = new Point(viewerSource.X, viewerSource.Y + elementHeight / 2);
+		//    Point s4 = new Point(viewerSource.X, viewerSource.Y + elementHeight / 4);
+		//    Point s5 = new Point(viewerSource.X, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
+
+		//    Point s6 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y);
+		//    Point s7 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y + elementHeight / 2);
+		//    Point s8 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y + elementHeight / 4);
+		//    Point s9 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
+		//    Point s10 = new Point(viewerSource.X + elementWidth / 4, viewerSource.Y + elementHeight);
+
+		//    Point s11 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y);
+		//    Point s12 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y + elementHeight / 2);
+		//    Point s13 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y + elementHeight / 4);
+		//    Point s14 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
+		//    Point s15 = new Point(viewerSource.X + elementWidth / 2, viewerSource.Y + elementHeight);
+
+		//    Point s16 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y);
+		//    Point s17 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y + elementHeight / 2);
+		//    Point s18 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y + elementHeight / 4);
+		//    Point s19 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
+		//    Point s20 = new Point(viewerSource.X + elementWidth / 2 + elementWidth / 4, viewerSource.Y + elementHeight);
+
+		//    Point s21 = new Point(viewerSource.X + elementWidth, viewerSource.Y);
+		//    Point s22 = new Point(viewerSource.X + elementWidth, viewerSource.Y + elementHeight / 2);
+		//    Point s23 = new Point(viewerSource.X + elementWidth, viewerSource.Y + elementHeight / 4);
+		//    Point s24 = new Point(viewerSource.X + elementWidth, viewerSource.Y + elementHeight / 2 + elementHeight / 4);
+		//    Point s25 = new Point(viewerSource.X + elementWidth, viewerSource.Y + elementHeight);
+
+
+		//    drawTestTarget(s1);
+		//    drawTestTarget(s2);
+		//    drawTestTarget(s3);
+		//    drawTestTarget(s4);
+		//    drawTestTarget(s5);
+		//    drawTestTarget(s6);
+		//    drawTestTarget(s7);
+		//    drawTestTarget(s8);
+		//    drawTestTarget(s9);
+		//    drawTestTarget(s10);
+		//    drawTestTarget(s11);
+		//    drawTestTarget(s12);
+		//    drawTestTarget(s13);
+		//    drawTestTarget(s14);
+		//    drawTestTarget(s15);
+		//    drawTestTarget(s16);
+		//    drawTestTarget(s17);
+		//    drawTestTarget(s18);
+		//    drawTestTarget(s19);
+		//    drawTestTarget(s20);
+		//    drawTestTarget(s21);
+		//    drawTestTarget(s22);
+		//    drawTestTarget(s23);
+		//    drawTestTarget(s24);
+		//    drawTestTarget(s25);
+		//}
+
+		//private void drawTestTarget(Point p)
+		//{
+		//    //add number
+		//    Ellipse r = new Ellipse();
+		//    r.Height = 10;
+		//    r.Width = 10;
+
+		//    SolidColorBrush mySolidColorBrush = new SolidColorBrush(Colors.Black);
+
+		//    r.Fill = mySolidColorBrush;
+
+		//    //myEllipse.StrokeThickness = 2;
+
+		//    Canvas.SetLeft(r, p.X - (r.Width / 2));
+		//    Canvas.SetTop(r, p.Y - (r.Height / 2));
+
+		//    mainCanvas.Children.Add(r);
+
+		//    Ellipse r2 = new Ellipse();
+		//    r2.Height = 50;
+		//    r2.Width = 50;
+
+		//    SolidColorBrush mySolidColorBrush2 = new SolidColorBrush(Colors.Transparent);
+
+		//    r2.Fill = mySolidColorBrush2;
+
+		//    r2.Stroke = Brushes.Black;
+
+		//    Canvas.SetLeft(r2, p.X - (r2.Width / 2));
+		//    Canvas.SetTop(r2, p.Y - (r2.Height / 2));
+
+		//    mainCanvas.Children.Add(r2);
+		//}
+
+		//private void renderLine(Saccade line, Color c)
+		//{
+		//    try
+		//    {
+		//        Point p1 = new Point();
+		//        Point p2 = new Point();
+
+		//        p1.X = line.X1;
+		//        p1.Y = line.Y1;
+		//        p2.X = line.X2;
+		//        p2.Y = line.Y2;
+
+		//        Point p1_fixed = this.CenterSubGrid.PointFromScreen(p1);
+		//        Point p2_fixed = this.CenterSubGrid.PointFromScreen(p2);
+
+		//        Line l = new Line();
+		//        l.X1 = p1_fixed.X;
+		//        l.X2 = p2_fixed.X;
+		//        l.Y1 = p1_fixed.Y;
+		//        l.Y2 = p2_fixed.Y;
+		//        l.Stroke = new SolidColorBrush(c);
+		//        l.StrokeThickness = 2;
+		//        mainCanvas.Children.Add(l);
+		//    }
+		//    catch (Exception e)
+		//    {
+		//        //the bug that caused this should have been patched out
+		//        Console.WriteLine("WARN: line failed to render");
+		//    }
+		//}
+
+		private void CheckBox_Clicked(object sender, RoutedEventArgs e)
+		{
+			//    render();
+		}
+}
 
     //Handle data streams from the eye tracker
     public class GazeStreamReader : IDisposable

@@ -4,9 +4,68 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GazeTrackingAttentionDemo"
+        xmlns:cam="clr-namespace:WebcamControl;assembly=WebcamControl"
         mc:Ignorable="d"
-        Title="ControlWindow" Height="450" Width="800">
+        Title="ControlWindow" 
+        Width="1920"
+        Height="1200"
+        Loaded="onLoad"
+        WindowStyle="None"
+        >
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <cam:Webcam x:Name="WebcamViewer" Grid.Row="0" Grid.Column="0" Margin="10"
+                    HorizontalAlignment="Stretch"
+                    
+                    VerticalAlignment="Stretch"
+                    
+                    FrameRate="60"       
+
+                    ImageDirectory="C:\Videos"
+
+                    VideoDirectory="C:\Videos"
+
+                    VideoDevice="{Binding SelectedItem, ElementName=VidDevices}"
+
+                    AudioDevice="{Binding SelectedItem, ElementName=AudDevices}"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBlock Grid.Row="1" Text="Video Device" VerticalAlignment="Center"/>
+            <ComboBox Grid.Row="1" x:Name="VidDevices" Grid.Column="1" Margin="10,0,0,0"
+
+                      Width="auto" Height="auto"
+
+                      ItemsSource="{Binding VideoDevices}"
+
+                      DisplayMemberPath="Name"
+
+                      SelectedIndex="0"/>
+            <Button x:Name="record" Margin="10,0,0,0" Click="Record_Click">record</Button>
+            <Button x:Name="stop" Margin="10,0,0,0" Click="Stop_Click">stop</Button>
+
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" x:Name="Menu" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <!--<Button x:Name="Load" FontSize="18" Content="Load Document" Height="76" Width="252" Margin="5" Click="Load_Click"></Button>
+            <Button x:Name="Begin" FontSize="18" Content="Begin" Height="76" Width="252" Margin="5" Click="Begin_Click"/>
+            <Button x:Name="End" FontSize="18" Content="End" Height="76" Width="252" Margin="5" Click="End_Click" IsEnabled="False"/>
+            <Button x:Name="Render" FontSize="18" Content="Render" Height="76" Width="252" Margin="5" Click="Render_Click" IsEnabled="False"/>
+            <Button x:Name="Callibrate" FontSize="18" Content="Callibrate" Height="76" Width="252" Margin="5" Click="Callibrate_Click"/>
+            <Button x:Name="Test_Callibration" FontSize="18" Content="Test Callibration" Height="76" Width="252" Margin="5" Click="Test_Click"/>
+            <Button x:Name="Reset" FontSize="18" Content="Reset" Height="76" Width="252" Margin="5" Click="Reset_Click"/>
+            <Button x:Name="Exit" FontSize="18" Content="Exit" Height="76" Width="252" Margin="5" Click="Exit_Click"/>-->
+        </StackPanel>
+        
         
     </Grid>
+    
 </Window>

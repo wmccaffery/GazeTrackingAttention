@@ -7,23 +7,16 @@
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="GazeTrackingAttentionDemo.MainWindow"
+        xmlns:cam="clr-namespace:WebcamControl;assembly=WebcamControl"
+        xmlns:usrCtrls="clr-namespace:GazeTrackingAttentionDemo.UserControls"
         mc:Ignorable="d"
         Title="MainWindow" 
-        WindowState="Maximized"
         Width="1920"
-        Height="1080"
+        Height="1200"
         WindowStyle="None"
+        Loaded="onLoad"
+        WindowStartupLocation="Manual"
         >
-    <Window.Resources>
-        <ObjectDataProvider ObjectType="{x:Type local:BuildDocumentDisplay}"
-                            MethodName="getA4Width" x:Key="a4width"/>
-        <ObjectDataProvider ObjectType="{x:Type local:BuildDocumentDisplay}"
-                            MethodName="getA4Height" x:Key="a4height"/>
-        <ObjectDataProvider ObjectType="{x:Type local:BuildDocumentDisplay}"
-                            MethodName="getMarginWidth" x:Key="marginWidth"/>
-        <ObjectDataProvider ObjectType="{x:Type local:BuildDocumentDisplay}"
-                            MethodName="getMarginHeight" x:Key="marginHeight"/>
-    </Window.Resources>
 
     <Grid ShowGridLines="False" x:Name="layoutRoot" Background="LightGray">
         <Grid.ColumnDefinitions>
@@ -36,55 +29,8 @@
 
         <Label x:Name="InitMessage" Grid.Column="2" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center">Awaiting Test Start...</Label>
 
-        <Grid x:Name="CenterSubGrid" ShowGridLines="True" Grid.Column="2" Width="{Binding Source={StaticResource a4width}}" Height="{Binding Source={StaticResource a4height}}" Background="White">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="{Binding Source={StaticResource marginWidth}}"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="{Binding Source={StaticResource marginWidth}}"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="{Binding Source={StaticResource marginHeight}}"/>
-                <RowDefinition/>
-                <RowDefinition Height="{Binding Source={StaticResource marginHeight}}"/>
-            </Grid.RowDefinitions>
-
-            <Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="mainCanvas"/>
-            <!--<Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="gazeCanvas"/>
-            <Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="fixationCanvas"/>
-            <Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="saccadeCanvas"/>-->
-
-            <!--<UniformGrid Grid.Column="1" Grid.Row="1" Columns="1" x:Name="DocumentArea">-->
-            <RichTextBox x:Name="PageText" x:FieldModifier="public" BorderThickness="0" Grid.Column="1" Grid.Row="1" FontSize="18" FontFamily="Calibri" IsReadOnly="True" Cursor="Arrow" PreviewMouseDown="RtbMouseDown" MouseMove="RtbMouseMove">
-                <FlowDocument>
-                    <Paragraph x:Name="p1">
-                        <Run x:Name="p1text" Text="Hayabusa 2 reached asteroid Ryugu in June 2018 after a three-and-a-half-year journey from Earth. It will descend to the surface and attempt to grab the sample from a pre-chosen site. The spacecraft will return to Earth with the samples in 2020 after its exploration of Ryugu is complete. Jaxa officials had to delay the touchdown last October, after they found the asteroid's surface was more rugged than expected."/>
-                    </Paragraph>
-                    <Paragraph x:Name="p2">
-                        <Run x:Name="p2text" Text="During sample collection, the spacecraft will approach the 1km-wide asteroid with an instrument called the sampler horn. On touchdown, a 5g projectile made of the metal tantalum is fired into the rocky surface at 300m/s. The particles kicked up by the impact will be caught by a specially-designed section of the sampler horn."/>
-                    </Paragraph>
-                    <Paragraph x:Name="p3">
-                        <Run x:Name="p3text" Text="Hayabusa 2 will begin descending to the surface on 21 February (local time) and should touch down around 08:00 on the 22nd. In September, Hayabusa 2 deployed two robotic &quot;hoppers&quot; that propelled themselves across the surface of Ryugu, sending back images and other data. Then, in October, the &quot;mothership&quot; despatched a French-German instrument package called Mascot to the surface."/>
-                    </Paragraph>
-                    <Paragraph x:Name="p4">
-                        <Run x:Name="p4text" Text="Later this year, perhaps in March or April, Jaxa plans to detonate an explosive charge that will punch a crater into the surface of Ryugu. Hayabusa-2 would then descend into the crater to collect fresh samples of material that have not been altered by aeons of exposure to the environment of space."/>
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
-        </Grid>
-
-        <Grid x:Name="MenuSubGrid" Background="White">
-            <StackPanel x:Name="Menu" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Button x:Name="Load" Content="Load Document" Height="76" Width="252" Margin="5" Click="Load_Click"></Button>
-                <Button x:Name="Begin" Content="Begin" Height="76" Width="252" Margin="5" Click="Begin_Click"/>
-                <Button x:Name="End" Content="End" Height="76" Width="252" Margin="5" Click="End_Click" IsEnabled="False"/>
-                <Button x:Name="Render" Content="Render" Height="76" Width="252" Margin="5" Click="Render_Click" IsEnabled="False"/>
-                <Button x:Name="Callibrate" Content="Callibrate" Height="76" Width="252" Margin="5" Click="Callibrate_Click"/>
-                <Button x:Name="Test_Callibration" Content="Test Callibration" Height="76" Width="252" Margin="5" Click="Test_Click"/>
-                <Button x:Name="Reset" Content="Reset" Height="76" Width="252" Margin="5" Click="Reset_Click"/>
-                <Button x:Name="Exit" Content="Exit" Height="76" Width="252" Margin="5" Click="Exit_Click"/>
-            </StackPanel>
-        </Grid>
-
+        <usrCtrls:DocumentCtrl Grid.Column="2"/>
+        
         <Grid x:Name="MarkupSubGrid" Grid.Column="4" ShowGridLines="False" Background="White">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition SharedSizeGroup="A"/>
@@ -107,7 +53,7 @@
 
             </Grid.RowDefinitions>
 
-            <GroupBox x:Name="playback_group" Header="Playback" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="4" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
+            <GroupBox x:Name="playback_group" Header="Playback" FontSize="18" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="4" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
                 <Grid Margin="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition SharedSizeGroup="A"/>
@@ -124,38 +70,94 @@
                         <RowDefinition SharedSizeGroup="A"/>
                     </Grid.RowDefinitions>
 
-                    <Slider Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Center"></Slider>
-                    <Button Grid.Row="5" Content="Play"></Button>
+                    <MediaElement Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="10" Source="C:\Videos\Webcam 01-03-2019 09.31.09.wmv" LoadedBehavior="Manual" Name="player" />
+                    <StackPanel Grid.Row="3" Grid.ColumnSpan="3">
+                        <WrapPanel HorizontalAlignment="Center">
+                            <Button Name="btnPlay" Click="btnPlay_Click">Play</Button>
+                            <Button Name="btnPause" Margin="5,0" Click="btnPause_Click">Pause</Button>
+                            <Button Name="btnStop" Click="btnStop_Click">Stop</Button>
+                        </WrapPanel>
+                    </StackPanel>
+                    <!--<StatusBar Grid.Row="4" Grid.ColumnSpan="3">
+                        <StatusBar.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </ItemsPanelTemplate>
+                        </StatusBar.ItemsPanel>
+                        <StatusBarItem>
+                            <TextBlock Name="lblProgressStatus">00:00:00</TextBlock>
+                        </StatusBarItem>
+                        <StatusBarItem Grid.Column="1" HorizontalContentAlignment="Stretch">
+                            <Slider Name="sliProgress" Thumb.DragStarted="sliProgress_DragStarted"  Thumb.DragCompleted="sliProgress_DragCompleted" ValueChanged="sliProgress_ValueChanged" />
+                        </StatusBarItem>
+                        <StatusBarItem Grid.Column="2">
+                            <ProgressBar Name="pbVolume" Width="50" Height="12" Maximum="1" Value="{Binding ElementName=mePlayer, Path=Volume}" />
+                        </StatusBarItem>
+                    </StatusBar>-->
+                    <!--<cam:Webcam x:Name="WebcamViewer" Grid.Row="0" Grid.Column="0" Margin="10"
+
+                    FrameRate="30"       
+
+                    ImageDirectory="C:\WebcamSnapshots"
+
+                    VideoDirectory="C:\VideoClips"
+
+                    VideoDevice="{Binding SelectedItem, ElementName=VidDevices}"
+
+                    AudioDevice="{Binding SelectedItem, ElementName=AudDevices}"/>
+
+
+                    <TextBlock Grid.Row="2" Text="Video Device" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Row="3" x:Name="VidDevices" Grid.Column="1" Margin="10,0,0,0"
+
+                      Width="210" Height="24"
+
+                      ItemsSource="{Binding VideoDevices}"
+
+                      DisplayMemberPath="Name"
+
+                      SelectedIndex="0"/>-->
+
+                    <!--<Slider Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Center"></Slider>
+                    <Button Grid.Row="5" Content="Play"></Button>-->
 
                 </Grid>
 
             </GroupBox>
 
-            <GroupBox x:Name="visualisation_group" Header="Visualisation" Grid.Column="1" Grid.Row="4" Grid.RowSpan="3" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
+            <GroupBox x:Name="visualisation_group" Header="Visualisation" Grid.Column="1" Grid.Row="4" Grid.RowSpan="2" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
                 <UniformGrid>
                     <StackPanel Orientation="Vertical">
                         <Label>Display</Label>
-                        <Viewbox Height="20" HorizontalAlignment="Left">
+                        <Viewbox Height="30" HorizontalAlignment="Left">
                             <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Checked="Gaze_CheckBox_Checked" Unchecked="Gaze_CheckBox_Unchecked" Click="CheckBox_Clicked"  IsChecked="True"/>
                         </Viewbox>
-                        <Viewbox Height="20" HorizontalAlignment="Left">
+                        <Viewbox Height="30" HorizontalAlignment="Left">
                             <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Checked="Fixation_CheckBox_Checked" Unchecked="Fixation_CheckBox_Unchecked" Click="CheckBox_Clicked" />
                         </Viewbox>
-                        <Viewbox Height="20" HorizontalAlignment="Left">
+                        <Viewbox Height="30" HorizontalAlignment="Left">
                             <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top" Checked="Saccade_CheckBox_Checked" Unchecked="Saccade_CheckBox_Unchecked" Click="CheckBox_Clicked" />
                         </Viewbox>
-                        <Viewbox Height="20" HorizontalAlignment="Left">
+                        <Viewbox Height="30" HorizontalAlignment="Left">
                             <CheckBox x:Name="All_CheckBox" Content="All" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked" Click="CheckBox_Clicked" />
                         </Viewbox>
                     </StackPanel>
-                    <!--add key and hilight interface-->
+                    <!--add key and highlight interface-->
                 </UniformGrid>
 
             </GroupBox>
 
-            <GroupBox x:Name="markup_group" Header="Markup" Grid.Column="1" Grid.Row="7" Grid.RowSpan="3" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
+            <GroupBox x:Name="markup_group" Header="Markup" FontSize="18" Grid.Column="1" Grid.Row="6" Grid.RowSpan="4" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
@@ -166,44 +168,62 @@
                     </Grid.RowDefinitions>
                     <!--<StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Right" Width="289">-->
                     <TextBlock Foreground="Red" FontSize="20" Grid.Row="0" Grid.ColumnSpan="2"> &lt;no element selected&gt;</TextBlock>
-                    <Label Grid.Row="1" Content="Attentiveness" Grid.ColumnSpan="2"/>
+                    <Label Grid.Row="1" Content="Interest" Grid.ColumnSpan="2"/>
                     <StackPanel Grid.Row="2" Orientation="Horizontal" Grid.ColumnSpan="2">
-                        <Viewbox Height="25">
-                            <RadioButton GroupName="Attentiveness"/>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Interest"/>
                         </Viewbox>
-                        <Viewbox Height="25">
-                            <RadioButton GroupName="Attentiveness"/>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Interest"/>
                         </Viewbox>
-                        <Viewbox Height="25">
-                            <RadioButton GroupName="Attentiveness"/>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Interest"/>
                         </Viewbox>
-                        <Viewbox Height="25">
-                            <RadioButton GroupName="Attentiveness"/>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Interest"/>
                         </Viewbox>
-                        <Viewbox Height="25">
-                            <RadioButton GroupName="Attentiveness"/>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Interest"/>
                         </Viewbox>
                     </StackPanel>
-                    <Label Grid.Row="3" Content="Effort" Grid.ColumnSpan="2"/>
+                    <Label Grid.Row="3" Content="Attentiveness" Grid.ColumnSpan="2"/>
                     <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="2">
-                        <Viewbox Height="25">
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                    </StackPanel>
+                    <Label Grid.Row="5" Content="Effort" Grid.ColumnSpan="2"/>
+                    <StackPanel Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="2">
+                        <Viewbox Height="50">
                             <RadioButton GroupName="Effort"/>
                         </Viewbox>
-                        <Viewbox Height="25">
+                        <Viewbox Height="50">
                             <RadioButton GroupName="Effort"/>
                         </Viewbox>
-                        <Viewbox Height="25">
+                        <Viewbox Height="50">
                             <RadioButton GroupName="Effort"/>
                         </Viewbox>
-                        <Viewbox Height="25">
+                        <Viewbox Height="50">
                             <RadioButton GroupName="Effort"/>
                         </Viewbox>
-                        <Viewbox Height="25">
+                        <Viewbox Height="50">
                             <RadioButton GroupName="Effort"/>
                         </Viewbox>
                     </StackPanel>
-                    <Label Grid.Row="5" Grid.ColumnSpan="2">Comments</Label>
-                    <TextBox Grid.Row="6"  Margin="2,2,2,2" Grid.ColumnSpan="2"></TextBox>
+                    <Label Grid.Row="7" Grid.ColumnSpan="2">Comments</Label>
+                    <TextBox Grid.Row="8"  Margin="2,2,2,2" Grid.ColumnSpan="2"></TextBox>
                 </Grid>
             </GroupBox>
 

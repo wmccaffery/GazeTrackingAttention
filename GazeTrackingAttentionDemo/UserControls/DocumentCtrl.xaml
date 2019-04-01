@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="GazeTrackingAttentionDemo.UserControls.DocumentCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GazeTrackingAttentionDemo"
+             mc:Ignorable="d" 
+             d:DesignHeight="{Binding Path = DocumentHeight}" d:DesignWidth="{Binding Path = DocumentWidth}">
+
+    <Grid x:Name="DocumentGrid" ShowGridLines="False" Height="{Binding Path = DocumentHeight}" Width="{Binding Path=DocumentWidth}" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{Binding Path = DocumentMarginWidth}"/>
+                <ColumnDefinition/>
+            <ColumnDefinition Width="{Binding Path = DocumentMarginWidth}"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+            <RowDefinition Height="{Binding Path = DocumentMarginHeight}"/>
+                <RowDefinition/>
+            <RowDefinition Height="{Binding Path = DocumentMarginHeight}"/>
+            </Grid.RowDefinitions>
+
+            <Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="mainCanvas"/>
+            <!--<Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="gazeCanvas"/>
+                <Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="fixationCanvas"/>
+                <Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="saccadeCanvas"/>-->
+            <!--<UniformGrid Grid.Column="1" Grid.Row="1" Columns="1" x:Name="DocumentArea">-->
+        
+            <RichTextBox x:Name="PageText" Grid.Column="1" Grid.Row="1" BorderThickness="0" FontSize="18" FontFamily="Calibri" IsReadOnly="True" Cursor="Arrow">
+                <FlowDocument>
+                    <Paragraph x:Name="p1">
+                        <Run x:Name="p1text" Text="TEST1"/>
+                    </Paragraph>
+                    <Paragraph x:Name="p2">
+                        <Run x:Name="p2text" Text="TEST2"/>
+                    </Paragraph>
+                    <Paragraph x:Name="p3">
+                        <Run x:Name="p3text" Text="TEST3"/>
+                    </Paragraph>
+                    <Paragraph x:Name="p4">
+                        <Run x:Name="p4text" Text="TEST4"/>
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+        </Grid>
+</UserControl>

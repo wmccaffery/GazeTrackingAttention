@@ -5,12 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GazeTrackingAttentionDemo"
              mc:Ignorable="d" 
-             d:DesignHeight="{Binding Path = DocumentHeight}" d:DesignWidth="{Binding Path = DocumentWidth}">
+             d:DesignHeight="{Binding Path = DocumentHeight}" 
+             d:DesignWidth="{Binding Path = DocumentWidth}"
+             Height="{Binding Path = DocumentHeight}"
+             Width="{Binding Path = DocumentWidth}"
+             Background="White">
 
-    <Grid x:Name="DocumentGrid" ShowGridLines="False" Height="{Binding Path = DocumentHeight}" Width="{Binding Path=DocumentWidth}" Grid.Column="1">
+
+    <Grid x:Name="DocumentGrid" ShowGridLines="True" Height="{Binding Path = DocumentHeight}" Width="{Binding Path=DocumentWidth}" Grid.Column="1">
             <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding Path = DocumentMarginWidth}"/>
-                <ColumnDefinition/>
+            <ColumnDefinition/>
             <ColumnDefinition Width="{Binding Path = DocumentMarginWidth}"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>

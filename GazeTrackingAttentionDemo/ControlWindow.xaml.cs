@@ -27,7 +27,7 @@ namespace GazeTrackingAttentionDemo
 		public Collection<EncoderDevice> AudioDevices { get; set; }
 		public ControlWindow()
         {
-			Screen s1 = Screen.AllScreens[0];
+			Screen s1 = Screen.AllScreens[1];
 			System.Drawing.Rectangle r1 = s1.WorkingArea;
 			this.Top = r1.Top;
 			this.Left = r1.Left;

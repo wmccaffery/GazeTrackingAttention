@@ -48,7 +48,7 @@ namespace GazeTrackingAttentionDemo
 			this.WindowStartupLocation = WindowStartupLocation.Manual;
 
 			//Screen s2 = Screen.AllScreens.Where(s => !s.Primary).FirstOrDefault();
-			Screen s2 = Screen.AllScreens[1];
+			Screen s2 = Screen.AllScreens[0];
 			System.Drawing.Rectangle r2 = s2.WorkingArea;
 			this.Top = r2.Top;
 			this.Left = r2.Left;

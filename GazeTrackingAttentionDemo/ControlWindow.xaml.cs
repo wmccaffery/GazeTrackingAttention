@@ -47,7 +47,6 @@ namespace GazeTrackingAttentionDemo
 		{
 			this.WindowState = WindowState.Maximized;
 			WebcamViewer.StartPreview();
-
 		}
 
 		private void Record_Click(object sender, RoutedEventArgs e)

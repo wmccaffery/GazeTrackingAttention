@@ -20,11 +20,39 @@ namespace GazeTrackingAttentionDemo.UserControls
     /// </summary>
     public partial class TestCalibrationCtrl : UserControl
     {
-        public TestCalibrationCtrl()
+
+		private static double _a4Width = 8.27;
+		private static double _a4Height = 11.69;
+		private static double _a4MarginSize = 1;
+		private static double _xScreenRes = 1920;
+		private static double _yScreenRes = 1200;
+		private static double _xScreenDPI = 20.4;
+		private static double _yScreenDPI = 12.8;
+
+		private double _documentWidth = (_a4Width * (_xScreenRes / _xScreenDPI));
+
+		private double _documentHeight = _a4Height * (_yScreenRes / _yScreenDPI);
+
+		private double _documentMarginWidth = _a4MarginSize * (_xScreenRes / _xScreenDPI) - 10;
+
+		private double _documentMarginHeight = _a4MarginSize * (_xScreenRes / _xScreenDPI) - 10;
+
+
+		public double DocumentWidth { get => _documentWidth; }
+		public double DocumentHeight { get => _documentHeight; }
+		public double DocumentMarginWidth { get => _documentMarginWidth; }
+		public double DocumentMarginHeight { get => _documentMarginHeight; }
+
+		public TestCalibrationCtrl()
         {
             InitializeComponent();
 
-			var field = PageText;
+			this.DataContext = this;
+		}
+
+		public void onLoad(object sender, RoutedEventArgs e)
+		{
+			var field = testArea;
 			UIElement container = VisualTreeHelper.GetParent(field) as UIElement;
 			Point viewerSource = field.TranslatePoint(new Point(0, 0), container);
 			double elementHeight = field.ActualHeight;
@@ -121,5 +149,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 			mainCanvas.Children.Add(r2);
 		}
+
+
 	}
 }
+

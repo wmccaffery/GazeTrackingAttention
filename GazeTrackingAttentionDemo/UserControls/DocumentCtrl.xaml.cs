@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.IO;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace GazeTrackingAttentionDemo.UserControls
 {
@@ -12,7 +14,15 @@ namespace GazeTrackingAttentionDemo.UserControls
 			InitializeComponent();
 			
 			this.DataContext = this;
+
 		}
+
+		public void onLoad(object sender, RoutedEventArgs e)
+		{
+			PageText.Document.Blocks.Clear();
+			PageText.Selection.Load(new FileStream(@"C:\MMAD\Test.rtf", FileMode.Open), DataFormats.Rtf);
+		}
+
 
 		//Calculate sizes to draw a full sized A4 page 
 

@@ -1,4 +1,4 @@
-﻿<Window
+﻿<Window x:Class="GazeTrackingAttentionDemo.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,8 +6,6 @@
         xmlns:local="clr-namespace:GazeTrackingAttentionDemo"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="GazeTrackingAttentionDemo.MainWindow"
-        xmlns:cam="clr-namespace:WebcamControl;assembly=WebcamControl"
         xmlns:usrCtrls="clr-namespace:GazeTrackingAttentionDemo.UserControls"
         mc:Ignorable="d"
         Title="MainWindow" 
@@ -34,7 +32,7 @@
         <ContentControl Grid.Column="2" x:Name="centerView"/>
 
 
-        <Grid x:Name="MarkupSubGrid" Grid.Column="4" ShowGridLines="False" Background="White">
+        <!--<Grid x:Name="MarkupSubGrid" Grid.Column="4" ShowGridLines="False" Background="White">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition SharedSizeGroup="A"/>
                 <ColumnDefinition SharedSizeGroup="A"/>
@@ -81,7 +79,7 @@
                             <Button Name="btnStop" Click="btnStop_Click">Stop</Button>
                         </WrapPanel>
                     </StackPanel>
-                    <!--<StatusBar Grid.Row="4" Grid.ColumnSpan="3">
+                    --><!--<StatusBar Grid.Row="4" Grid.ColumnSpan="3">
                         <StatusBar.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Grid>
@@ -128,7 +126,7 @@
                       SelectedIndex="0"/>-->
 
                     <!--<Slider Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Center"></Slider>
-                    <Button Grid.Row="5" Content="Play"></Button>-->
+                    <Button Grid.Row="5" Content="Play"></Button>--><!--
 
                 </Grid>
 
@@ -152,7 +150,7 @@
                         </Viewbox>
                         <Button Height="30" FontSize="20" Margin="60,5,60,0">Render</Button>
                     </StackPanel>
-                    <!--add key and highlight interface-->
+                    --><!--add key and highlight interface--><!--
                 </UniformGrid>
 
             </GroupBox>
@@ -170,7 +168,7 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <!--<StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Right" Width="289">-->
+                    --><!--<StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Right" Width="289">--><!--
                     <TextBlock Foreground="Red" FontSize="20" Grid.Row="0" Grid.ColumnSpan="2"> &lt;no element selected&gt;</TextBlock>
                     <Label Grid.Row="1" Content="Interest" Grid.ColumnSpan="2"/>
                     <StackPanel Grid.Row="2" Orientation="Horizontal" Grid.ColumnSpan="2">
@@ -250,11 +248,11 @@
 
                     <TextBox x:Name="DisplaySlider_Value" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Bottom"
  TextWrapping="Wrap" Height="24" Width="22"/>
-                    <!--Text="{Binding Value, ElementName=DisplaySlider}"-->
+                    --><!--Text="{Binding Value, ElementName=DisplaySlider}"--><!--
 
                 </Grid>
             </GroupBox>
-        </Grid>
+        </Grid>-->
     </Grid>
 </Window>
 

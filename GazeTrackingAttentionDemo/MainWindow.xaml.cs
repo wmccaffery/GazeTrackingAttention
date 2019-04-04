@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -41,6 +42,10 @@ namespace GazeTrackingAttentionDemo
 		Boolean dataRecorded;
 
 		State state  = State.ReadyToRecord; //TODO INITIAL VALUE IS CURRENTLY SET FOR DEBUGGING
+
+		public event Action<String> pathHandover;
+
+
 
 		UserControl document = new UserControls.DocumentCtrl();
 		UserControl test = new UserControls.TestCalibrationCtrl();
@@ -79,14 +84,19 @@ namespace GazeTrackingAttentionDemo
 			init();
 
 			//Create child window
-			//SourceInitialized += (s, a) =>
-			//{
-			//	ControlWindow ctrlwin = new ControlWindow();
-			//	ctrlwin.Owner = this;
-			//	ctrlwin.Show();
-			//};
+			SourceInitialized += (s, a) =>
+			{
+				ControlWindow ctrlwin = new ControlWindow();
+				ctrlwin.Owner = this;
+				ctrlwin.Show();
+			};
 
 			centerView.Content = document;
+
+			if(pathHandover != null)
+			{
+				pathHandover("C:\\MMAD\\Test.rtf");
+			}
 		}
 
 		public void init()
@@ -111,7 +121,6 @@ namespace GazeTrackingAttentionDemo
 			//Fixation_CheckBox.Visibility = Visibility.Hidden;
 			//Gaze_CheckBox.Visibility = Visibility.Hidden;
 			//Visualisation_Header.Visibility = Visibility.Hidden;
-
 
 		}
 
@@ -161,8 +170,8 @@ namespace GazeTrackingAttentionDemo
 			//End.IsEnabled = false;
 			//Test_Callibration.IsEnabled = false;
 			//Callibrate.IsEnabled = false;
-			DisplaySlider.Maximum = session.currentTestResults.endTime;
-			DisplaySlider.Minimum = session.currentTestResults.startTime;
+			//DisplaySlider.Maximum = session.currentTestResults.endTime;
+			//DisplaySlider.Minimum = session.currentTestResults.startTime;
 			dataRecorded = true;
 
 
@@ -234,28 +243,28 @@ namespace GazeTrackingAttentionDemo
 		private void btnPlay_Click(object sender, RoutedEventArgs e)
 		{
 
-			player.Play();
+			//player.Play();
 		}
 
 		private void btnPause_Click(object sender, RoutedEventArgs e)
 		{
-			player.Pause();
+			//player.Pause();
 		}
 
 		private void btnStop_Click(object sender, RoutedEventArgs e)
 		{
-			player.Stop();
+			//player.Stop();
 		}
 
 		private void Render_Click(object sender, RoutedEventArgs e)
         {
             //DisplaySlider.Value = DisplaySlider.Maximum;
-            DisplaySlider.Visibility = Visibility.Visible;
-            DisplaySlider_Value.Visibility = Visibility.Visible;
-            All_CheckBox.Visibility = Visibility.Visible;
-            Saccade_CheckBox.Visibility = Visibility.Visible;
-            Fixation_CheckBox.Visibility = Visibility.Visible;
-            Gaze_CheckBox.Visibility = Visibility.Visible;
+            //DisplaySlider.Visibility = Visibility.Visible;
+            //DisplaySlider_Value.Visibility = Visibility.Visible;
+            //All_CheckBox.Visibility = Visibility.Visible;
+            //Saccade_CheckBox.Visibility = Visibility.Visible;
+            //Fixation_CheckBox.Visibility = Visibility.Visible;
+            //Gaze_CheckBox.Visibility = Visibility.Visible;
             //Visualisation_Header.Visibility = Visibility.Visible;
             //render();
         }
@@ -298,16 +307,16 @@ namespace GazeTrackingAttentionDemo
 
         private void All_CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            Saccade_CheckBox.IsChecked = true;
-            Fixation_CheckBox.IsChecked = true;
-            Gaze_CheckBox.IsChecked = true;
+            //Saccade_CheckBox.IsChecked = true;
+            //Fixation_CheckBox.IsChecked = true;
+            //Gaze_CheckBox.IsChecked = true;
         }
 
         private void All_CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            Saccade_CheckBox.IsChecked = false;
-            Fixation_CheckBox.IsChecked = false;
-            Gaze_CheckBox.IsChecked = false;
+            //Saccade_CheckBox.IsChecked = false;
+            //Fixation_CheckBox.IsChecked = false;
+            //Gaze_CheckBox.IsChecked = false;
         }
 
 		private void Load_Click(object sender, RoutedEventArgs e)

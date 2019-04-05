@@ -28,6 +28,8 @@
         <Label x:Name="InitMessage" Grid.Column="2" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center">Awaiting Test Start...</Label>
 
         <ContentControl Grid.Column="2" x:Name="centerView"/>
+        <ContentControl Grid.Column="4" x:Name="rightView"/>
+
 
     </Grid>
 </Window>

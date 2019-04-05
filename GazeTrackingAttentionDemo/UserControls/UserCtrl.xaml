@@ -17,7 +17,7 @@
             <Label>ID</Label>
             <TextBox x:Name="userID" Text="{Binding UserID, Mode=TwoWay}"></TextBox>
             <Label>Group</Label>
-            <ComboBox x:Name="groupSelection" Text="Select Group" ItemsSource="{Binding GroupNames}">
+            <ComboBox x:Name="groupSelection" ItemsSource="{Binding GroupNames}" SelectedItem="{Binding UserGroup, Mode=TwoWay}">
             </ComboBox>
             <Button Margin="300,20,300,20" Click="CreateUser_Click">Create</Button>
         </StackPanel>

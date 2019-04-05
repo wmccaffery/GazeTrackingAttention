@@ -1,4 +1,5 @@
-﻿using Microsoft.Expression.Encoder.Devices;
+﻿using GazeTrackingAttentionDemo.Models;
+using Microsoft.Expression.Encoder.Devices;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -52,7 +53,7 @@ namespace GazeTrackingAttentionDemo
 
 		}
 
-		public void onUserCreated()
+		public void onUserCreated(User user)
 		{
 			controller.Content = webcam;
 		}

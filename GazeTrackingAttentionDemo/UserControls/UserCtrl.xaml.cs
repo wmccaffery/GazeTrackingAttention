@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using GazeTrackingAttentionDemo.Models;
 namespace GazeTrackingAttentionDemo.UserControls
 {
 	/// <summary>
@@ -25,8 +25,10 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public List<String> GroupPaths { get; set; }
 		public List<String> GroupNames { get; set; }
+		public String UserGroup {get; set;}
+		public String UserID { get; set; }
 
-		public delegate void UserCreatedHandler();
+		public delegate void UserCreatedHandler(User newUser);
 
 		public event UserCreatedHandler UserCreated;
 
@@ -51,14 +53,13 @@ namespace GazeTrackingAttentionDemo.UserControls
 				GroupNames.Add(dirName);
 			}
 			Console.WriteLine(GroupPaths.Count + " test groups were discovered");
-
-
 		}
 
 		public void onLoad(object sender, RoutedEventArgs e)
 		{
 			//parentWin = (Window)((ContentControl) this.Parent).Parent;
 			parentWin = (ControlWindow)Window.GetWindow(this);
+
 			//define event handler in main window
 			UserCreated += new UserCreatedHandler(mainWin.onUserCreated);
 			UserCreated += new UserCreatedHandler(parentWin.onUserCreated);
@@ -70,8 +71,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		private void CreateUser_Click(object sender, RoutedEventArgs e)
 		{
-			UserCreated();
-
+			UserCreated(new User(UserID, UserGroup, ("C:\\MMAD\\TestGroups\\" + UserGroup)));
 		}
 	}
 }

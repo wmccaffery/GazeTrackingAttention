@@ -125,10 +125,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\Annotation.cs" />
-    <Compile Include="Models\Fixation.cs" />
-    <Compile Include="Models\Saccade.cs" />
-    <Compile Include="Models\TestResults.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="UserControls\MarkupCtrl.xaml.cs">
       <DependentUpon>MarkupCtrl.xaml</DependentUpon>

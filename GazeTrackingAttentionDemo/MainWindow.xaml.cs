@@ -1,4 +1,5 @@
 ﻿
+using GazeTrackingAttentionDemo.Models;
 using Microsoft.Expression.Encoder.Devices;
 using System;
 using System.Collections;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -27,7 +29,7 @@ namespace GazeTrackingAttentionDemo
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		enum State { Wait, Setup, Test, ReadyToRecord, Recording, DoneRecording, Markup }
+		public enum EState { Wait, Setup, Test, ReadyToRecord, Recording, DoneRecording, Markup }
 		//Wait: time between tests
 		//Setup: user creation and initial calibration
 		//Test: testing user calibration
@@ -37,13 +39,34 @@ namespace GazeTrackingAttentionDemo
 		//Markup: data is being annotated
 
 
-
-		State state = State.Setup; //TODO INITIAL VALUE IS CURRENTLY SET FOR DEBUGGING
+		public EState State { get; set; }
+		//{
+			//get { return State; }
+			//set
+			//{
+			//	State = value;
+			//	if (State == EState.Markup)
+			//	{
+			//		//show markup
+			//	}
+			//}
+		//}
 
 
 		UserControl document = new UserControls.DocumentCtrl();
 		UserControl test = new UserControls.TestCalibrationCtrl();
 		UserControl markup = new UserControls.MarkupCtrl();
+
+		User currentUser;
+		String currentTest;
+		public List<String> filePaths { get; set; }
+
+		int testIndex = 0;
+
+		public delegate void LoadTestHandler(String test);
+
+		public event LoadTestHandler loadTest;
+
 
 
 		GazeStreamReader fd;
@@ -72,6 +95,9 @@ namespace GazeTrackingAttentionDemo
 			VideoDevices = EncoderDevices.FindDevices(EncoderDeviceType.Video);
 			AudioDevices = EncoderDevices.FindDevices(EncoderDeviceType.Audio);
 
+			loadTest += new LoadTestHandler(((UserControls.DocumentCtrl)document).onTestLoaded);
+
+
 			session = new Session();
 			fd = new GazeStreamReader(session);
 
@@ -92,21 +118,35 @@ namespace GazeTrackingAttentionDemo
 		{
 			this.WindowState = WindowState.Maximized;
 			this.KeyDown += new System.Windows.Input.KeyEventHandler(MainWindow_KeyDown);
+			
 
 		}
 
-		public void onUserCreated()
+		public void onUserCreated(User user)
 		{
 			fd.calibrate();
 			centerView.Content = test;
-			state = State.Test;
+			currentUser = user;
+			State = EState.Test;
+
+			//load test files
+			filePaths = new List<String>(Directory.GetFiles(currentUser.GroupPath));
+			filePaths.Sort(delegate (String a, String b)
+			{
+				int a_num = Int32.Parse(Regex.Match(a, @"\d+").Value);
+				int b_num = Int32.Parse(Regex.Match(a, @"\d+").Value);
+				return a.CompareTo(b);
+			});
+			testIndex = 0;
+			currentTest = filePaths[testIndex];
 		}
 
 
 		public void init()
 		{
-			session = new Session();
+			//session = new Session();
 			fd = new GazeStreamReader(session);
+
 		}
 		//private void Exit_Click(object sender, RoutedEventArgs e)
 		//{
@@ -170,21 +210,33 @@ namespace GazeTrackingAttentionDemo
 					Environment.Exit(0);
 					break;
 				case Key.N:
-					//Next
-					//load next doc
+					loadTest(currentTest);
+					if (testIndex < filePaths.Count)
+					{
+						currentTest = filePaths[++testIndex];
+					} else if(State != EState.Markup)
+					{
+						testIndex = 0;
+						currentTest = filePaths[testIndex];
+						State = EState.Markup;
+
+					} else
+					{
+
+					}
 					break;
 				case Key.S:
 					//Start/Stop recording data
-					if (state == State.ReadyToRecord || state == State.Test)
+					if (State == EState.ReadyToRecord || State == EState.Test)
 					{
 						fd.readFixationStream();
 						fd.readGazeStream();
-						state = State.Recording;
+						State = EState.Recording;
 					}
-					else if (state == State.Recording || state == State.Test)
+					else if (State == EState.Recording || State == EState.Test)
 					{
 						fd.Dispose();
-						state = State.DoneRecording;
+						State = EState.DoneRecording;
 					}
 					break;
 				case Key.C:
@@ -193,15 +245,15 @@ namespace GazeTrackingAttentionDemo
 					break; 
 				case Key.T:
 					//test calibration
-					if (state == State.ReadyToRecord)
+					if (State == EState.ReadyToRecord)
 					{
 						centerView.Content = test; 
-						state = State.Test;
+						State = EState.Test;
 					}
-					else if (state == State.Test)
+					else if (State == EState.Test)
 					{
 						centerView.Content = document;
-						state = State.ReadyToRecord;
+						State = EState.ReadyToRecord;
 					}
 					break;
 			}

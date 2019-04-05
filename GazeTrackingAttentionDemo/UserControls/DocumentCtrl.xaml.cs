@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace GazeTrackingAttentionDemo.UserControls
 {
@@ -20,9 +21,17 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void onLoad(object sender, RoutedEventArgs e)
 		{
-			//PageText.Document.Blocks.Clear();
+			PageText.Document.Blocks.Clear();
 			//PageText.Selection.Load(new FileStream(@"C:\MMAD\TestGroups\GroupA\Test1.rtf", FileMode.Open), DataFormats.Rtf);
+			PageText.Document.Blocks.Add(new Paragraph(new Run("Ready to start test ")));
 			Console.WriteLine("Document control Loaded");
+		}
+
+		public void onTestLoaded(String test)
+		{
+			PageText.Document.Blocks.Clear();
+			PageText.Selection.Load(new FileStream(test, FileMode.Open), DataFormats.Rtf);
+
 		}
 
 
@@ -50,6 +59,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 			public double DocumentMarginWidth { get => _documentMarginWidth;}
 			public double DocumentMarginHeight { get => _documentMarginHeight;}
 	}
+
+
 
 	//private void RtbMouseMove(object sender, MouseEventArgs e)
 	//{

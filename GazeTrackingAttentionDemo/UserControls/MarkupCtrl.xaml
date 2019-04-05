@@ -8,7 +8,7 @@
              xmlns:local="clr-namespace:GazeTrackingAttentionDemo"
              mc:Ignorable="d" 
              d:DesignHeight="1200" d:DesignWidth="800">
-    <!--<Grid x:Name="MarkupSubGrid" Grid.Column="4" ShowGridLines="False" Background="White">
+    <Grid x:Name="MarkupSubGrid" Grid.Column="4" ShowGridLines="False" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition SharedSizeGroup="A"/>
             <ColumnDefinition SharedSizeGroup="A"/>
@@ -55,7 +55,7 @@
                         <Button Name="btnStop" Click="btnStop_Click">Stop</Button>
                     </WrapPanel>
                 </StackPanel>
-                --><!--<StatusBar Grid.Row="4" Grid.ColumnSpan="3">
+                <!--<StatusBar Grid.Row="4" Grid.ColumnSpan="3">
                         <StatusBar.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Grid>
@@ -77,33 +77,6 @@
                             <ProgressBar Name="pbVolume" Width="50" Height="12" Maximum="1" Value="{Binding ElementName=mePlayer, Path=Volume}" />
                         </StatusBarItem>
                     </StatusBar>-->
-                <!--<cam:Webcam x:Name="WebcamViewer" Grid.Row="0" Grid.Column="0" Margin="10"
-
-                    FrameRate="30"       
-
-                    ImageDirectory="C:\WebcamSnapshots"
-
-                    VideoDirectory="C:\VideoClips"
-
-                    VideoDevice="{Binding SelectedItem, ElementName=VidDevices}"
-
-                    AudioDevice="{Binding SelectedItem, ElementName=AudDevices}"/>
-
-
-                    <TextBlock Grid.Row="2" Text="Video Device" VerticalAlignment="Center"/>
-                    <ComboBox Grid.Row="3" x:Name="VidDevices" Grid.Column="1" Margin="10,0,0,0"
-
-                      Width="210" Height="24"
-
-                      ItemsSource="{Binding VideoDevices}"
-
-                      DisplayMemberPath="Name"
-
-                      SelectedIndex="0"/>-->
-
-                <!--<Slider Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Center"></Slider>
-                    <Button Grid.Row="5" Content="Play"></Button>--><!--
-
             </Grid>
 
         </GroupBox>
@@ -126,7 +99,7 @@
                     </Viewbox>
                     <Button Height="30" FontSize="20" Margin="60,5,60,0">Render</Button>
                 </StackPanel>
-                --><!--add key and highlight interface--><!--
+                <!--add key and highlight interface-->
             </UniformGrid>
 
         </GroupBox>
@@ -144,64 +117,65 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                --><!--<StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Right" Width="289">--><!--
-                <TextBlock Foreground="Red" FontSize="20" Grid.Row="0" Grid.ColumnSpan="2"> &lt;no element selected&gt;</TextBlock>
-                <Label Grid.Row="1" Content="Interest" Grid.ColumnSpan="2"/>
-                <StackPanel Grid.Row="2" Orientation="Horizontal" Grid.ColumnSpan="2">
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Interest"/>
-                    </Viewbox>
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Interest"/>
-                    </Viewbox>
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Interest"/>
-                    </Viewbox>
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Interest"/>
-                    </Viewbox>
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Interest"/>
-                    </Viewbox>
+                <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Right" Width="289">
+                    <TextBlock Foreground="Red" FontSize="20" Grid.Row="0" Grid.ColumnSpan="2"> &lt;no element selected&gt;</TextBlock>
+                    <Label Grid.Row="1" Content="Interest" Grid.ColumnSpan="2"/>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Grid.ColumnSpan="2">
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Interest"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Interest"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Interest"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Interest"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Interest"/>
+                        </Viewbox>
+                    </StackPanel>
+                    <Label Grid.Row="3" Content="Attentiveness" Grid.ColumnSpan="2"/>
+                    <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="2">
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Attentiveness"/>
+                        </Viewbox>
+                    </StackPanel>
+                    <Label Grid.Row="5" Content="Effort" Grid.ColumnSpan="2"/>
+                    <StackPanel Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="2">
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Effort"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Effort"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Effort"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Effort"/>
+                        </Viewbox>
+                        <Viewbox Height="50">
+                            <RadioButton GroupName="Effort"/>
+                        </Viewbox>
+                    </StackPanel>
+                    <Label Grid.Row="7" Grid.ColumnSpan="2">Comments</Label>
+                    <TextBox Grid.Row="8"  Margin="2,2,2,2" Grid.ColumnSpan="2"></TextBox>
                 </StackPanel>
-                <Label Grid.Row="3" Content="Attentiveness" Grid.ColumnSpan="2"/>
-                <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="2">
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Attentiveness"/>
-                    </Viewbox>
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Attentiveness"/>
-                    </Viewbox>
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Attentiveness"/>
-                    </Viewbox>
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Attentiveness"/>
-                    </Viewbox>
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Attentiveness"/>
-                    </Viewbox>
-                </StackPanel>
-                <Label Grid.Row="5" Content="Effort" Grid.ColumnSpan="2"/>
-                <StackPanel Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="2">
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Effort"/>
-                    </Viewbox>
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Effort"/>
-                    </Viewbox>
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Effort"/>
-                    </Viewbox>
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Effort"/>
-                    </Viewbox>
-                    <Viewbox Height="50">
-                        <RadioButton GroupName="Effort"/>
-                    </Viewbox>
-                </StackPanel>
-                <Label Grid.Row="7" Grid.ColumnSpan="2">Comments</Label>
-                <TextBox Grid.Row="8"  Margin="2,2,2,2" Grid.ColumnSpan="2"></TextBox>
             </Grid>
         </GroupBox>
 
@@ -224,9 +198,9 @@
 
                 <TextBox x:Name="DisplaySlider_Value" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Bottom"
  TextWrapping="Wrap" Height="24" Width="22"/>
-                --><!--Text="{Binding Value, ElementName=DisplaySlider}"--><!--
+                <!--Text="{Binding Value, ElementName=DisplaySlider}"-->
 
             </Grid>
         </GroupBox>
-    </Grid>-->
+    </Grid>
 </UserControl>

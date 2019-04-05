@@ -6,19 +6,20 @@
              xmlns:local="clr-namespace:GazeTrackingAttentionDemo.UserControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Background="White">
+             Background="White"
+             Loaded="onLoad">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <StackPanel>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <Label>New User</Label>
             <Label>ID</Label>
-            <TextBox></TextBox>
+            <TextBox x:Name="userID" Text="{Binding UserID, Mode=TwoWay}"></TextBox>
             <Label>Group</Label>
-            <ComboBox x:Name="groupSelection" Text="Select Group" ItemsSource="{Binding groupNames}">
+            <ComboBox x:Name="groupSelection" Text="Select Group" ItemsSource="{Binding GroupNames}">
             </ComboBox>
-            <Button Margin="300,20,300,20">Create</Button>
+            <Button Margin="300,20,300,20" Click="CreateUser_Click">Create</Button>
         </StackPanel>
     </Grid>
 </UserControl>

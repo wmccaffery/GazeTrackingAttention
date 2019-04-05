@@ -32,7 +32,7 @@
             <!--<UniformGrid Grid.Column="1" Grid.Row="1" Columns="1" x:Name="DocumentArea">-->
         
             <RichTextBox x:Name="PageText" Grid.Column="1" Grid.Row="1" BorderThickness="0" FontSize="18" FontFamily="Calibri" IsReadOnly="True" Cursor="Arrow">
-                <FlowDocument>
+                <!--<FlowDocument>
                     <Paragraph x:Name="p1">
                         <Run x:Name="p1text" Text="TEST1"/>
                     </Paragraph>
@@ -45,7 +45,7 @@
                     <Paragraph x:Name="p4">
                         <Run x:Name="p4text" Text="TEST4"/>
                     </Paragraph>
-                </FlowDocument>
+                </FlowDocument>-->
             </RichTextBox>
         </Grid>
 </UserControl>

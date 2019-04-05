@@ -22,11 +22,15 @@ namespace GazeTrackingAttentionDemo
     /// </summary>
     public partial class ControlWindow : Window
     {
+		System.Windows.Controls.UserControl newUserForm = new UserControls.UserCtrl();
+		System.Windows.Controls.UserControl webcam = new UserControls.WebcamCtrl();
+		MainWindow mainWin = (MainWindow)System.Windows.Application.Current.MainWindow;
 
-		public Collection<EncoderDevice> VideoDevices { get; set; }
-		public Collection<EncoderDevice> AudioDevices { get; set; }
+
+
+
 		public ControlWindow()
-        {
+		{
 			Screen s1 = Screen.AllScreens[1];
 			System.Drawing.Rectangle r1 = s1.WorkingArea;
 			this.Top = r1.Top;
@@ -34,30 +38,26 @@ namespace GazeTrackingAttentionDemo
 			this.Width = r1.Width;
 			this.Height = r1.Height;
 
-			VideoDevices = EncoderDevices.FindDevices(EncoderDeviceType.Video);
-			AudioDevices = EncoderDevices.FindDevices(EncoderDeviceType.Audio);
+			InitializeComponent();
 
 			this.DataContext = this;
-
-			InitializeComponent();
+			controller.Content = newUserForm;
 
 		}
 
 		private void onLoad(object sender, RoutedEventArgs e)
 		{
 			this.WindowState = WindowState.Maximized;
-			WebcamViewer.StartPreview();
+			this.KeyDown += new System.Windows.Input.KeyEventHandler(mainWin.MainWindow_KeyDown);
+
 		}
 
-		private void Record_Click(object sender, RoutedEventArgs e)
+		public void onUserCreated()
 		{
-			WebcamViewer.StartRecording();
+			controller.Content = webcam;
 		}
 
-		private void Stop_Click(object sender, RoutedEventArgs e)
-		{
-			WebcamViewer.StopRecording();
-		}
+
 
 
 

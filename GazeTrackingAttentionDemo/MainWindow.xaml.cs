@@ -27,7 +27,7 @@ namespace GazeTrackingAttentionDemo
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		enum State {Wait, Setup, Test, ReadyToRecord, Recording, DoneRecording, Markup}
+		enum State { Wait, Setup, Test, ReadyToRecord, Recording, DoneRecording, Markup }
 		//Wait: time between tests
 		//Setup: user creation and initial calibration
 		//Test: testing user calibration
@@ -36,15 +36,9 @@ namespace GazeTrackingAttentionDemo
 		//DoneRecording: data has been recorded
 		//Markup: data is being annotated
 
-		Boolean showGaze;
-		Boolean showFixations;
-		Boolean showSaccades;
-		Boolean dataRecorded;
 
-		State state  = State.ReadyToRecord; //TODO INITIAL VALUE IS CURRENTLY SET FOR DEBUGGING
 
-		public event Action<String> pathHandover;
-
+		State state = State.Setup; //TODO INITIAL VALUE IS CURRENTLY SET FOR DEBUGGING
 
 
 		UserControl document = new UserControls.DocumentCtrl();
@@ -54,13 +48,10 @@ namespace GazeTrackingAttentionDemo
 
 		GazeStreamReader fd;
 		Session session;
-		TestSet testSet;
 
 		public Collection<EncoderDevice> VideoDevices { get; set; }
 		public Collection<EncoderDevice> AudioDevices { get; set; }
 
-
-		//double displayTime;
 
 		public MainWindow()
 		{
@@ -81,6 +72,9 @@ namespace GazeTrackingAttentionDemo
 			VideoDevices = EncoderDevices.FindDevices(EncoderDeviceType.Video);
 			AudioDevices = EncoderDevices.FindDevices(EncoderDeviceType.Audio);
 
+			session = new Session();
+			fd = new GazeStreamReader(session);
+
 			init();
 
 			//Create child window
@@ -91,38 +85,8 @@ namespace GazeTrackingAttentionDemo
 				ctrlwin.Show();
 			};
 
-			centerView.Content = document;
-
-			if(pathHandover != null)
-			{
-				pathHandover("C:\\MMAD\\Test.rtf");
-			}
 		}
 
-		public void init()
-		{
-			session = new Session();
-			fd = new GazeStreamReader(session);
-			//Render.IsEnabled = false;
-			//Begin.IsEnabled = true;
-			//End.IsEnabled = false;
-			//Test_Callibration.IsEnabled = true;
-			//Callibrate.IsEnabled = true;
-			//Reset.IsEnabled = true;
-			//mainCanvas.Children.Clear();
-
-
-			//MarkupSubGrid.Visibility = Visibility.Hidden;
-			//DocumentArea.Visibility = Visibility.Visible;
-			//DisplaySlider.Visibility = Visibility.Hidden;
-			//DisplaySlider_Value.Visibility = Visibility.Hidden;
-			//All_CheckBox.Visibility = Visibility.Hidden;
-			//Saccade_CheckBox.Visibility = Visibility.Hidden;
-			//Fixation_CheckBox.Visibility = Visibility.Hidden;
-			//Gaze_CheckBox.Visibility = Visibility.Hidden;
-			//Visualisation_Header.Visibility = Visibility.Hidden;
-
-		}
 
 		public void onLoad(object sender, RoutedEventArgs e)
 		{
@@ -131,6 +95,19 @@ namespace GazeTrackingAttentionDemo
 
 		}
 
+		public void onUserCreated()
+		{
+			fd.calibrate();
+			centerView.Content = test;
+			state = State.Test;
+		}
+
+
+		public void init()
+		{
+			session = new Session();
+			fd = new GazeStreamReader(session);
+		}
 		//private void Exit_Click(object sender, RoutedEventArgs e)
 		//{
 		//	System.Windows.Application.Current.Shutdown();
@@ -172,17 +149,11 @@ namespace GazeTrackingAttentionDemo
 			//Callibrate.IsEnabled = false;
 			//DisplaySlider.Maximum = session.currentTestResults.endTime;
 			//DisplaySlider.Minimum = session.currentTestResults.startTime;
-			dataRecorded = true;
 
 
 		}
 
-		private void Callibrate_Click(object sender, RoutedEventArgs e)
-		{
-			fd.callibrate();
-		}
-
-		private void MainWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+		public void MainWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
 		{
 			//if (e.Key == Key.A)
 			//{
@@ -204,13 +175,13 @@ namespace GazeTrackingAttentionDemo
 					break;
 				case Key.S:
 					//Start/Stop recording data
-					if (state == State.ReadyToRecord)
+					if (state == State.ReadyToRecord || state == State.Test)
 					{
 						fd.readFixationStream();
 						fd.readGazeStream();
 						state = State.Recording;
 					}
-					else if (state == State.Recording)
+					else if (state == State.Recording || state == State.Test)
 					{
 						fd.Dispose();
 						state = State.DoneRecording;
@@ -218,12 +189,13 @@ namespace GazeTrackingAttentionDemo
 					break;
 				case Key.C:
 					//calibrate
-					break;
+					fd.calibrate();
+					break; 
 				case Key.T:
 					//test calibration
 					if (state == State.ReadyToRecord)
 					{
-						centerView.Content = test;
+						centerView.Content = test; 
 						state = State.Test;
 					}
 					else if (state == State.Test)
@@ -240,34 +212,7 @@ namespace GazeTrackingAttentionDemo
             init();
         }
 
-		private void btnPlay_Click(object sender, RoutedEventArgs e)
-		{
-
-			//player.Play();
-		}
-
-		private void btnPause_Click(object sender, RoutedEventArgs e)
-		{
-			//player.Pause();
-		}
-
-		private void btnStop_Click(object sender, RoutedEventArgs e)
-		{
-			//player.Stop();
-		}
-
-		private void Render_Click(object sender, RoutedEventArgs e)
-        {
-            //DisplaySlider.Value = DisplaySlider.Maximum;
-            //DisplaySlider.Visibility = Visibility.Visible;
-            //DisplaySlider_Value.Visibility = Visibility.Visible;
-            //All_CheckBox.Visibility = Visibility.Visible;
-            //Saccade_CheckBox.Visibility = Visibility.Visible;
-            //Fixation_CheckBox.Visibility = Visibility.Visible;
-            //Gaze_CheckBox.Visibility = Visibility.Visible;
-            //Visualisation_Header.Visibility = Visibility.Visible;
-            //render();
-        }
+	
 
         private void DisplayTime_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -275,242 +220,7 @@ namespace GazeTrackingAttentionDemo
             //render();
         }
 
-        private void Gaze_CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            showGaze = true;
-        }
-
-        private void Gaze_CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            showGaze = false;
-        }
-
-        private void Fixation_CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            showFixations = true;
-        }
-
-        private void Fixation_CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            showFixations = false;
-        }
-
-        private void Saccade_CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            showSaccades = true;
-        }
-
-        private void Saccade_CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            showSaccades = false;
-        }
-
-        private void All_CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            //Saccade_CheckBox.IsChecked = true;
-            //Fixation_CheckBox.IsChecked = true;
-            //Gaze_CheckBox.IsChecked = true;
-        }
-
-        private void All_CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            //Saccade_CheckBox.IsChecked = false;
-            //Fixation_CheckBox.IsChecked = false;
-            //Gaze_CheckBox.IsChecked = false;
-        }
-
-		private void Load_Click(object sender, RoutedEventArgs e)
-		{
-			//    //select document to load 
-
-			//    //load paragraphs into document text area
-
-			//    //make use of rtb load function?
-			//    p1text.Text = "THIS IS PARAGRAPH 1";
-			//    p2text.Text = "THIS IS PARAGRAPH 2";
-			//    p3text.Text = "THIS IS PARAGRAPH 3";
-			//    p4text.Text = "THIS IS PARAGRAPH 4";
-
-
-		}
-
-		//private void RtbMouseMove(object sender, MouseEventArgs e)
-		//{
-		//    RichTextBox rtb = sender as RichTextBox;
-		//    rtb.Focus();
-		//    Point point = Mouse.GetPosition(rtb);
-
-		//    TextPointer tp = rtb.GetPositionFromPoint(point, true);
-		//    Paragraph p = tp.Paragraph;
-
-		//    TextPointer start = p.ContentStart;
-		//    TextPointer end = p.ContentEnd;
-
-		//    rtb.Selection.Select(start, end);
-		//}
-
-		//private void RtbMouseDown(object sender, MouseButtonEventArgs e)
-		//{
-		//    Console.WriteLine("Triggered");
-		//    RichTextBox rtb = sender as RichTextBox;
-		//    TextPointer start = rtb.Selection.Start;
-		//    Paragraph p = start.Paragraph;
-		//    Console.WriteLine("paragraph " + p.Name + " selected");
-		//}
-
-		//private void render()
-		//{
-		//    StackTrace stackTrace = new StackTrace();
-		//    Console.WriteLine("I was called by " + stackTrace.GetFrame(1).GetMethod().Name);
-		//    mainCanvas.Children.Clear();
-		//    //if (State.fixations.Count == 0)
-		//    //{
-		//    //    Console.WriteLine("nothing to render");
-		//    //}
-		//        if (test)
-		//        {
-		//            renderTestTargets();
-		//        }
-
-		//        if (showFixations)
-		//        {
-		//            //double durationSum = 0;
-		//            for (int i = 0; i < session.currentTestResults.fixationData.Count; i++)
-		//            {
-		//                Fixation f = (Fixation)session.currentTestResults.fixationData[i];
-		//                //if (f.startPoint.timeStamp <= displayTime)
-		//                {
-		//                Console.WriteLine("duration " + f.duration);
-		//                renderEllipse(this.CenterSubGrid.PointFromScreen(f.centroid.toPoint()), Color.FromArgb(127, Colors.Blue.R, Colors.Blue.G, Colors.Blue.B), i,Math.Sqrt(f.duration/100/Math.PI));
-		//                }
-		//            }
-		//        }
-
-		//        if (showSaccades)
-		//        {
-		//            foreach (Saccade l in session.currentTestResults.SaccadeData)
-		//            {
-		//                {
-		//                    //if (l.start <= displayTime)
-		//                    renderLine(l, Colors.Black);
-		//                }
-		//            }
-		//        }
-
-		//        if (showGaze)
-		//        {
-		//            foreach (DataPoint p in session.currentTestResults.rawGazeData)
-		//            {
-		//            //if (p.timeStamp <= displayTime)
-		//            //{
-		//                    //renderEllipse(p.toPoint(), Colors.Red, 5);
-		//                    Point pt = this.CenterSubGrid.PointFromScreen(p.toPoint());
-		//                    renderEllipse(pt, Colors.Gold, 5);
-		//                //}
-		//            }
-		//        }
-		//    }
-
-
-		//private void renderEllipse(Point p, Color c, int num, double radius)
-		//{
-		//    //draw ellipse
-		//    Ellipse e = new Ellipse();
-
-		//    SolidColorBrush mySolidColorBrush = new SolidColorBrush(c);
-
-		//    e.Fill = mySolidColorBrush;
-
-		//    //myEllipse.StrokeThickness = 2;
-
-		//    e.Stroke = Brushes.Black;
-
-		//    e.Width = radius;
-
-		//    e.Height = radius;
-
-
-		//    Canvas.SetLeft(e, p.X - (e.Width / 2));
-		//    Canvas.SetTop(e, p.Y - (e.Height / 2));
-
-		//    mainCanvas.Children.Add(e);
-
-		//    //add number
-		//    TextBlock t = new TextBlock();
-		//    t.Text = "" + num;
-		//    t.Foreground = new SolidColorBrush(Colors.White);
-		//    t.Height = 25;
-		//    t.Width = 25;
-		//    t.TextAlignment = TextAlignment.Center;
-		//    t.VerticalAlignment = VerticalAlignment.Center;
-		//    t.FontSize = 20;
-		//    t.FontWeight = FontWeights.Bold;
-		//    //t.Background = new SolidColorBrush(Colors.Red);
-
-		//    Canvas.SetLeft(t, p.X - (t.Width / 2));
-		//    Canvas.SetTop(t, p.Y - (t.Height / 2));
-
-		//    mainCanvas.Children.Add(t);
-		//}
-
-		//private void renderEllipse(Point p, Color c, double radius)
-		//{
-		//    //draw ellipse
-		//    Ellipse e = new Ellipse();
-
-		//    SolidColorBrush mySolidColorBrush = new SolidColorBrush(c);
-
-		//    e.Fill = mySolidColorBrush;
-
-		//    //myEllipse.StrokeThickness = 2;
-
-		//    e.Stroke = Brushes.Black;
-
-		//    e.Width = radius;
-
-		//    e.Height = radius;
-
-		//    Canvas.SetLeft(e, p.X - (e.Width / 2));
-		//    Canvas.SetTop(e, p.Y - (e.Height / 2));
-
-		//    mainCanvas.Children.Add(e);
-		//}
-
-		//private void renderLine(Saccade line, Color c)
-		//{
-		//    try
-		//    {
-		//        Point p1 = new Point();
-		//        Point p2 = new Point();
-
-		//        p1.X = line.X1;
-		//        p1.Y = line.Y1;
-		//        p2.X = line.X2;
-		//        p2.Y = line.Y2;
-
-		//        Point p1_fixed = this.CenterSubGrid.PointFromScreen(p1);
-		//        Point p2_fixed = this.CenterSubGrid.PointFromScreen(p2);
-
-		//        Line l = new Line();
-		//        l.X1 = p1_fixed.X;
-		//        l.X2 = p2_fixed.X;
-		//        l.Y1 = p1_fixed.Y;
-		//        l.Y2 = p2_fixed.Y;
-		//        l.Stroke = new SolidColorBrush(c);
-		//        l.StrokeThickness = 2;
-		//        mainCanvas.Children.Add(l);
-		//    }
-		//    catch (Exception e)
-		//    {
-		//        //the bug that caused this should have been patched out
-		//        Console.WriteLine("WARN: line failed to render");
-		//    }
-		//}
-
-		private void CheckBox_Clicked(object sender, RoutedEventArgs e)
-		{
-			//    render();
-		}
+		
 }
 
     //Handle data streams from the eye tracker
@@ -531,35 +241,17 @@ namespace GazeTrackingAttentionDemo
             this.session = session;
         }
 
-        public void callibrate()
+		//calibrate eye tracker
+        public void calibrate()
         {
+			Console.WriteLine("Calibrating eye tracker");
             _host.Context.LaunchConfigurationTool(Tobii.Interaction.Framework.ConfigurationTool.Recalibrate, (data) => { });
         }
 
+		//read fixations from eye tracker stream
+		//TODO unify times with windows everything using windows timestamps, rather than just using for duration.
         public void readFixationStream()
         {
-            //_fixationDataStream
-            //    .Begin((x, y, _) =>
-            //    {
-            //        Console.WriteLine("\n" +
-            //                          "Fixation started at X: {0}, Y: {1}", x, y);
-            //        _fixationBeginTime = DateTime.Now;
-            //    })
-            //    .Data((x, y, _) =>
-            //    {
-            //        Console.WriteLine("During fixation, currently at: X: {0}, Y: {1}", x, y);
-            //    })
-            //    .End((x, y, _) =>
-            //    {
-            //        Console.WriteLine("Fixation ended at X: {0}, Y: {1}", x, y);
-            //        if (_fixationBeginTime != default(DateTime))
-            //        {
-            //            Console.ForegroundColor = ConsoleColor.Cyan;
-            //            Console.WriteLine("Fixation duration: {0}", DateTime.Now - _fixationBeginTime);
-            //            Console.ForegroundColor = _defaultForegroundColor;
-            //        }
-            //    });
-
             //store fixation
             Fixation f = new Fixation();
             long startTime = -1;
@@ -599,8 +291,7 @@ namespace GazeTrackingAttentionDemo
                 f = new Fixation();
             });
 
-            //f.duration = f.endPoint.timeStamp - f.startPoint.timeStamp;
-
+			//all this block of code does is print out the current fixation to thte console
             //if (!Double.IsNaN(f.startPoint.rawX) && !Double.IsNaN(f.startPoint.rawY) && !Double.IsNaN(f.endPoint.rawX) && !Double.IsNaN(f.endPoint.rawY))
             //{
             //    f.completeFixation();
@@ -621,12 +312,10 @@ namespace GazeTrackingAttentionDemo
             //        f = new Fixation();
             //    }
             //}
-
-            //f.getLines();
-
             //});
         }
 
+		//read gaze data from eye tracker stream
         public void readGazeStream()
         {
             _gazePointDataStream.GazePoint((x, y, timestamp) =>
@@ -644,6 +333,7 @@ namespace GazeTrackingAttentionDemo
             });
         }
 
+		//calculate and record fixation
         private void findSaccade()
         {
             //store saccade
@@ -678,6 +368,7 @@ namespace GazeTrackingAttentionDemo
             }
         }
 
+		
         public void Dispose()
         {
             if (_host != null)
@@ -693,29 +384,6 @@ namespace GazeTrackingAttentionDemo
             }
         }
     }
-
-    //
-    //public static class DataManager
-    //{
-    //    public static Mode mode;
-
-    //    //TODO implement navigation for set -- something like the word screen maybe? probably too ornate.
-    //    public static ArrayList testSet = new ArrayList();
-
-    //    public static Session currentTest = new Session();
-        
-
-
-        //public static double getLastTimestamp()
-        //{
-        //    return ((Fixation)fixationData[fixationData.Count - 1]).endPoint.timeStamp;
-        //}
-
-        //public static double getFirstTimestamp()
-        //{
-        //    return ((Fixation)fixationData[0]).startPoint.timeStamp;
-        //}
-    //}
 
     public class Session
     {
@@ -748,50 +416,6 @@ namespace GazeTrackingAttentionDemo
 
         public double startTime;
         public double endTime;
-    }
-
-    public class TestSet
-    {
-        public List<String> testPaths;
-        int index;
-
-        public String getCurrent()
-        {
-            return testPaths[index];
-        }
-
-        public int nextTest()
-        {
-            if (index < testPaths.Count - 1)
-            {
-                index++;
-                return 0;
-            }
-            return 1;
-        }
-
-        public int prevTest()
-        {
-            if (index > 0)
-            {
-                index--;
-                return 0;
-            }
-            return 1;
-        }
-
-        //public void loadTestSet()
-        //{
-            
-        //}
-    }
-
-    public class AnnotatedParagraph
-    {
-        String text;
-        int attention;
-        int effort;
-        String comments;
     }
 
     public class Fixation
@@ -932,7 +556,6 @@ namespace GazeTrackingAttentionDemo
         public double rawY;
         public double timeStamp;
         public double duration;
-        public double weight;
 
         public DataPoint(double X, double Y)
         {
@@ -940,7 +563,6 @@ namespace GazeTrackingAttentionDemo
             this.rawY = Y;
             this.timeStamp = -1;
             this.duration = -1;
-            this.weight = -1;
         }
 
         public DataPoint(double X, double Y, double timeStamp)
@@ -949,7 +571,6 @@ namespace GazeTrackingAttentionDemo
             this.rawY = Y;
             this.timeStamp = timeStamp;
             this.duration = -1;
-            this.weight = -1;
         }
 
         public Point toPoint()

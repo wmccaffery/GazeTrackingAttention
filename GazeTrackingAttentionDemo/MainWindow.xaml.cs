@@ -97,6 +97,7 @@ namespace GazeTrackingAttentionDemo
 			fd = new GazeStreamReader();
 
 			init();
+			fd.initLSL();
 
 			//Create child window
 			SourceInitialized += (s, a) =>
@@ -121,8 +122,8 @@ namespace GazeTrackingAttentionDemo
 		public void onUserCreated(User user)
 		{
 			//fd.calibrate();
-			//centerView.Content = test;
-			
+			centerView.Content = document;
+
 			currentUser = user;
 			State = EState.ReadyToCalibrate;
 
@@ -192,6 +193,7 @@ namespace GazeTrackingAttentionDemo
 					if(State == EState.Ready)
 					{
 						fd.readStreams();
+						State = EState.Streaming;
 					}
 					if (State == EState.Streaming)
 					{
@@ -277,14 +279,14 @@ namespace GazeTrackingAttentionDemo
 			gazeDataResultsInfo = liblsl.resolve_stream("name", "GazeData");
 			gazeDataInlet = new liblsl.StreamInlet(gazeDataResultsInfo[0]); ;
 
-			fixationBeginResultsInfo = liblsl.resolve_stream("name", "FixationBegin");
-			fixationBeginInlet = new liblsl.StreamInlet(fixationBeginResultsInfo[0]); ;
+			//fixationBeginResultsInfo = liblsl.resolve_stream("name", "FixationBegin");
+			//fixationBeginInlet = new liblsl.StreamInlet(fixationBeginResultsInfo[0]); ;
 
-			fixationDataResultsInfo = liblsl.resolve_stream("name", "FixationData");
-			fixationDataInlet = new liblsl.StreamInlet(fixationDataResultsInfo[0]); ;
+			//fixationDataResultsInfo = liblsl.resolve_stream("name", "FixationData");
+			//fixationDataInlet = new liblsl.StreamInlet(fixationDataResultsInfo[0]); ;
 
-			fixationEndResultsInfo = liblsl.resolve_stream("name", "FixationEnd");
-			fixationEndInlet = new liblsl.StreamInlet(fixationEndResultsInfo[0]); ;
+			//fixationEndResultsInfo = liblsl.resolve_stream("name", "FixationEnd");
+			//fixationEndInlet = new liblsl.StreamInlet(fixationEndResultsInfo[0]); ;
 
 
 
@@ -307,6 +309,7 @@ namespace GazeTrackingAttentionDemo
 
 		public void readStreams()
 		{
+			Console.WriteLine("reading streams");
 			_fixationDataStream
 				.Begin((x, y, timestamp) =>
 				{
@@ -330,14 +333,21 @@ namespace GazeTrackingAttentionDemo
 
 		public void recordStreams()
 		{
+			Console.WriteLine("recording streams");
+
 			float[] sample = new float[2];
+			double timestamp;
+
 			while (true)
 			{
-				gazeDataInlet.pull_sample(sample);
+				timestamp = gazeDataInlet.pull_sample(sample);
 				foreach (float f in sample)
 					System.Console.Write("\t{0}", f);
+				System.Console.Write("\t{0}", timestamp);
+
 				System.Console.WriteLine();
 			}
+			//gazeDataInlet.pull_sample(sample);
 
 		}
 

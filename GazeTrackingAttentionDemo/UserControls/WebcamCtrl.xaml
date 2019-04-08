@@ -13,7 +13,12 @@
             <RowDefinition/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <cam:Webcam Grid.Row="0" x:Name="WebcamViewer" Margin="10"
+        <cam:Webcam Grid.Row="0" 
+                    
+                    x:Name="WebcamViewer" 
+                    
+                    Margin="10"
+                    
                     HorizontalAlignment="Stretch"
                     
                     VerticalAlignment="Stretch"

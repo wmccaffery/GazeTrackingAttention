@@ -1,22 +1,16 @@
 ﻿
 using GazeTrackingAttentionDemo.Models;
+using LSL;
 using Microsoft.Expression.Encoder.Devices;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 using Tobii.Interaction;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -29,7 +23,7 @@ namespace GazeTrackingAttentionDemo
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		public enum EState { Wait, Setup, Test, ReadyToRecord, Recording, DoneRecording, Markup }
+		public enum EState { Wait, Setup, Test, ReadyToCalibrate, Ready, Streaming, Recording, DoneRecording, Markup }
 		//Wait: time between tests
 		//Setup: user creation and initial calibration
 		//Test: testing user calibration
@@ -57,24 +51,26 @@ namespace GazeTrackingAttentionDemo
 		UserControl test = new UserControls.TestCalibrationCtrl();
 		UserControl markup = new UserControls.MarkupCtrl();
 
+		//current user data
 		User currentUser;
-		String currentTest;
+
+		//list of all file paths
 		public List<String> filePaths { get; set; }
 
+		//index of next filePath to read
 		int testIndex = 0;
 
+		//handler and event for loading tests
 		public delegate void LoadTestHandler(String test);
-
 		public event LoadTestHandler loadTest;
 
-
-
+		//init gaze stream
 		GazeStreamReader fd;
-		Session session;
+		//Session session;
 
+		//collection of all video devices available
 		public Collection<EncoderDevice> VideoDevices { get; set; }
-		public Collection<EncoderDevice> AudioDevices { get; set; }
-
+		//public Collection<EncoderDevice> AudioDevices { get; set; }
 
 		public MainWindow()
 		{
@@ -91,15 +87,14 @@ namespace GazeTrackingAttentionDemo
 
 			InitializeComponent();
 
-			//find available audio and video devices for webcam
+			//find available video devices for webcam
 			VideoDevices = EncoderDevices.FindDevices(EncoderDeviceType.Video);
-			AudioDevices = EncoderDevices.FindDevices(EncoderDeviceType.Audio);
 
 			loadTest += new LoadTestHandler(((UserControls.DocumentCtrl)document).onTestLoaded);
 
 
-			session = new Session();
-			fd = new GazeStreamReader(session);
+			//session = new Session();
+			fd = new GazeStreamReader();
 
 			init();
 
@@ -111,6 +106,8 @@ namespace GazeTrackingAttentionDemo
 				ctrlwin.Show();
 			};
 
+
+
 		}
 
 
@@ -118,16 +115,16 @@ namespace GazeTrackingAttentionDemo
 		{
 			this.WindowState = WindowState.Maximized;
 			this.KeyDown += new System.Windows.Input.KeyEventHandler(MainWindow_KeyDown);
-			
 
 		}
 
 		public void onUserCreated(User user)
 		{
-			fd.calibrate();
-			centerView.Content = test;
+			//fd.calibrate();
+			//centerView.Content = test;
+			
 			currentUser = user;
-			State = EState.Test;
+			State = EState.ReadyToCalibrate;
 
 			//load test files
 			filePaths = new List<String>(Directory.GetFiles(currentUser.GroupPath));
@@ -138,133 +135,77 @@ namespace GazeTrackingAttentionDemo
 				return a.CompareTo(b);
 			});
 			testIndex = 0;
-			currentTest = filePaths[testIndex];
 		}
-
 
 		public void init()
 		{
 			//session = new Session();
-			fd = new GazeStreamReader(session);
+			//fd = new GazeStreamReader(session);
 
 		}
-		//private void Exit_Click(object sender, RoutedEventArgs e)
-		//{
-		//	System.Windows.Application.Current.Shutdown();
-		//}
 
-		//public void Test_Click(object sender, RoutedEventArgs e)
-		//{
-		//	if (test)
-		//	{
-		//		test = false;
-		//		init();
-		//	}
-		//	else
-		//	{
-		//		test = true;
-		//	}
-		//render();
-
-		//PageText.Visibility = Visibility.Hidden;
-
-		//}
-
-		//private void Begin_Click(object sender, RoutedEventArgs e)
-		//{
-		//	//fd = new DataReader();
-		//	fd.readFixationStream();
-		//	fd.readGazeStream();
-		//	//End.IsEnabled = true;
-		//	//Begin.Visibility = Visibility.Collapsed;
-		//}
-
-		private void End_Click(object sender, RoutedEventArgs e)
+		//loads current testindex returns false if testindex too high
+		public Boolean getTest()
 		{
-			fd.Dispose();
-			//Render.IsEnabled = true;
-			//Begin.IsEnabled = false;
-			//End.IsEnabled = false;
-			//Test_Callibration.IsEnabled = false;
-			//Callibrate.IsEnabled = false;
-			//DisplaySlider.Maximum = session.currentTestResults.endTime;
-			//DisplaySlider.Minimum = session.currentTestResults.startTime;
-
-
+			if (testIndex < filePaths.Count)
+			{
+				loadTest(filePaths[testIndex]);
+				testIndex++;
+				return true;
+			}
+			return false;
 		}
+
+		public String getCurrentTest()
+		{
+			return filePaths[testIndex];
+		}
+		
 
 		public void MainWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
 		{
-			//if (e.Key == Key.A)
-			//{
-			//	Environment.Exit(0);
-			//}
 			switch (e.Key)
 			{
 				case Key.R:
-					//Reset
-					init();
+					//Restart current test
 					break;
 				case Key.E:
-					//Exit
+					//exit program
 					Environment.Exit(0);
 					break;
 				case Key.N:
-					loadTest(currentTest);
-					if (testIndex < filePaths.Count)
+					//load next test, when finished start markup
+					if(State == EState.ReadyToCalibrate || State == EState.DoneRecording)
 					{
-						currentTest = filePaths[++testIndex];
-					} else if(State != EState.Markup)
-					{
-						testIndex = 0;
-						currentTest = filePaths[testIndex];
-						State = EState.Markup;
-
-					} else
-					{
-
+						if (!getTest())
+						{
+							State = EState.Markup;
+						} else
+						{
+							fd.calibrate();
+							State = EState.Ready;
+						}
 					}
 					break;
 				case Key.S:
 					//Start/Stop recording data
-					if (State == EState.ReadyToRecord || State == EState.Test)
+					if(State == EState.Ready)
 					{
-						fd.readFixationStream();
-						fd.readGazeStream();
-						State = EState.Recording;
+						fd.readStreams();
 					}
-					else if (State == EState.Recording || State == EState.Test)
+					if (State == EState.Streaming)
+					{
+						fd.recordStreams();
+						State = EState.Recording;
+					} else if (State == EState.Recording)
 					{
 						fd.Dispose();
 						State = EState.DoneRecording;
 					}
 					break;
-				case Key.C:
-					//calibrate
-					fd.calibrate();
-					break; 
-				case Key.T:
-					//test calibration
-					if (State == EState.ReadyToRecord)
-					{
-						centerView.Content = test; 
-						State = EState.Test;
-					}
-					else if (State == EState.Test)
-					{
-						centerView.Content = document;
-						State = EState.ReadyToRecord;
-					}
-					break;
 			}
 		}
 
-        private void Reset_Click(object sender, RoutedEventArgs e)
-        {
-            init();
-        }
-
-	
 
         private void DisplayTime_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -281,144 +222,247 @@ namespace GazeTrackingAttentionDemo
         private readonly Host _host;
         private readonly FixationDataStream _fixationDataStream;
         private readonly GazePointDataStream _gazePointDataStream;
-        private Session session;
-        
+		//private Session session;
 
-        public GazeStreamReader(Session session)
+		//LSL output streams
+		public liblsl.StreamInfo gazeDataInfo;
+		public liblsl.StreamInfo[] gazeDataResultsInfo;
+		public liblsl.StreamOutlet gazeDataOutlet;
+		public liblsl.StreamInlet gazeDataInlet;
+
+		public liblsl.StreamInfo fixationBeginInfo;
+		public liblsl.StreamInfo[] fixationBeginResultsInfo;
+		public liblsl.StreamOutlet fixationBeginOutlet;
+		public liblsl.StreamInlet fixationBeginInlet;
+
+		public liblsl.StreamInfo fixationDataInfo;
+		public liblsl.StreamInfo[] fixationDataResultsInfo;
+		public liblsl.StreamOutlet fixationDataOutlet;
+		public liblsl.StreamInlet fixationDataInlet;
+
+		public liblsl.StreamInfo fixationEndInfo;
+		public liblsl.StreamInfo[] fixationEndResultsInfo;
+		public liblsl.StreamOutlet fixationEndOutlet;
+		public liblsl.StreamInlet fixationEndInlet;
+
+		public liblsl.StreamInfo[] eegDataResultsInfo;
+		public liblsl.StreamInlet eegDataInlet;
+
+
+		public GazeStreamReader()
         {
             _host = new Host();
             _fixationDataStream = _host.Streams.CreateFixationDataStream();
             //_fixationDataStream = _host.Streams.CreateFixationDataStream(Tobii.Interaction.Framework.FixationDataMode.Slow);
             _gazePointDataStream = _host.Streams.CreateGazePointDataStream();
-            this.session = session;
+            //this.session = session;
         }
 
+		public void initLSL()
+		{
+			//provider
+			gazeDataInfo = new liblsl.StreamInfo("GazeData", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+			gazeDataOutlet = new liblsl.StreamOutlet(gazeDataInfo);
+
+			fixationBeginInfo = new liblsl.StreamInfo("FixationBegin", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+			fixationBeginOutlet = new liblsl.StreamOutlet(fixationBeginInfo);
+
+			fixationDataInfo = new liblsl.StreamInfo("FixatioData", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+			fixationDataOutlet = new liblsl.StreamOutlet(fixationDataInfo);
+
+			fixationEndInfo = new liblsl.StreamInfo("FixationEnd", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+			fixationEndOutlet = new liblsl.StreamOutlet(fixationEndInfo);
+
+			//intlet
+			gazeDataResultsInfo = liblsl.resolve_stream("name", "GazeData");
+			gazeDataInlet = new liblsl.StreamInlet(gazeDataResultsInfo[0]); ;
+
+			fixationBeginResultsInfo = liblsl.resolve_stream("name", "FixationBegin");
+			fixationBeginInlet = new liblsl.StreamInlet(fixationBeginResultsInfo[0]); ;
+
+			fixationDataResultsInfo = liblsl.resolve_stream("name", "FixationData");
+			fixationDataInlet = new liblsl.StreamInlet(fixationDataResultsInfo[0]); ;
+
+			fixationEndResultsInfo = liblsl.resolve_stream("name", "FixationEnd");
+			fixationEndInlet = new liblsl.StreamInlet(fixationEndResultsInfo[0]); ;
+
+
+
+		}
+
+		//send data to LSL
+		public void sendGazeToLSL(liblsl.StreamOutlet outlet, double x, double y)
+		{
+			double[] data = { x, y };
+			outlet.push_sample(data);
+		}
+
 		//calibrate eye tracker
-        public void calibrate()
+		public void calibrate()
         {
 			Console.WriteLine("Calibrating eye tracker");
             _host.Context.LaunchConfigurationTool(Tobii.Interaction.Framework.ConfigurationTool.Recalibrate, (data) => { });
+			
         }
+
+		public void readStreams()
+		{
+			_fixationDataStream
+				.Begin((x, y, timestamp) =>
+				{
+					sendGazeToLSL(fixationBeginOutlet, x, y);
+				})
+				 .Data((x, y, timestamp) =>
+				 {
+					 sendGazeToLSL(fixationDataOutlet, x, y);
+
+				 })
+				.End((x, y, timestamp) =>
+				{
+					sendGazeToLSL(fixationEndOutlet, x, y);
+				});
+
+			_gazePointDataStream.GazePoint((x, y, timestamp) =>
+			{
+				sendGazeToLSL(gazeDataOutlet, x, y);
+			});
+		}
+
+		public void recordStreams()
+		{
+			float[] sample = new float[2];
+			while (true)
+			{
+				gazeDataInlet.pull_sample(sample);
+				foreach (float f in sample)
+					System.Console.Write("\t{0}", f);
+				System.Console.WriteLine();
+			}
+
+		}
 
 		//read fixations from eye tracker stream
-		//TODO unify times with windows everything using windows timestamps, rather than just using for duration.
-        public void readFixationStream()
-        {
-            //store fixation
-            Fixation f = new Fixation();
-            long startTime = -1;
-            long endTime = -1;
+		//      public void readFixationStream()
+		//      {
+		//	store fixation
 
-            _fixationDataStream
-                .Begin((x, y, timestamp) =>
-            {
-                
-                f.startPoint = new DataPoint(x, y, timestamp);
-                Console.WriteLine("Fixation started at X:{0} Y:{1} Device timestamp: {2}", x, y, timestamp);
-                startTime = Stopwatch.GetTimestamp();
-            })
-                 .Data((x, y, timestamp) =>
-            {
-                f.points.Add(new DataPoint(x, y, timestamp));
-                Console.WriteLine("During fixation at X:{0} Y:{1} Device timestamp: {2}", x, y, timestamp);
+		//	Fixation f = new Fixation();
+		//	long startTime = -1;
+		//	long endTime = -1;
 
-            })
-                .End((x, y, timestamp) =>
-            {
-                endTime = Stopwatch.GetTimestamp();
-                f.endPoint = new DataPoint(x, y, timestamp);
-                if ((Double.IsNaN(f.endPoint.rawX) && Double.IsNaN(f.endPoint.rawY)) || startTime == -1) 
-                {
-                    Console.WriteLine("NOT A VALID FIXATION, DISCARDED");
-                }
-                else
-                {
-                    Console.WriteLine("Fixation started at " + f.startPoint.timeStamp);
-                    Console.WriteLine("Fixation finished at X:{0} Y:{1} Device timestamp: {2}", x, y, timestamp);
-                    session.currentTestResults.fixationData.Add(f);
-                }
-                f.duration = endTime - startTime;
-                f.completeFixation();
-                findSaccade();
-                f = new Fixation();
-            });
+		//	TODO send streams to LSL and perform cleaning of fixation data after receieving back from LSL
+		//	_fixationDataStream
+		//              .Begin((x, y, timestamp) =>
+		//          {
+		//		f.startPoint = new DataPoint(x, y, timestamp);
+		//		Console.WriteLine("Fixation started at X:{0} Y:{1} Device timestamp: {2}", x, y, timestamp);
+		//		startTime = Stopwatch.GetTimestamp();
+		//	})
+		//               .Data((x, y, timestamp) =>
+		//          {
+		//		f.points.Add(new DataPoint(x, y, timestamp));
+		//		Console.WriteLine("During fixation at X:{0} Y:{1} Device timestamp: {2}", x, y, timestamp);
 
-			//all this block of code does is print out the current fixation to thte console
-            //if (!Double.IsNaN(f.startPoint.rawX) && !Double.IsNaN(f.startPoint.rawY) && !Double.IsNaN(f.endPoint.rawX) && !Double.IsNaN(f.endPoint.rawY))
-            //{
-            //    f.completeFixation();
-            //    //Console.WriteLine(f.startPoint.X);
-            //    //Console.WriteLine("duration {0})", f.duration);
-            //    if (f.startPoint.timeStamp != 0)
-            //    {
-            //        session.currentTestResults.fixationData.Add(f);
-            //        Console.WriteLine("NEW FIXATION: \n" +
-            //        "xPos:{0}\n" +
-            //        "yPos:{1}\n" +
-            //        "timestamp:{2}\n" +
-            //        "duration:{3}\n" +
-            //        "startPoint:{4}\n" +
-            //        "subPoints:{5}\n" +
-            //        "endPoint:{6}\n", f.centroid.rawX, f.centroid.rawY, f.startPoint.timeStamp, f.duration, f.startPoint.toString(), f.points.ToString(), f.endPoint.toString());
-            //        //attemptSaccade();
-            //        f = new Fixation();
-            //    }
-            //}
-            //});
-        }
+		//	})
+		//              .End((x, y, timestamp) =>
+		//          {
+		//		endTime = Stopwatch.GetTimestamp();
+		//		f.endPoint = new DataPoint(x, y, timestamp);
+		//		if ((Double.IsNaN(f.endPoint.rawX) && Double.IsNaN(f.endPoint.rawY)) || startTime == -1)
+		//		{
+		//			Console.WriteLine("NOT A VALID FIXATION, DISCARDED");
+		//		}
+		//		else
+		//		{
+		//			Console.WriteLine("Fixation started at " + f.startPoint.timeStamp);
+		//			Console.WriteLine("Fixation finished at X:{0} Y:{1} Device timestamp: {2}", x, y, timestamp);
+		//			session.currentTestResults.fixationData.Add(f);
+		//		}
+		//		f.duration = endTime - startTime;
+		//		f.completeFixation();
+		//		findSaccade();
+		//		f = new Fixation();
+		//	});
+
+		//	all this block of code does is print out the current fixation to thte console
+		//          if (!Double.IsNaN(f.startPoint.rawX) && !Double.IsNaN(f.startPoint.rawY) && !Double.IsNaN(f.endPoint.rawX) && !Double.IsNaN(f.endPoint.rawY))
+		//          {
+		//              f.completeFixation();
+		//              //Console.WriteLine(f.startPoint.X);
+		//              //Console.WriteLine("duration {0})", f.duration);
+		//              if (f.startPoint.timeStamp != 0)
+		//              {
+		//                  session.currentTestResults.fixationData.Add(f);
+		//                  Console.WriteLine("NEW FIXATION: \n" +
+		//                  "xPos:{0}\n" +
+		//                  "yPos:{1}\n" +
+		//                  "timestamp:{2}\n" +
+		//                  "duration:{3}\n" +
+		//                  "startPoint:{4}\n" +
+		//                  "subPoints:{5}\n" +
+		//                  "endPoint:{6}\n", f.centroid.rawX, f.centroid.rawY, f.startPoint.timeStamp, f.duration, f.startPoint.toString(), f.points.ToString(), f.endPoint.toString());
+		//                  //attemptSaccade();
+		//                  f = new Fixation();
+		//              }
+		//          }
+		//          });
+		//      }
 
 		//read gaze data from eye tracker stream
-        public void readGazeStream()
-        {
-            _gazePointDataStream.GazePoint((x, y, timestamp) =>
-            {
-                session.currentTestResults.rawGazeData.Add(new DataPoint(x, y, timestamp));
-                //Console.WriteLine("NEW GAZE POINT: \n xPos: " + x + "\n yPos: " + y + "\n timestamp " + timestamp);
-                if(session.currentTestResults.startTime == -1)
-                {
-                    session.currentTestResults.startTime = timestamp; 
-                }
-                if(timestamp > session.currentTestResults.endTime)
-                {
-                    session.currentTestResults.endTime = timestamp;
-                }
-            });
-        }
+		//public void readGazeStream()
+  //      {
+  //          _gazePointDataStream.GazePoint((x, y, timestamp) =>
+  //          {
+		//		sendGazeToLSL(gazeDataOutlet, x, y);
+
+		//		//session.currentTestResults.rawGazeData.Add(new DataPoint(x, y, timestamp));
+		//		////Console.WriteLine("NEW GAZE POINT: \n xPos: " + x + "\n yPos: " + y + "\n timestamp " + timestamp);
+		//		//if(session.currentTestResults.startTime == -1)
+		//		//{
+		//		//    session.currentTestResults.startTime = timestamp; 
+		//		//}
+		//		//if(timestamp > session.currentTestResults.endTime)
+		//		//{
+		//		//    session.currentTestResults.endTime = timestamp;
+		//	//}
+
+		//	});
+  //      }
 
 		//calculate and record fixation
-        private void findSaccade()
-        {
-            //store saccade
+        //private void findSaccade()
+        //{
+        //    //store saccade
             
-            if (session.currentTestResults.fixationData.Count > 1)
-            {
-                Saccade s = new Saccade();
-                Fixation f1 = ((Fixation)session.currentTestResults.fixationData[session.currentTestResults.fixationData.Count - 2]);
-                Fixation f2 = ((Fixation)session.currentTestResults.fixationData[session.currentTestResults.fixationData.Count - 1]);
-                s.X1 = f1.centroid.rawX;
-                s.Y1 = f1.centroid.rawY;
-                s.X2 = f2.centroid.rawX;
-                s.Y2 = f2.centroid.rawY;
-                s.hlength = s.X2 - s.X1;
-                s.vlength = s.Y2 - s.Y1;
-                s.size = Math.Sqrt(Math.Pow(s.hlength, 2) + Math.Pow(s.vlength, 2));
-                //s.start = f1.endPoint.timeStamp;
-                //s.end = f2.startPoint.timeStamp;
-                //s.duration = f2.startPoint.timeStamp - f1.endPoint.timeStamp;
-                session.currentTestResults.SaccadeData.Add(s);
+        //    if (session.currentTestResults.fixationData.Count > 1)
+        //    {
+        //        Saccade s = new Saccade();
+        //        Fixation f1 = ((Fixation)session.currentTestResults.fixationData[session.currentTestResults.fixationData.Count - 2]);
+        //        Fixation f2 = ((Fixation)session.currentTestResults.fixationData[session.currentTestResults.fixationData.Count - 1]);
+        //        s.X1 = f1.centroid.rawX;
+        //        s.Y1 = f1.centroid.rawY;
+        //        s.X2 = f2.centroid.rawX;
+        //        s.Y2 = f2.centroid.rawY;
+        //        s.hlength = s.X2 - s.X1;
+        //        s.vlength = s.Y2 - s.Y1;
+        //        s.size = Math.Sqrt(Math.Pow(s.hlength, 2) + Math.Pow(s.vlength, 2));
+        //        //s.start = f1.endPoint.timeStamp;
+        //        //s.end = f2.startPoint.timeStamp;
+        //        //s.duration = f2.startPoint.timeStamp - f1.endPoint.timeStamp;
+        //        session.currentTestResults.SaccadeData.Add(s);
 
-                Console.WriteLine("NEW SACCADE: \n" +
-                "size:{0}\n" +
-                "duration:{1}\n" +
-                "startTime:{2}\n" +
-                "endTime:{3}\n" +
-                "x1Pos:{4}\n" +
-                "y1Pos:{5}\n" +
-                "x2Pos:{6}\n" +
-                "y2Pos:{7}\n", s.size, s.duration, s.start, s.end, s.X1, s.Y1, s.X2, s.Y2);
+        //        Console.WriteLine("NEW SACCADE: \n" +
+        //        "size:{0}\n" +
+        //        "duration:{1}\n" +
+        //        "startTime:{2}\n" +
+        //        "endTime:{3}\n" +
+        //        "x1Pos:{4}\n" +
+        //        "y1Pos:{5}\n" +
+        //        "x2Pos:{6}\n" +
+        //        "y2Pos:{7}\n", s.size, s.duration, s.start, s.end, s.X1, s.Y1, s.X2, s.Y2);
 
-            }
-        }
+        //    }
+        //}
 
 		
         public void Dispose()
@@ -437,38 +481,38 @@ namespace GazeTrackingAttentionDemo
         }
     }
 
-    public class Session
-    {
-        public Session()
-        {
-            TestResults = new List<ResultsSet>();
-            currentTestResults = new ResultsSet();
-        }
+    //public class Session
+    //{
+    //    public Session()
+    //    {
+    //        TestResults = new List<ResultsSet>();
+    //        currentTestResults = new ResultsSet();
+    //    }
 
-        public String userID;
-        public ResultsSet currentTestResults;
-        public List<ResultsSet> TestResults;
-    }
+    //    public String userID;
+    //    public ResultsSet currentTestResults;
+    //    public List<ResultsSet> TestResults;
+    //}
 
-    public class ResultsSet
-    {
-        public ResultsSet()
-        {
-            fixationData = new List<Fixation>();
-            rawGazeData = new List<DataPoint>();
-            SaccadeData = new List<Saccade>();
+    //public class ResultsSet
+    //{
+    //    public ResultsSet()
+    //    {
+    //        fixationData = new List<Fixation>();
+    //        rawGazeData = new List<DataPoint>();
+    //        SaccadeData = new List<Saccade>();
 
-            startTime = -1;
-            endTime = -1;
-        }
+    //        startTime = -1;
+    //        endTime = -1;
+    //    }
 
-        public List<Fixation> fixationData;
-        public List<DataPoint> rawGazeData;
-        public List<Saccade> SaccadeData;
+    //    public List<Fixation> fixationData;
+    //    public List<DataPoint> rawGazeData;
+    //    public List<Saccade> SaccadeData;
 
-        public double startTime;
-        public double endTime;
-    }
+    //    public double startTime;
+    //    public double endTime;
+    //}
 
     public class Fixation
     {

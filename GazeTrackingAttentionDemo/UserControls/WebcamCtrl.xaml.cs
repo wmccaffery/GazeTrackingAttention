@@ -46,19 +46,23 @@ namespace GazeTrackingAttentionDemo.UserControls
 				Console.WriteLine("HD Pro Webcam C920 not found");
 			}
 
+
 			this.DataContext = this;
 
 			InitializeComponent();
 		}
 
+
 		private void onLoad(object sender, RoutedEventArgs e)
 		{
 			WebcamViewer.StartPreview();
+			
 		}
 
 		private void Record_Click(object sender, RoutedEventArgs e)
 		{
 			WebcamViewer.StartRecording();
+			//get timestamp
 		}
 
 		private void Stop_Click(object sender, RoutedEventArgs e)

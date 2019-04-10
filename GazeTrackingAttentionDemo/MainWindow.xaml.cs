@@ -1,4 +1,5 @@
 ﻿
+using GazeTrackingAttentionDemo.LSLInteraction;
 using GazeTrackingAttentionDemo.Models;
 using LSL;
 using Microsoft.Expression.Encoder.Devices;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -65,7 +67,10 @@ namespace GazeTrackingAttentionDemo
 		public event LoadTestHandler loadTest;
 
 		//init gaze stream
-		GazeStreamReader fd;
+		StreamReader fd;
+
+		//Thread eegStream;
+
 		//Session session;
 
 		//collection of all video devices available
@@ -94,10 +99,9 @@ namespace GazeTrackingAttentionDemo
 
 
 			//session = new Session();
-			fd = new GazeStreamReader();
+			fd = new StreamReader();
 
-			init();
-			fd.initLSL();
+			//Action<double, double, double> action = ( x,  y, ts) => { Console.WriteLine("{0}\t{1}\t{2}", x, y, ts); };
 
 			//Create child window
 			SourceInitialized += (s, a) =>
@@ -136,13 +140,6 @@ namespace GazeTrackingAttentionDemo
 				return a.CompareTo(b);
 			});
 			testIndex = 0;
-		}
-
-		public void init()
-		{
-			//session = new Session();
-			//fd = new GazeStreamReader(session);
-
 		}
 
 		//loads current testindex returns false if testindex too high
@@ -190,12 +187,11 @@ namespace GazeTrackingAttentionDemo
 					break;
 				case Key.S:
 					//Start/Stop recording data
-					if(State == EState.Ready)
+					if (State == EState.Ready)
 					{
 						fd.readStreams();
 						State = EState.Streaming;
-					}
-					if (State == EState.Streaming)
+					} else if (State == EState.Streaming)
 					{
 						fd.recordStreams();
 						State = EState.Recording;
@@ -218,47 +214,63 @@ namespace GazeTrackingAttentionDemo
 		
 }
 
-    //Handle data streams from the eye tracker
-    public class GazeStreamReader : IDisposable
-    {
-        private readonly Host _host;
-        private readonly FixationDataStream _fixationDataStream;
-        private readonly GazePointDataStream _gazePointDataStream;
+	//Handle data streams from the eye tracker
+	public class StreamReader : IDisposable
+	{
+		//read directly from device
+		private readonly Host _host;
+		private readonly FixationDataStream _fixationDataStream;
+		private readonly GazePointDataStream _gazePointDataStream;
+
+
+		//read from LSL
+		private readonly LSLStreamInteractionHost _lslHost;
+		private readonly LSLFixationDataStream _lslFixationDataStream;
+		private readonly LSLGazeDataStream _lslGazeDataStream;
+		private readonly LSLEEGDataStream _lslEEGDataStream;
+
+		
+		private MainWindow _mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
+
 		//private Session session;
 
 		//LSL output streams
 		public liblsl.StreamInfo gazeDataInfo;
-		public liblsl.StreamInfo[] gazeDataResultsInfo;
 		public liblsl.StreamOutlet gazeDataOutlet;
-		public liblsl.StreamInlet gazeDataInlet;
 
 		public liblsl.StreamInfo fixationBeginInfo;
-		public liblsl.StreamInfo[] fixationBeginResultsInfo;
 		public liblsl.StreamOutlet fixationBeginOutlet;
-		public liblsl.StreamInlet fixationBeginInlet;
 
 		public liblsl.StreamInfo fixationDataInfo;
-		public liblsl.StreamInfo[] fixationDataResultsInfo;
 		public liblsl.StreamOutlet fixationDataOutlet;
-		public liblsl.StreamInlet fixationDataInlet;
 
 		public liblsl.StreamInfo fixationEndInfo;
-		public liblsl.StreamInfo[] fixationEndResultsInfo;
 		public liblsl.StreamOutlet fixationEndOutlet;
-		public liblsl.StreamInlet fixationEndInlet;
-
-		public liblsl.StreamInfo[] eegDataResultsInfo;
-		public liblsl.StreamInlet eegDataInlet;
 
 
-		public GazeStreamReader()
-        {
-            _host = new Host();
-            _fixationDataStream = _host.Streams.CreateFixationDataStream();
-            //_fixationDataStream = _host.Streams.CreateFixationDataStream(Tobii.Interaction.Framework.FixationDataMode.Slow);
-            _gazePointDataStream = _host.Streams.CreateGazePointDataStream();
-            //this.session = session;
-        }
+
+
+
+		public StreamReader()
+		{
+
+			//Device
+			_host = new Host();
+
+			_fixationDataStream = _host.Streams.CreateFixationDataStream();
+			//_fixationDataStream = _host.Streams.CreateFixationDataStream(Tobii.Interaction.Framework.FixationDataMode.Slow);
+			_gazePointDataStream = _host.Streams.CreateGazePointDataStream();
+			//this.session = session;
+
+			//LSL
+			initLSL();
+
+			_lslHost = new LSLStreamInteractionHost();
+
+			_lslFixationDataStream = _lslHost.CreateNewLslFixationDataStream();
+			_lslGazeDataStream = _lslHost.CreateNewLslGazeDataStream();
+			_lslEEGDataStream = _lslHost.CreateNewLslEEGDataStream();
+		}
 
 		public void initLSL()
 		{
@@ -269,26 +281,11 @@ namespace GazeTrackingAttentionDemo
 			fixationBeginInfo = new liblsl.StreamInfo("FixationBegin", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
 			fixationBeginOutlet = new liblsl.StreamOutlet(fixationBeginInfo);
 
-			fixationDataInfo = new liblsl.StreamInfo("FixatioData", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+			fixationDataInfo = new liblsl.StreamInfo("FixationData", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
 			fixationDataOutlet = new liblsl.StreamOutlet(fixationDataInfo);
 
 			fixationEndInfo = new liblsl.StreamInfo("FixationEnd", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
 			fixationEndOutlet = new liblsl.StreamOutlet(fixationEndInfo);
-
-			//intlet
-			gazeDataResultsInfo = liblsl.resolve_stream("name", "GazeData");
-			gazeDataInlet = new liblsl.StreamInlet(gazeDataResultsInfo[0]); ;
-
-			//fixationBeginResultsInfo = liblsl.resolve_stream("name", "FixationBegin");
-			//fixationBeginInlet = new liblsl.StreamInlet(fixationBeginResultsInfo[0]); ;
-
-			//fixationDataResultsInfo = liblsl.resolve_stream("name", "FixationData");
-			//fixationDataInlet = new liblsl.StreamInlet(fixationDataResultsInfo[0]); ;
-
-			//fixationEndResultsInfo = liblsl.resolve_stream("name", "FixationEnd");
-			//fixationEndInlet = new liblsl.StreamInlet(fixationEndResultsInfo[0]); ;
-
-
 
 		}
 
@@ -301,12 +298,13 @@ namespace GazeTrackingAttentionDemo
 
 		//calibrate eye tracker
 		public void calibrate()
-        {
+		{
 			Console.WriteLine("Calibrating eye tracker");
-            _host.Context.LaunchConfigurationTool(Tobii.Interaction.Framework.ConfigurationTool.Recalibrate, (data) => { });
-			
-        }
+			_host.Context.LaunchConfigurationTool(Tobii.Interaction.Framework.ConfigurationTool.Recalibrate, (data) => { });
 
+		}
+
+		//read from gaze streams
 		public void readStreams()
 		{
 			Console.WriteLine("reading streams");
@@ -333,21 +331,47 @@ namespace GazeTrackingAttentionDemo
 
 		public void recordStreams()
 		{
-			Console.WriteLine("recording streams");
-
-			float[] sample = new float[2];
-			double timestamp;
-
-			while (true)
+			if (_lslFixationDataStream.eyeTrackerPresent)
 			{
-				timestamp = gazeDataInlet.pull_sample(sample);
-				foreach (float f in sample)
-					System.Console.Write("\t{0}", f);
-				System.Console.Write("\t{0}", timestamp);
+				Console.WriteLine("recording streams");
+				_lslFixationDataStream
+					.Begin((x, y, timestamp) =>
+					{
+					//sendGazeToLSL(fixationBeginOutlet, x, y);
+					Console.WriteLine("Fixation Begin\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
 
-				System.Console.WriteLine();
+					})
+					.Data((x, y, timestamp) =>
+					{
+					//sendGazeToLSL(fixationDataOutlet, x, y);
+					Console.WriteLine("Fixation Data\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
+
+
+					})
+					.End((x, y, timestamp) =>
+					{
+					//sendGazeToLSL(fixationEndOutlet, x, y);
+					Console.WriteLine("Fixation End\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
+
+					});
 			}
-			//gazeDataInlet.pull_sample(sample);
+
+			if (_lslGazeDataStream.eyeTrackerPresent)
+			{
+				_lslGazeDataStream.GazeData((x, y, timestamp) =>
+				{
+					Console.WriteLine("Gaze\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
+				});
+			}
+
+			if (_lslEEGDataStream.eegPresent)
+			{
+				_lslEEGDataStream.EEGData((c0, c1, c2, c3, c4, c5, c6, c7, timestamp) =>
+				{
+					Console.WriteLine("EEG\tCHANNEL1 {0}\tCHANNEL2 {1}\tCHANNEL2 {2}\tCHANNEL2 {3}\tCHANNEL2 {4}\tCHANNEL2 {5}\tCHANNEL2 {6}\tCHANNEL2 {7}\ttimestamp {2}", c0, c1, c2, c3, c4, c5, c6, c7, timestamp);
+
+				});
+			}
 
 		}
 
@@ -420,9 +444,9 @@ namespace GazeTrackingAttentionDemo
 
 		//read gaze data from eye tracker stream
 		//public void readGazeStream()
-  //      {
-  //          _gazePointDataStream.GazePoint((x, y, timestamp) =>
-  //          {
+		//      {
+		//          _gazePointDataStream.GazePoint((x, y, timestamp) =>
+		//          {
 		//		sendGazeToLSL(gazeDataOutlet, x, y);
 
 		//		//session.currentTestResults.rawGazeData.Add(new DataPoint(x, y, timestamp));
@@ -437,45 +461,45 @@ namespace GazeTrackingAttentionDemo
 		//	//}
 
 		//	});
-  //      }
+		//      }
 
 		//calculate and record fixation
-        //private void findSaccade()
-        //{
-        //    //store saccade
-            
-        //    if (session.currentTestResults.fixationData.Count > 1)
-        //    {
-        //        Saccade s = new Saccade();
-        //        Fixation f1 = ((Fixation)session.currentTestResults.fixationData[session.currentTestResults.fixationData.Count - 2]);
-        //        Fixation f2 = ((Fixation)session.currentTestResults.fixationData[session.currentTestResults.fixationData.Count - 1]);
-        //        s.X1 = f1.centroid.rawX;
-        //        s.Y1 = f1.centroid.rawY;
-        //        s.X2 = f2.centroid.rawX;
-        //        s.Y2 = f2.centroid.rawY;
-        //        s.hlength = s.X2 - s.X1;
-        //        s.vlength = s.Y2 - s.Y1;
-        //        s.size = Math.Sqrt(Math.Pow(s.hlength, 2) + Math.Pow(s.vlength, 2));
-        //        //s.start = f1.endPoint.timeStamp;
-        //        //s.end = f2.startPoint.timeStamp;
-        //        //s.duration = f2.startPoint.timeStamp - f1.endPoint.timeStamp;
-        //        session.currentTestResults.SaccadeData.Add(s);
+		//private void findSaccade()
+		//{
+		//    //store saccade
 
-        //        Console.WriteLine("NEW SACCADE: \n" +
-        //        "size:{0}\n" +
-        //        "duration:{1}\n" +
-        //        "startTime:{2}\n" +
-        //        "endTime:{3}\n" +
-        //        "x1Pos:{4}\n" +
-        //        "y1Pos:{5}\n" +
-        //        "x2Pos:{6}\n" +
-        //        "y2Pos:{7}\n", s.size, s.duration, s.start, s.end, s.X1, s.Y1, s.X2, s.Y2);
+		//    if (session.currentTestResults.fixationData.Count > 1)
+		//    {
+		//        Saccade s = new Saccade();
+		//        Fixation f1 = ((Fixation)session.currentTestResults.fixationData[session.currentTestResults.fixationData.Count - 2]);
+		//        Fixation f2 = ((Fixation)session.currentTestResults.fixationData[session.currentTestResults.fixationData.Count - 1]);
+		//        s.X1 = f1.centroid.rawX;
+		//        s.Y1 = f1.centroid.rawY;
+		//        s.X2 = f2.centroid.rawX;
+		//        s.Y2 = f2.centroid.rawY;
+		//        s.hlength = s.X2 - s.X1;
+		//        s.vlength = s.Y2 - s.Y1;
+		//        s.size = Math.Sqrt(Math.Pow(s.hlength, 2) + Math.Pow(s.vlength, 2));
+		//        //s.start = f1.endPoint.timeStamp;
+		//        //s.end = f2.startPoint.timeStamp;
+		//        //s.duration = f2.startPoint.timeStamp - f1.endPoint.timeStamp;
+		//        session.currentTestResults.SaccadeData.Add(s);
 
-        //    }
-        //}
+		//        Console.WriteLine("NEW SACCADE: \n" +
+		//        "size:{0}\n" +
+		//        "duration:{1}\n" +
+		//        "startTime:{2}\n" +
+		//        "endTime:{3}\n" +
+		//        "x1Pos:{4}\n" +
+		//        "y1Pos:{5}\n" +
+		//        "x2Pos:{6}\n" +
+		//        "y2Pos:{7}\n", s.size, s.duration, s.start, s.end, s.X1, s.Y1, s.X2, s.Y2);
 
-		
-        public void Dispose()
+		//    }
+		//}
+
+
+		public void Dispose()
         {
             if (_host != null)
             {

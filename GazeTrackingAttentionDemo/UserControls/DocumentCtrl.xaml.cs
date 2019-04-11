@@ -23,7 +23,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			PageText.Document.Blocks.Clear();
 			//PageText.Selection.Load(new FileStream(@"C:\MMAD\TestGroups\GroupA\Test1.rtf", FileMode.Open), DataFormats.Rtf);
-			PageText.Document.Blocks.Add(new Paragraph(new Run("Ready to start test ")));
+			//new font with correct
+			//PageText.Document.Blocks.Add(new Paragraph(new Run("Ready to start test ")));
 			Console.WriteLine("Document control Loaded");
 		}
 

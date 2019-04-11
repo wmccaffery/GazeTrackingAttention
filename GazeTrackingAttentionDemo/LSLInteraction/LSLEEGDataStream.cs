@@ -41,12 +41,15 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 
 		private void recordEEGStream(Action<double, double, double, double, double, double, double, double, double> action)
 		{
+			eegDataInlet.open_stream();
 			while (true)
 			{
 				float[] sample = new float[8];
 				double timestamp;
+				double correction;
 				timestamp = eegDataInlet.pull_sample(sample);
-				action(sample[0], sample[1], sample[2], sample[3], sample[4], sample[5], sample[6], sample[7], timestamp);
+				correction = eegDataInlet.time_correction();
+				action(sample[0], sample[1], sample[2], sample[3], sample[4], sample[5], sample[6], sample[7], timestamp + correction);
 			}
 		}
 	}

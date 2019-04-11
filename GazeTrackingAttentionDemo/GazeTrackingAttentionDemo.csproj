@@ -130,7 +130,11 @@
     <Compile Include="LSLInteraction\LSLFixationDataStream.cs" />
     <Compile Include="LSLInteraction\LSLGazeDataStream.cs" />
     <Compile Include="LSLInteraction\LSLStreamInteractionHost.cs" />
+    <Compile Include="Models\Fixation.cs" />
+    <Compile Include="Models\Saccade.cs" />
+    <Compile Include="Models\Test.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="StreamReader.cs" />
     <Compile Include="UserControls\MarkupCtrl.xaml.cs">
       <DependentUpon>MarkupCtrl.xaml</DependentUpon>
     </Compile>

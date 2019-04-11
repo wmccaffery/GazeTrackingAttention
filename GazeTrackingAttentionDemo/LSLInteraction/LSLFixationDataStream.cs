@@ -90,8 +90,12 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 			{
 				float[] sample = new float[2];
 				double timestamp;
+				double correction;
+
 				timestamp = fixationBeginInlet.pull_sample(sample);
-				action(sample[0], sample[1], timestamp);
+				correction = fixationBeginInlet.time_correction();
+
+				action(sample[0], sample[1], correction + timestamp);
 			}
 		}
 		private void recordFixationDataStream(Action<double, double, double> action)
@@ -100,8 +104,12 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 			{
 				float[] sample = new float[2];
 				double timestamp;
+				double correction;
+
 				timestamp = fixationDataInlet.pull_sample(sample);
-				action(sample[0], sample[1], timestamp);
+				correction = fixationDataInlet.time_correction();
+
+				action(sample[0], sample[1], correction + timestamp);
 			}
 		}
 		private void recordFixationEndStream(Action<double, double, double> action)
@@ -110,8 +118,12 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 			{
 				float[] sample = new float[2];
 				double timestamp;
+				double correction;
+
 				timestamp = fixationEndInlet.pull_sample(sample);
-				action(sample[0], sample[1], timestamp);
+				correction = fixationEndInlet.time_correction();
+
+				action(sample[0], sample[1], correction + timestamp);
 			}
 		}
 	}

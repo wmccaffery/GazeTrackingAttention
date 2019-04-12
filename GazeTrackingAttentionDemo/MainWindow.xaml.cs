@@ -205,7 +205,11 @@ namespace GazeTrackingAttentionDemo
 					break;
 				case Key.E:
 					//exit program
-					Environment.Exit(0);
+					if (State != EState.Wait)
+					{
+						Console.WriteLine("Exiting");
+						Environment.Exit(0);
+					}
 					break;
 				case Key.N:
 					//load next test, when finished start markup

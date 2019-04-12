@@ -133,14 +133,12 @@ namespace GazeTrackingAttentionDemo
 		public void readStreams()
 		{
 			String testDir = _mainWindow.currentTestInstance.TestDir;
-			String fixationRawPath = testDir + "//rawFixationData.csv";
+			String fixationRawBeginPath = testDir + "//rawFixationData.csv";
+			String fixationRawDataPath = testDir + "//rawFixationData.csv";
+			String fixationRawEndPath = testDir + "//rawFixationData.csv";
 			String gazeRawPath = testDir + "//rawGazeData.csv";
-			String eegRawPath =  testDir + "//rawEEGData.csv";
+			String eegRawPath = testDir + "//rawEEGData.csv";
 
-			//clear files
-			File.WriteAllText(fixationRawPath, "");
-			File.WriteAllText(gazeRawPath, "");
-			File.WriteAllText(eegRawPath, "");
 
 
 			if (_lslFixationDataStream.eyeTrackerPresent)
@@ -149,44 +147,50 @@ namespace GazeTrackingAttentionDemo
 				_lslFixationDataStream
 					.Begin((x, y, timestamp) =>
 					{
+						timestamp = timestamp * 1000;
 						timestamp += _lslHost.offset;
 						Console.WriteLine("Fixation Begin\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
 						if (_record)
 						{
-							if (!File.Exists(fixationRawPath))
+							if (!File.Exists(fixationRawBeginPath))
 							{
-								File.WriteAllText(fixationRawPath, "Stream,X,Y,Timestamp" + Environment.NewLine);
+								File.WriteAllText(fixationRawBeginPath, "");
+								File.WriteAllText(fixationRawBeginPath, "Stream,X,Y,Timestamp" + Environment.NewLine);
 							}
 							string data = "Begin," + x + "," + y + "," + timestamp + Environment.NewLine;
-							File.AppendAllText(fixationRawPath, data);
+							File.AppendAllText(fixationRawBeginPath, data);
 						}
 					})
 					.Data((x, y, timestamp) =>
 					{
+						timestamp = timestamp * 1000;
 						timestamp += _lslHost.offset;
 						Console.WriteLine("Fixation Data\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
 						if (_record)
 						{
-							if (!File.Exists(fixationRawPath))
+							if (!File.Exists(fixationRawDataPath))
 							{
-								File.WriteAllText(fixationRawPath, "Stream,X,Y,Timestamp"+ Environment.NewLine);
+								File.WriteAllText(fixationRawDataPath, "");
+								File.WriteAllText(fixationRawDataPath, "Stream,X,Y,Timestamp"+ Environment.NewLine);
 							}
 							string data = "Data," + x + "," + y + "," + timestamp + Environment.NewLine;
-							File.AppendAllText(fixationRawPath, data);
+							File.AppendAllText(fixationRawDataPath, data);
 						}
 
 					})
 					.End((x, y, timestamp) =>
 					{
+						timestamp = timestamp * 1000;
 						timestamp += _lslHost.offset;
 						Console.WriteLine("Fixation End\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
 						{
-							if (!File.Exists(fixationRawPath))
+							if (!File.Exists(fixationRawEndPath))
 							{
-								File.WriteAllText(fixationRawPath, "Stream,X,Y,Timestamp" + Environment.NewLine);
+								File.WriteAllText(fixationRawEndPath, "");
+								File.WriteAllText(fixationRawEndPath, "Stream,X,Y,Timestamp" + Environment.NewLine);
 							}
 							string data = "End," + x + "," + y + "," + timestamp + Environment.NewLine;
-							File.AppendAllText(fixationRawPath, data);
+							File.AppendAllText(fixationRawEndPath, data);
 						}
 					});
 			}
@@ -195,12 +199,14 @@ namespace GazeTrackingAttentionDemo
 			{
 				_lslGazeDataStream.GazeData((x, y, timestamp) =>
 				{
+					timestamp = timestamp * 1000;
 					timestamp += _lslHost.offset;
 					Console.WriteLine("Gaze\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
 					if (_record)
 					{
 						if (!File.Exists(gazeRawPath))
 						{
+							File.WriteAllText(gazeRawPath, "");
 							File.WriteAllText(gazeRawPath, "X,Y,Timestamp" + Environment.NewLine);
 						}
 						string data = x + "," + y + "," + timestamp + Environment.NewLine;
@@ -217,6 +223,7 @@ namespace GazeTrackingAttentionDemo
 					{
 						if (!File.Exists(eegRawPath))
 						{
+							File.WriteAllText(eegRawPath, "");
 							File.WriteAllText(eegRawPath, "C1,C2,C3,C4,C5,C6,C7,C8,Timestamp" + Environment.NewLine);
 						}
 						string data = c0 + "," +  c1 + "," +  c2 + "," +  c3 + "," +  c4 + "," + c5 + "," + c6 + "," + c7 + "," + timestamp + Environment.NewLine;

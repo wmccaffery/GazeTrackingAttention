@@ -149,6 +149,7 @@ namespace GazeTrackingAttentionDemo
 				_lslFixationDataStream
 					.Begin((x, y, timestamp) =>
 					{
+						timestamp += _lslHost.offset;
 						Console.WriteLine("Fixation Begin\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
 						if (_record)
 						{
@@ -162,6 +163,7 @@ namespace GazeTrackingAttentionDemo
 					})
 					.Data((x, y, timestamp) =>
 					{
+						timestamp += _lslHost.offset;
 						Console.WriteLine("Fixation Data\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
 						if (_record)
 						{
@@ -176,6 +178,7 @@ namespace GazeTrackingAttentionDemo
 					})
 					.End((x, y, timestamp) =>
 					{
+						timestamp += _lslHost.offset;
 						Console.WriteLine("Fixation End\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
 						{
 							if (!File.Exists(fixationRawPath))
@@ -192,6 +195,7 @@ namespace GazeTrackingAttentionDemo
 			{
 				_lslGazeDataStream.GazeData((x, y, timestamp) =>
 				{
+					timestamp += _lslHost.offset;
 					Console.WriteLine("Gaze\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
 					if (_record)
 					{

@@ -1,13 +1,22 @@
-﻿using System;
+﻿using LSL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GazeTrackingAttentionDemo.LSLInteraction
 {
 	class LSLStreamInteractionHost
 	{
+		public double offset;
+
+		public LSLStreamInteractionHost()
+		{
+			MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow;
+			offset = _mainWindow.stopwatch.ElapsedMilliseconds - liblsl.local_clock()*1000;
+		}
 
 		public LSLGazeDataStream CreateNewLslGazeDataStream()
 		{
@@ -46,6 +55,11 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		{
 			stream.eegDataStream.Abort();
 			stream.eegDataInlet.close_stream();
+		}
+
+		public double getOffset()
+		{
+			return offset;
 		}
 	}
 }

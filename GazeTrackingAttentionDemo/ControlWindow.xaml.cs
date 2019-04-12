@@ -1,4 +1,5 @@
 ﻿using GazeTrackingAttentionDemo.Models;
+using GazeTrackingAttentionDemo.UserControls;
 using Microsoft.Expression.Encoder.Devices;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static GazeTrackingAttentionDemo.MainWindow;
 
 namespace GazeTrackingAttentionDemo
 {
@@ -28,7 +30,7 @@ namespace GazeTrackingAttentionDemo
 		MainWindow mainWin = (MainWindow)System.Windows.Application.Current.MainWindow;
 
 
-
+		private WebcamCtrl _webcam;
 
 		public ControlWindow()
 		{
@@ -50,12 +52,32 @@ namespace GazeTrackingAttentionDemo
 		{
 			this.WindowState = WindowState.Maximized;
 			this.KeyDown += new System.Windows.Input.KeyEventHandler(mainWin.MainWindow_KeyDown);
+			mainWin.readyToRecord += new readyToRecordHandler(readyToRecord);
 
+			mainWin.recordingStarted += new recordingStartHandler(startRecording);
+
+			mainWin.recordingStopped += new recordingEndHandler(stopRecording);
+		}
+
+		public void readyToRecord(Test test)
+		{
+			_webcam.setup(test.TestDir);
+			_webcam.startPreview();
+		}
+
+		public void startRecording()
+		{
+			_webcam.startRecording();
+		}
+		public void stopRecording()
+		{
+			_webcam.stopRecording();
 		}
 
 		public void onUserCreated(User user)
 		{
 			controller.Content = webcam;
+			_webcam = (WebcamCtrl)webcam;
 		}
 
 

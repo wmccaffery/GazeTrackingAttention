@@ -148,7 +148,7 @@ namespace GazeTrackingAttentionDemo
 
 		public Boolean incrementTestCounter()
 		{
-			if (testIndex < filePaths.Count)
+			if (testIndex < filePaths.Count-1)
 			{
 				testIndex++;
 				return true;

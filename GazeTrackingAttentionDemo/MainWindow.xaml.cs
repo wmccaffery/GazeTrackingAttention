@@ -1,6 +1,7 @@
 ﻿
 using GazeTrackingAttentionDemo.LSLInteraction;
 using GazeTrackingAttentionDemo.Models;
+using GazeTrackingAttentionDemo.UserControls;
 using LSL;
 using Microsoft.Expression.Encoder.Devices;
 using System;
@@ -16,6 +17,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using Tobii.Interaction;
 using Tobii.Interaction.Framework;
+using Application = System.Windows.Application;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace GazeTrackingAttentionDemo
@@ -37,18 +39,17 @@ namespace GazeTrackingAttentionDemo
 		//Markup: data is being annotated
 
 
-		public EState State { get; set; }
-		//{
-		//get { return State; }
-		//set
-		//{
-		//	State = value;
-		//	if (State == EState.Markup)
-		//	{
-		//		//show markup
-		//	}
-		//}
-		//}
+		private EState _state;
+		public EState State// { get; set; }
+		{
+			get { return _state; }
+			set
+			{
+				_state = value;
+				progStateChanged(_state);
+			}
+		}
+
 
 
 		UserControl document = new UserControls.DocumentCtrl();
@@ -82,6 +83,9 @@ namespace GazeTrackingAttentionDemo
 		public delegate void recordingEndHandler();
 		public event recordingEndHandler recordingStopped;
 
+		public delegate void stateChangedHandler (EState state);
+		public event stateChangedHandler progStateChanged;
+
 
 
 		//init gaze stream
@@ -93,6 +97,7 @@ namespace GazeTrackingAttentionDemo
 
 		//collection of all video devices available
 		public Collection<EncoderDevice> VideoDevices { get; set; }
+
 		//public Collection<EncoderDevice> AudioDevices { get; set; }
 
 		public MainWindow()
@@ -204,9 +209,14 @@ namespace GazeTrackingAttentionDemo
 					{
 						if (!incrementTestCounter())
 						{
-							State = EState.Markup;
+							//recrding phase complete
+							System.Windows.Application app = System.Windows.Application.Current;
+							Application.Current.Shutdown();
+							
+							//State = EState.Markup;
 						} else
 						{
+							((DocumentCtrl)document).clearText();
 							Console.WriteLine("Starting test " + testIndex);
 							currentTestInstance = new Test(currentUser, filePaths[testIndex], testIndex);
 							currentTestInstance.fd.calibrate();

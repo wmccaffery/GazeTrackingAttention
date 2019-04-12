@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GazeTrackingAttentionDemo.LSLInteraction
 {
@@ -15,6 +16,8 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 
 		public Thread eegDataStream;
 		public Boolean eegPresent;
+
+		private MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow; 
 
 
 		public LSLEEGDataStream()
@@ -29,7 +32,6 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 					eegPresent = true;
 					eegDataInlet = new liblsl.StreamInlet(eegDataResultsInfo[0]);
 				}
-
 		}
 
 		public LSLEEGDataStream EEGData(Action<double, double, double, double, double, double, double, double, double> action)
@@ -49,7 +51,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 				double correction;
 				timestamp = eegDataInlet.pull_sample(sample);
 				correction = eegDataInlet.time_correction();
-				action(sample[0], sample[1], sample[2], sample[3], sample[4], sample[5], sample[6], sample[7], timestamp + correction);
+				action(sample[0], sample[1], sample[2], sample[3], sample[4], sample[5], sample[6], sample[7], timestamp + correction + _mainWindow.stopwatch.ElapsedMilliseconds);
 			}
 		}
 	}

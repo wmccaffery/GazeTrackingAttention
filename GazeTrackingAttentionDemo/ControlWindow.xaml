@@ -12,6 +12,13 @@
         Loaded="onLoad"
         WindowStyle="None"
         >
-    <ContentControl x:Name="controller"></ContentControl>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <ContentControl Grid.Row="0" x:Name="controller"></ContentControl>
+        <Label Grid.Row="1" x:Name="stateLabel">SETUP</Label>
+    </Grid>
     
 </Window>

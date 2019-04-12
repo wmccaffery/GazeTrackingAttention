@@ -30,11 +30,16 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void onTestLoaded(String test)
 		{
-			PageText.Document.Blocks.Clear();
+			clearText();
 			PageText.Selection.Load(new FileStream(test, FileMode.Open), DataFormats.Rtf);
 
 		}
 
+		public void clearText()
+		{
+			PageText.Document.Blocks.Clear();
+
+		}
 
 		//Calculate sizes to draw a full sized A4 page 
 

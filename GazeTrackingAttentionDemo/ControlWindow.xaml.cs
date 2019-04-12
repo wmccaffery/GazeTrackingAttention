@@ -57,6 +57,14 @@ namespace GazeTrackingAttentionDemo
 			mainWin.recordingStarted += new recordingStartHandler(startRecording);
 
 			mainWin.recordingStopped += new recordingEndHandler(stopRecording);
+
+			mainWin.progStateChanged += new stateChangedHandler(stateChanged);
+
+		}
+
+		public void stateChanged(EState state)
+		{
+			stateLabel.Content = state.ToString().ToUpper();
 		}
 
 		public void readyToRecord(Test test)

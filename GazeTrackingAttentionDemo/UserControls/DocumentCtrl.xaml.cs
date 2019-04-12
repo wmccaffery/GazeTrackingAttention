@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace GazeTrackingAttentionDemo.UserControls
 {
@@ -32,6 +33,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			clearText();
 			PageText.Selection.Load(new FileStream(test, FileMode.Open), DataFormats.Rtf);
+			PageText.FontSize = 17.85;
+			PageText.FontFamily = new FontFamily("Calibri");
 
 		}
 

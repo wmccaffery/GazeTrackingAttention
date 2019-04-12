@@ -156,13 +156,17 @@ namespace GazeTrackingAttentionDemo
 
 			//load test files
 			filePaths = new List<String>(Directory.GetFiles(currentUser.GroupPath));
-			filePaths.Sort(delegate (String a, String b)
+			filePaths.Sort((String a, String b) =>
 			{
 				int a_num = Int32.Parse(Regex.Match(a, @"\d+").Value);
-				int b_num = Int32.Parse(Regex.Match(a, @"\d+").Value);
-				return a.CompareTo(b);
+				int b_num = Int32.Parse(Regex.Match(b, @"\d+").Value);
+				Console.WriteLine("ANUM " + a_num);
+				Console.WriteLine("BNUM " + b_num);
+
+				return a_num.CompareTo(b_num);
 			});
 			testIndex = -1;
+			Console.WriteLine("FP " + filePaths[0]);
 		}
 
 		//loads current testindex returns false if testindex too high

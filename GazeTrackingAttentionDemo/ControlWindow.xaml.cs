@@ -4,6 +4,7 @@ using Microsoft.Expression.Encoder.Devices;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,8 @@ namespace GazeTrackingAttentionDemo
 		System.Windows.Controls.UserControl newUserForm = new UserControls.UserCtrl();
 		System.Windows.Controls.UserControl webcam = new UserControls.WebcamCtrl();
 		MainWindow mainWin = (MainWindow)System.Windows.Application.Current.MainWindow;
+
+		Test test;
 
 
 		private WebcamCtrl _webcam;
@@ -65,6 +68,14 @@ namespace GazeTrackingAttentionDemo
 		public void stateChanged(EState state)
 		{
 			stateLabel.Content = state.ToString().ToUpper();
+			if(state == EState.Ready)
+			{
+				test = mainWin.currentTestInstance;
+				paperBox.Visibility = Visibility.Visible;
+			} else
+			{
+				paperBox.Visibility = Visibility.Hidden;
+			}
 		}
 
 		public void readyToRecord(Test test)
@@ -88,9 +99,19 @@ namespace GazeTrackingAttentionDemo
 			_webcam = (WebcamCtrl)webcam;
 		}
 
+		private void PaperBox_Checked(object sender, RoutedEventArgs e)
+		{
+			test.isPaper = true;
+			File.WriteAllText(test.InfoPath, "");
+			File.AppendAllText(test.InfoPath, "ISPAPER=" + test.isPaper);
+		}
 
+		private void PaperBox_Unchecked(object sender, RoutedEventArgs e)
+		{
+			test.isPaper = false;
+			File.WriteAllText(test.InfoPath, "");
+			File.AppendAllText(test.InfoPath, "ISPAPER=" + test.isPaper);
 
-
-
+		}
 	}
 }

@@ -30,8 +30,8 @@
                 <Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="fixationCanvas"/>
                 <Canvas Panel.ZIndex="100" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="saccadeCanvas"/>-->
             <!--<UniformGrid Grid.Column="1" Grid.Row="1" Columns="1" x:Name="DocumentArea">-->
-        
-            <RichTextBox x:Name="PageText" Grid.Column="1" Grid.Row="1" BorderThickness="0" FontSize="18" FontFamily="Calibri" IsReadOnly="True" Cursor="Arrow">
+
+        <RichTextBox x:Name="PageText" Grid.Column="1" Grid.Row="1" BorderThickness="0" FontSize="17.85" FontFamily="Calibri" IsReadOnly="True" Cursor="Arrow">
                 <!--<FlowDocument>
                     <Paragraph x:Name="p1">
                         <Run x:Name="p1text" Text="TEST1"/>

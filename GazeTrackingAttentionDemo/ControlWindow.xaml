@@ -18,7 +18,10 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <ContentControl Grid.Row="0" x:Name="controller"></ContentControl>
-        <Label Grid.Row="1" x:Name="stateLabel">SETUP</Label>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Label x:Name="stateLabel">SETUP</Label>
+            <CheckBox x:Name="paperBox" Visibility="Hidden" Checked="PaperBox_Checked" Unchecked="PaperBox_Unchecked">IS PAPER</CheckBox>
+        </StackPanel>
     </Grid>
     
 </Window>

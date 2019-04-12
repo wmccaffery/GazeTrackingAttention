@@ -15,8 +15,11 @@ namespace GazeTrackingAttentionDemo.Models
 			this.GroupName = groupName;
 			this.GroupPath = groupPath;
 			this.DirPath = "C:\\MMAD\\Subjects\\Subject_" + id;
-			this.InfoPath = DirPath + "\\" + id + ".txt";
+			this.InfoPath = DirPath + "\\Subject_" + id + "Info.txt";
 			DirectoryInfo di = Directory.CreateDirectory(DirPath);
+			if (File.Exists(InfoPath)){
+				File.WriteAllText(InfoPath, "");
+			}
 			File.AppendAllText(InfoPath, id + Environment.NewLine + groupName + Environment.NewLine);
 		}
 

@@ -2,6 +2,7 @@
 using LSL;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -105,29 +106,40 @@ namespace GazeTrackingAttentionDemo
 			Console.WriteLine("Calibrating eye tracker");
 		}
 
-		//read from gaze streams
+		//read from gaze streams 
+		//!ISSUE NEEDS TO BE REWRITTEN TO BE IN PARALLEL
 		public void feedStreamsToLSL()
 		{
 			Console.WriteLine("reading streams");
+			_gazePointDataStream.GazePoint((x, y, timestamp) =>
+			{
+
+				sendGazeToLSL(gazeDataOutlet, x, y);
+			});
+
 			_fixationDataStream
 				.Begin((x, y, timestamp) =>
 				{
+					double LSLts = liblsl.local_clock();
+					Console.WriteLine("BD " + (timestamp - LSLts));
+
 					sendGazeToLSL(fixationBeginOutlet, x, y);
 				})
 				 .Data((x, y, timestamp) =>
 				 {
+					 double LSLts = liblsl.local_clock();
+					 Console.WriteLine("DD " + (timestamp - LSLts));
 					 sendGazeToLSL(fixationDataOutlet, x, y);
 
 				 })
 				.End((x, y, timestamp) =>
 				{
+					double LSLts = liblsl.local_clock();
+					Console.WriteLine("ED " + (timestamp - LSLts));
 					sendGazeToLSL(fixationEndOutlet, x, y);
 				});
 
-			_gazePointDataStream.GazePoint((x, y, timestamp) =>
-			{
-				sendGazeToLSL(gazeDataOutlet, x, y);
-			});
+
 		}
 
 		public void readStreams()

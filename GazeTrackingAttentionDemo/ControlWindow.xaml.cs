@@ -111,7 +111,6 @@ namespace GazeTrackingAttentionDemo
 			test.isPaper = false;
 			File.WriteAllText(test.InfoPath, "");
 			File.AppendAllText(test.InfoPath, "ISPAPER=" + test.isPaper);
-
 		}
 	}
 }

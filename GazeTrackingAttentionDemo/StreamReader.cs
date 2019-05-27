@@ -147,14 +147,20 @@ namespace GazeTrackingAttentionDemo
 		public void readStreams()
 		{
 			String testDir = _mainWindow.currentTestInstance.TestDir;
-			String fixationRawBeginPath = testDir + "//rawFixationData.csv";
-			String fixationRawDataPath = testDir + "//rawFixationData.csv";
-			String fixationRawEndPath = testDir + "//rawFixationData.csv";
-			String gazeRawPath = testDir + "//rawGazeData.csv";
-			String eegRawPath = testDir + "//rawEEGData.csv";
+			String uid = _mainWindow.currentTestInstance.User;
+			int test = _mainWindow.currentTestInstance.index;
+			DateTime time = DateTime.Now;
+			Int32 unixts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+			String test_metadata = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "U" + unixts;
 
+			//create test paths
+			String fixationRawBeginPath = test_metadata + "_EYETRACKER_rawFixationData.csv ";
+			String fixationRawDataPath = test_metadata + "_EYETRACKER_rawFixationData.csv";
+			String fixationRawEndPath = test_metadata + "_EYETRACKER_rawFixationData.csv";
+			String gazeRawPath = test_metadata + "_EYETRACKER_rawGazeData.csv";
+			String eegRawPath = test_metadata + "_EEG_rawEEGData.csv";
 
-
+			//record data
 			if (_lslFixationDataStream.eyeTrackerPresent)
 			{
 				Console.WriteLine("recording streams");

@@ -11,11 +11,12 @@ namespace GazeTrackingAttentionDemo.Models
 	{
 		public User(String id, String groupName, String groupPath)
 		{
+			DateTime dateAndTime = DateTime.Now;
 			this.Id = id;
 			this.GroupName = groupName;
 			this.GroupPath = groupPath;
-			this.DirPath = "C:\\MMAD\\Subjects\\Subject_" + id;
-			this.InfoPath = DirPath + "\\Subject_" + id + "Info.txt";
+			this.DirPath = "C:\\MMAD\\Subjects\\" + id + "_" + groupName + "_" + dateAndTime.ToString("dd-MM-yyyy--HH-mm-ss");
+			this.InfoPath = DirPath + "\\" + id + "Info.txt";
 			DirectoryInfo di = Directory.CreateDirectory(DirPath);
 			if (File.Exists(InfoPath)){
 				File.WriteAllText(InfoPath, "");

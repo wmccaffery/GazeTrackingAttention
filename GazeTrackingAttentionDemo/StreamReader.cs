@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using Tobii.Interaction;
 using Tobii.Interaction.Framework;
@@ -105,10 +106,28 @@ namespace GazeTrackingAttentionDemo
 			Console.WriteLine("Calibrating eye tracker");
 		}
 
-		//read from gaze streams
+		//read from gaze streams in parallel
 		public void feedStreamsToLSL()
 		{
 			Console.WriteLine("reading streams");
+
+			Thread gazeBeginStream = new Thread(() => streamGazeData());
+			Thread fixationBeginStream = new Thread(() => streamFixationData());
+
+			fixationBeginStream.Start();
+			gazeBeginStream.Start();
+		}
+
+		public void streamGazeData()
+		{
+			_gazePointDataStream.GazePoint((x, y, timestamp) =>
+			{
+				sendGazeToLSL(gazeDataOutlet, x, y);
+			});
+		}
+
+		public void streamFixationData()
+		{
 			_fixationDataStream
 				.Begin((x, y, timestamp) =>
 				{
@@ -123,11 +142,6 @@ namespace GazeTrackingAttentionDemo
 				{
 					sendGazeToLSL(fixationEndOutlet, x, y);
 				});
-
-			_gazePointDataStream.GazePoint((x, y, timestamp) =>
-			{
-				sendGazeToLSL(gazeDataOutlet, x, y);
-			});
 		}
 
 		public void readStreams()

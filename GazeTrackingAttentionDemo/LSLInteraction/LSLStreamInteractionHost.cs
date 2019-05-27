@@ -53,8 +53,14 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		}
 		public void closeStream(LSLEEGDataStream stream)
 		{
-			stream.eegDataStream.Abort();
-			stream.eegDataInlet.close_stream();
+			if (stream.eegDataStream != null)
+			{
+				stream.eegDataStream.Abort();
+			}
+			if (stream.eegDataInlet != null)
+			{
+				stream.eegDataInlet.close_stream();
+			}
 		}
 
 		public double getOffset()

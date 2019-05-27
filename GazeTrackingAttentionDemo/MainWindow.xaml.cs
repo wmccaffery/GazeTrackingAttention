@@ -158,10 +158,11 @@ namespace GazeTrackingAttentionDemo
 			filePaths = new List<String>(Directory.GetFiles(currentUser.GroupPath));
 			filePaths.Sort((String a, String b) =>
 			{
+				//sort files into order based on number in title
 				int a_num = Int32.Parse(Regex.Match(a, @"\d+").Value);
 				int b_num = Int32.Parse(Regex.Match(b, @"\d+").Value);
-				Console.WriteLine("ANUM " + a_num);
-				Console.WriteLine("BNUM " + b_num);
+				//Console.WriteLine("ANUM " + a_num);
+				//Console.WriteLine("BNUM " + b_num);
 
 				return a_num.CompareTo(b_num);
 			});
@@ -202,6 +203,7 @@ namespace GazeTrackingAttentionDemo
 			{
 				case Key.R:
 					//Restart current test
+					Console.WriteLine("Restart command has not yet been implemented");
 					break;
 				case Key.E:
 					//exit program
@@ -260,6 +262,8 @@ namespace GazeTrackingAttentionDemo
 						currentTestInstance.fd.closeLslStreams();
 						State = EState.DoneRecording;
 					}
+					break;
+				default:
 					break;
 			}
 		}

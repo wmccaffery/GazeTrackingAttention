@@ -3,15 +3,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GazeTrackingAttentionDemo.Models
 {
-	class Fixation
+	public class Fixation
 	{
+		public DataPoint startPos;
+		public DataPoint endPos;
+		public List<DataPoint> dataPos;
+
+		public Point centroid;
+		public double duration;
+
+		public Fixation(DataPoint startPos, DataPoint endPos, List<DataPoint> dataPos)
+		{
+			this.startPos = startPos;
+			this.endPos = endPos;
+			this.dataPos = dataPos;
+			completeFixation();
+		}
+
+		public Fixation()
+		{
+
+		}
+
+		public void completeFixation()
+		{
+			centroid = getCentroid();
+			duration = endPos.timestamp - startPos.timestamp;
+		}
+
+		private Point getCentroid() {
+			float xsum = startPos.x + endPos.x;
+			float ysum = startPos.y + endPos.y;
+			float numPoints = dataPos.Count + 2; //+2 since total number of points includes start and end points
+
+			foreach(DataPoint p in dataPos){
+				xsum += p.x;
+				ysum += p.y;
+			}
+
+			return new Point((xsum / numPoints), (ysum / numPoints));
+		}
 	}
 }
 
-
+//legacy fixation code
 
 //public class Fixation
 //{

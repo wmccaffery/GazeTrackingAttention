@@ -10,8 +10,9 @@ using System.Threading;
 using System.Windows;
 using Tobii.Interaction;
 using Tobii.Interaction.Framework;
+using GazeTrackingAttentionDemo.Models;
 
-namespace GazeTrackingAttentionDemo
+namespace GazeTrackingAttentionDemo.DataProcessing
 {
 	public class StreamReader : IDisposable
 	{
@@ -31,6 +32,8 @@ namespace GazeTrackingAttentionDemo
 		private MainWindow _mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
 
 		private Boolean _record;
+
+		public List<Tuple<string, DataPoint>> rawFixationPoints = new List<Tuple<string, DataPoint>>();
 
 		//LSL output streams
 		public liblsl.StreamInfo gazeDataInfo;
@@ -97,6 +100,9 @@ namespace GazeTrackingAttentionDemo
 		{
 			_host.Context.LaunchConfigurationTool(Tobii.Interaction.Framework.ConfigurationTool.Recalibrate, (data) => { });
 
+
+			//this code was attempting to trigger an event when calibration was complete
+
 			//EngineStateProvider engineStateProvider = new EngineStateProvider(_host.Context);
 
 			//EngineStateObserver<EyeTrackingDeviceStatus> _engineStateObserverTrackerState = engineStateProvider.CreateEyeTrackingDeviceStatusObserver();
@@ -151,7 +157,7 @@ namespace GazeTrackingAttentionDemo
 			int test = _mainWindow.currentTestInstance.index;
 			DateTime time = DateTime.Now;
 			Int32 unixts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-			String test_metadata = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "U" + unixts;
+			String test_metadata = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
 
 			//create test paths
 			String fixationRawBeginPath = test_metadata + "_EYETRACKER_rawFixationData.csv ";
@@ -170,15 +176,12 @@ namespace GazeTrackingAttentionDemo
 						timestamp = timestamp * 1000;
 						timestamp += _lslHost.offset;
 						Console.WriteLine("Fixation Begin\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
+						string header = "Stream,X,Y,Timestamp" + Environment.NewLine;
+						double[] data = { x, y };
+
 						if (_record)
 						{
-							if (!File.Exists(fixationRawBeginPath))
-							{
-								File.WriteAllText(fixationRawBeginPath, "");
-								File.WriteAllText(fixationRawBeginPath, "Stream,X,Y,Timestamp" + Environment.NewLine);
-							}
-							string data = "Begin," + x + "," + y + "," + timestamp + Environment.NewLine;
-							File.AppendAllText(fixationRawBeginPath, data);
+							recordData(fixationRawBeginPath, "Fixation", "Begin", header, data ,timestamp);
 						}
 					})
 					.Data((x, y, timestamp) =>
@@ -186,15 +189,12 @@ namespace GazeTrackingAttentionDemo
 						timestamp = timestamp * 1000;
 						timestamp += _lslHost.offset;
 						Console.WriteLine("Fixation Data\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
+						string header = "Stream,X,Y,Timestamp" + Environment.NewLine;
+						double[] data = { x, y };
+
 						if (_record)
 						{
-							if (!File.Exists(fixationRawDataPath))
-							{
-								File.WriteAllText(fixationRawDataPath, "");
-								File.WriteAllText(fixationRawDataPath, "Stream,X,Y,Timestamp"+ Environment.NewLine);
-							}
-							string data = "Data," + x + "," + y + "," + timestamp + Environment.NewLine;
-							File.AppendAllText(fixationRawDataPath, data);
+							recordData(fixationRawDataPath, "Fixation", "Data", header, data, timestamp);
 						}
 
 					})
@@ -203,14 +203,12 @@ namespace GazeTrackingAttentionDemo
 						timestamp = timestamp * 1000;
 						timestamp += _lslHost.offset;
 						Console.WriteLine("Fixation End\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
+						string header = "Stream,X,Y,Timestamp" + Environment.NewLine;
+						double[] data = { x, y };
+
+						if (_record)
 						{
-							if (!File.Exists(fixationRawEndPath))
-							{
-								File.WriteAllText(fixationRawEndPath, "");
-								File.WriteAllText(fixationRawEndPath, "Stream,X,Y,Timestamp" + Environment.NewLine);
-							}
-							string data = "End," + x + "," + y + "," + timestamp + Environment.NewLine;
-							File.AppendAllText(fixationRawEndPath, data);
+							recordData(fixationRawEndPath, "Fixation", "End", header, data, timestamp);
 						}
 					});
 			}
@@ -222,15 +220,12 @@ namespace GazeTrackingAttentionDemo
 					timestamp = timestamp * 1000;
 					timestamp += _lslHost.offset;
 					Console.WriteLine("Gaze\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
+					string header = "X,Y,Timestamp" + Environment.NewLine;
+					double[] data = { x, y };
+
 					if (_record)
 					{
-						if (!File.Exists(gazeRawPath))
-						{
-							File.WriteAllText(gazeRawPath, "");
-							File.WriteAllText(gazeRawPath, "X,Y,Timestamp" + Environment.NewLine);
-						}
-						string data = x + "," + y + "," + timestamp + Environment.NewLine;
-						File.AppendAllText(gazeRawPath, data);
+						recordData(gazeRawPath, "Gaze", "", header, data, timestamp);
 					}
 				});
 			}
@@ -240,18 +235,119 @@ namespace GazeTrackingAttentionDemo
 				_lslEEGDataStream.EEGData((c0, c1, c2, c3, c4, c5, c6, c7, timestamp) =>
 				{
 					Console.WriteLine("EEG\tCHANNEL1 {0}\tCHANNEL2 {1}\tCHANNEL3 {2}\tCHANNEL4 {3}\tCHANNEL5 {4}\tCHANNEL6 {5}\tCHANNEL7 {6}\tCHANNEL8 {7}\ttimestamp {2}", c0, c1, c2, c3, c4, c5, c6, c7, timestamp);
+					string header = "C1,C2,C3,C4,C5,C6,C7,C8,Timestamp" + Environment.NewLine;
+					double[] data = { c0, c1, c2, c3, c4, c5, c6, c7 };
+
+					if (_record)
 					{
-						if (!File.Exists(eegRawPath))
-						{
-							File.WriteAllText(eegRawPath, "");
-							File.WriteAllText(eegRawPath, "C1,C2,C3,C4,C5,C6,C7,C8,Timestamp" + Environment.NewLine);
-						}
-						string data = c0 + "," +  c1 + "," +  c2 + "," +  c3 + "," +  c4 + "," + c5 + "," + c6 + "," + c7 + "," + timestamp + Environment.NewLine;
-						File.AppendAllText(eegRawPath, data);
+						recordData(eegRawPath, "EEG", "", header, data, timestamp);
 					}
 				});
 			}
 
+		}
+		public void recordData(String rawPath, String streamType, String dataType, String fileHeader, double[] data, double timestamp)
+		{
+			if (_record)
+			{
+				if (!File.Exists(rawPath))
+				{
+					File.WriteAllText(rawPath, "");
+					File.WriteAllText(rawPath, fileHeader);
+				}
+
+				string datastr = "";
+
+				if(streamType == "Fixation")
+				{
+					//append data into a single csv line
+					//of the form "Begin," + x + "," + y + "," + timestamp + Environment.NewLine;
+
+					datastr += dataType + ",";
+					foreach(double d in data)
+					{
+						datastr += (d + ",");
+					}
+					datastr += (timestamp + Environment.NewLine);
+
+					//store in program for cleaning and assigning
+					rawFixationPoints.Add(Tuple.Create(dataType, new DataPoint((float)data[0], (float)data[1], (float)timestamp)));
+				}
+				else
+				{
+					foreach (double d in data)
+					{
+						datastr += (d + ",");
+					}
+					datastr += (timestamp + Environment.NewLine);
+				}
+
+				//write csv line to file
+				File.AppendAllText(rawPath, datastr);
+
+			}
+		}
+
+		public List<Fixation> cleanFixations()
+		{
+			Boolean fixationStart = false;
+
+			List<Fixation> validFixations = new List<Fixation>();
+
+			//valid fixation candidate
+			Fixation f = new Fixation();
+
+			//build valid fixations
+			foreach(Tuple<string, DataPoint> t in rawFixationPoints)
+			{
+				if (fixationStart && isValid(t.Item2)) { //continue fixation
+					if (t.Item1 == "Begin") //discard malformed fixation and start a new fixation
+					{
+						f = new Fixation();
+						f.startPos = t.Item2;
+						f.dataPos = new List<DataPoint>();
+
+					}
+					else if (t.Item1 == "End") //complete valid fixation and add to list
+					{
+						fixationStart = false;
+						f.endPos = t.Item2;
+						f.completeFixation();
+						validFixations.Add(f);
+					}
+					else //add data to fixation
+					{
+						f.dataPos.Add(t.Item2);
+					}
+					
+				}
+				else if(t.Item1 == "Begin" && isValid(t.Item2)) //start new fixation
+				{
+					fixationStart = true;
+					f.startPos = t.Item2;
+					f.dataPos = new List<DataPoint>();
+				}
+				else if (!isValid(t.Item2))  //discard malformed fixation start a new fixation but don't record a value since current is invalid
+				{ 
+					f = new Fixation();
+					f.dataPos = new List<DataPoint>();
+				} else
+				{
+					Console.WriteLine("An unhandled set of values was encountered while cleaning fixations!");
+					Environment.Exit(1);
+				}
+			}
+			return validFixations;
+		}
+
+		public void getSaccades() //TODO actually get saccades
+		{
+
+		}
+
+		public bool isValid(DataPoint val)
+		{
+			return (!float.IsNaN(val.x) && !float.IsNaN(val.y));
 		}
 
 		public void recordStreams()
@@ -273,6 +369,7 @@ namespace GazeTrackingAttentionDemo
 			Console.WriteLine("Done");
 
 		}
+
 
 		//read fixations from eye tracker stream
 		//      public void readFixationStream()

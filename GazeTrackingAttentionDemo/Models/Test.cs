@@ -13,10 +13,11 @@ namespace GazeTrackingAttentionDemo.Models
 		private String _testDir;
 		private String _user;
 		private String _infoPath;
-		public StreamReader fd;
+		public DataProcessing.StreamReader fd;
 		public Boolean isPaper;
 		public String infoPath;
 		public int index;
+		public List<Fixation> cleanedFixations;
 		
 
 		public Test(User user, String testPath, int testIndex)
@@ -25,7 +26,7 @@ namespace GazeTrackingAttentionDemo.Models
 			this.index = testIndex;
 			TestPath = testPath;
 			Console.WriteLine(TestPath);
-			fd = new StreamReader();
+			fd = new DataProcessing.StreamReader();
 			TestDir = user.DirPath + "\\" + user.Id + "_test" + testIndex + testPath.Substring(testPath.Length - 3) + dateTime.ToString("dd-MM-yyyy--HH-mm-ss");
 			InfoPath = TestDir + "\\meta.txt";
 
@@ -36,7 +37,7 @@ namespace GazeTrackingAttentionDemo.Models
 				File.WriteAllText(InfoPath, "");
 			}
 			File.AppendAllText(InfoPath, "ISPAPER=FALSE");
-
+			cleanedFixations = new List<Fixation>();
 		}
 
 		public string TestPath { get => _testPath; set => _testPath = value; }

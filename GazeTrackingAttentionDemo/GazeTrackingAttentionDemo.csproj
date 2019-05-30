@@ -153,18 +153,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataVisualization\GazePlot.cs" />
     <Compile Include="LSL.cs" />
     <Compile Include="LSLInteraction\LSLEEGDataStream.cs" />
     <Compile Include="LSLInteraction\LSLFixationDataStream.cs" />
     <Compile Include="LSLInteraction\LSLGazeDataStream.cs" />
     <Compile Include="LSLInteraction\LSLStreamInteractionHost.cs" />
+    <Compile Include="Models\DataPoint.cs" />
     <Compile Include="Models\Fixation.cs" />
     <Compile Include="Models\Saccade.cs" />
     <Compile Include="Models\Test.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="StreamReader.cs" />
+    <Compile Include="DataProcessing\StreamReader.cs" />
     <Compile Include="UserControls\MarkupCtrl.xaml.cs">
       <DependentUpon>MarkupCtrl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\SelectionCtrl.xaml.cs">
+      <DependentUpon>SelectionCtrl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\TestCalibrationCtrl.xaml.cs">
       <DependentUpon>TestCalibrationCtrl.xaml</DependentUpon>
@@ -202,6 +207,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UserControls\MarkupCtrl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\SelectionCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -266,6 +275,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Tobii.EyeX.Client.1.8.504\build\Tobii.EyeX.Client.targets" Condition="Exists('..\packages\Tobii.EyeX.Client.1.8.504\build\Tobii.EyeX.Client.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -1,4 +1,5 @@
 ﻿
+using GazeTrackingAttentionDemo.DataVisualization;
 using GazeTrackingAttentionDemo.LSLInteraction;
 using GazeTrackingAttentionDemo.Models;
 using GazeTrackingAttentionDemo.UserControls;
@@ -29,7 +30,7 @@ namespace GazeTrackingAttentionDemo
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		public enum EState { Wait, Setup, Test, ReadyToCalibrate, Ready, Streaming, Recording, DoneRecording, Markup }
+		public enum EState { Wait, Setup, Test, ReadyToCalibrate, Ready, Streaming, Recording, DoneRecording, Selection, Markup }
 		//Wait: time between tests
 		//Setup: user creation and initial calibration
 		//Test: testing user calibration
@@ -144,9 +145,13 @@ namespace GazeTrackingAttentionDemo
 		{
 			this.WindowState = WindowState.Maximized;
 			this.KeyDown += new System.Windows.Input.KeyEventHandler(MainWindow_KeyDown);
+			//this.progStateChanged += new stateChangedHandler(stateChanged);
 
 		}
 
+
+
+		//handle user being created in ControlWindow
 		public void onUserCreated(User user)
 		{
 			centerView.Content = document;
@@ -196,7 +201,7 @@ namespace GazeTrackingAttentionDemo
 			return filePaths[testIndex];
 		}
 		
-
+		//Handle user keyboard input TODO delegate actions to state handler
 		public void MainWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
 		{
 			switch (e.Key)
@@ -220,8 +225,13 @@ namespace GazeTrackingAttentionDemo
 						if (!incrementTestCounter())
 						{
 							//recrding phase complete
-							System.Windows.Application app = System.Windows.Application.Current;
-							Application.Current.Shutdown();
+							//System.Windows.Application app = System.Windows.Application.Current;
+							//Application.Current.Shutdown();
+
+							GazePlot gp = new GazePlot(currentTestInstance.cleanedFixations, MainCanvas);
+							gp.renderPlot(true, false, false, false, 0, 999999);
+							State = EState.Selection;
+
 							
 							//State = EState.Markup;
 						} else
@@ -260,6 +270,7 @@ namespace GazeTrackingAttentionDemo
 						Console.WriteLine("Test " + testIndex + " complete");
 						currentTestInstance.testComplete();
 						currentTestInstance.fd.closeLslStreams();
+						currentTestInstance.cleanedFixations = currentTestInstance.fd.cleanFixations();
 						State = EState.DoneRecording;
 					}
 					break;
@@ -267,6 +278,16 @@ namespace GazeTrackingAttentionDemo
 					break;
 			}
 		}
+
+		//Handle statechange
+		//public void stateChanged(EState state)
+		//{
+		//	switch (State)
+		//	{
+		//		case EState.Streaming:
+
+		//	}
+		//}
 
 		//public void onDeviceCalibration(object sender, EngineStateValue<EyeTrackingDeviceStatus> e)
 		//{
@@ -280,10 +301,10 @@ namespace GazeTrackingAttentionDemo
 
 
 		//private void DisplayTime_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-  //      {
-  //          //displayTime = DisplaySlider.Value;
-  //          //render();
-  //      }	
+		//      {
+		//          //displayTime = DisplaySlider.Value;
+		//          //render();
+		//      }	
 	}
 }
 

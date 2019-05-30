@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -12,6 +14,11 @@ namespace GazeTrackingAttentionDemo.UserControls
 	/// </summary>a
 	public partial class DocumentCtrl : UserControl
 	{
+
+
+		public delegate void numParagraphsFoundHandler(int numParagraphs);
+		public event numParagraphsFoundHandler numParagraphsFound;
+
 		public DocumentCtrl()
 		{
 			InitializeComponent();
@@ -26,6 +33,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			//PageText.Selection.Load(new FileStream(@"C:\MMAD\TestGroups\GroupA\Test1.rtf", FileMode.Open), DataFormats.Rtf);
 			//new font with correct
 			//PageText.Document.Blocks.Add(new Paragraph(new Run("Ready to start test ")));
+			numParagraphsFound += new numParagraphsFoundHandler(UserControls.SelectionCtrl.numParagraphsUpdated);
 			Console.WriteLine("Document control Loaded");
 		}
 
@@ -36,6 +44,12 @@ namespace GazeTrackingAttentionDemo.UserControls
 			PageText.FontSize = 17.85;
 			PageText.FontFamily = new FontFamily("Calibri");
 
+			int  numParagraphs = 0;
+			foreach (var paragraph in PageText.Document.Paragraphs())
+			{
+				numParagraphs++;
+			}
+			numParagraphsFound(numParagraphs);
 		}
 
 		public void clearText()
@@ -69,6 +83,35 @@ namespace GazeTrackingAttentionDemo.UserControls
 			public double DocumentMarginHeight { get => _documentMarginHeight;}
 	}
 
+	public static class FlowDocumentExtensions
+	{
+		public static IEnumerable<Paragraph> Paragraphs(this FlowDocument doc)
+		{
+			return doc.Descendants().OfType<Paragraph>();
+		}
+	}
+
+	//CODE BLOCK TAKEN FROM https://stackoverflow.com/questions/27716601/c-sharp-read-paragraph-from-rich-text-box
+	//Author DBC
+	//Originally posted December 31st 2014
+	//Edited January 3rd 2015
+	//Accessed 30th May 2019
+
+	public static class DependencyObjectExtensions
+	{
+		public static IEnumerable<DependencyObject> Descendants(this DependencyObject root)
+		{
+			if (root == null)
+				yield break;
+			yield return root;
+			foreach (var child in LogicalTreeHelper.GetChildren(root).OfType<DependencyObject>())
+				foreach (var descendent in child.Descendants())
+					yield return descendent;
+		}
+	}
+
+
+	//END OF CODE BLOCK
 
 
 	//private void RtbMouseMove(object sender, MouseEventArgs e)

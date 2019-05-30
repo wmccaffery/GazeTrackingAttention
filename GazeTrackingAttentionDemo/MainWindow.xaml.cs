@@ -30,13 +30,15 @@ namespace GazeTrackingAttentionDemo
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		public enum EState { Wait, Setup, Test, ReadyToCalibrate, Ready, Streaming, Recording, DoneRecording, Selection, Markup }
+		public enum EState { Wait, Setup, Test, ReadyToCalibrate, Ready, Streaming, Recording, DoneRecording, Selection, ActiveSelection, Markup }
 		//Wait: time between tests
 		//Setup: user creation and initial calibration
 		//Test: testing user calibration
 		//ReadyToRecord: ready to start recording data
 		//Recording: data is being recorded
 		//DoneRecording: data has been recorded
+		//Selection: loaded interface for selecting datapoints for paragraphs
+		//ActiveSelection: in the process of selecting datapoints
 		//Markup: data is being annotated
 
 
@@ -51,19 +53,36 @@ namespace GazeTrackingAttentionDemo
 			}
 		}
 
-
-
 		UserControl document = new UserControls.DocumentCtrl();
+		UserControl selectionctrl = new SelectionCtrl();
 		UserControl test = new UserControls.TestCalibrationCtrl();
 		UserControl markup = new UserControls.MarkupCtrl();
 		ControlWindow ctrlwin;
 
 		public Stopwatch stopwatch = new Stopwatch();
-		
+
+
 
 		//current user data
 		public User currentUser;
-		public Test currentTestInstance;
+
+		//all tests
+		public List<Test> testInstances = new List<Test>();
+
+		//current test
+		private Test _currentTestInstance = null;
+		public Test currentTestInstance
+		{
+			get { return _currentTestInstance; }
+			set
+			{
+				if(_currentTestInstance != null) //add previous value to list
+				{
+					testInstances.Add(_currentTestInstance);
+				}
+				_currentTestInstance = value;
+			}
+		}
 
 		//list of all file paths
 		public List<String> filePaths { get; set; }
@@ -87,7 +106,8 @@ namespace GazeTrackingAttentionDemo
 		public delegate void stateChangedHandler (EState state);
 		public event stateChangedHandler progStateChanged;
 
-
+		public delegate void testChangedHandler(String path);
+		public event testChangedHandler currentTestChanged;
 
 		//init gaze stream
 		//StreamReader fd;
@@ -191,6 +211,7 @@ namespace GazeTrackingAttentionDemo
 			if (testIndex < filePaths.Count-1)
 			{
 				testIndex++;
+				currentTestChanged(filePaths[testIndex]);
 				return true;
 			}
 			return false;
@@ -220,30 +241,89 @@ namespace GazeTrackingAttentionDemo
 					break;
 				case Key.N:
 					//load next test, when finished start markup
-					if(State == EState.ReadyToCalibrate || State == EState.DoneRecording)
+					//if(State == EState.ReadyToCalibrate || State == EState.DoneRecording)
+					//{
+					//	if (!incrementTestCounter())
+					//	{
+					//		//recrding phase complete
+					//		//System.Windows.Application app = System.Windows.Application.Current;
+					//		//Application.Current.Shutdown();
+
+					//		GazePlot gp = new GazePlot(currentTestInstance.cleanedFixations, MainCanvas);
+					//		gp.renderPlot(true, false, false, false, 0, 999999);
+					//		testIndex = 0;
+					//		loadTest(filePaths[testIndex]);
+					//		State = EState.Selection;
+
+
+					//		//State = EState.Markup;
+					//	} else
+					//	{
+					//		((DocumentCtrl)document).clearText();
+					//		Console.WriteLine("Starting test " + testIndex);
+					//		currentTestInstance = new Test(currentUser, filePaths[testIndex], testIndex);
+					//		currentTestInstance.fd.calibrate();
+					//		State = EState.Ready;
+					//	}
+					//}
+					//break;
+					switch (State)
 					{
-						if (!incrementTestCounter())
-						{
-							//recrding phase complete
-							//System.Windows.Application app = System.Windows.Application.Current;
-							//Application.Current.Shutdown();
+						case EState.ReadyToCalibrate:
+							startTest();
+							break;
 
-							GazePlot gp = new GazePlot(currentTestInstance.cleanedFixations, MainCanvas);
-							gp.renderPlot(true, false, false, false, 0, 999999);
-							State = EState.Selection;
+						case EState.DoneRecording:
+							if (!incrementTestCounter())
+							{
+								testInstances.Add(currentTestInstance); //save final test instance
+								testIndex = 0;
+								loadTest(filePaths[testIndex]); //load original test instance
+								GazePlot gp = new GazePlot(currentTestInstance.cleanedFixations, MainCanvas); //red
+								gp.renderPlot(true, false, false, false, 0, 999999);
+								State = EState.Selection;
+							}
+							else
+							{
+								startTest();
+							}
+							break;
 
-							
-							//State = EState.Markup;
-						} else
-						{
-							((DocumentCtrl)document).clearText();
-							Console.WriteLine("Starting test " + testIndex);
-							currentTestInstance = new Test(currentUser, filePaths[testIndex], testIndex);
-							currentTestInstance.fd.calibrate();
-							State = EState.Ready;
-						}
+						case EState.Selection:
+							if (!incrementTestCounter())
+							{
+								GazePlot gp = new GazePlot(currentTestInstance.cleanedFixations, MainCanvas);
+								gp.renderPlot(true, false, false, false, 0, 999999);
+								testIndex = 0;
+								//currentTestInstance = 
+								//State = EState.Markup;
+							}
+							else
+							{
+								((DocumentCtrl)document).clearText();
+								Console.WriteLine("test " + testIndex + " loaded for selection");
+								currentTestInstance = new Test(currentUser, filePaths[testIndex], testIndex);
+							}
+							break;
+
+						case EState.Markup:
+							if (!incrementTestCounter())
+							{
+								GazePlot gp = new GazePlot(currentTestInstance.cleanedFixations, MainCanvas);
+								gp.renderPlot(true, false, false, false, 0, 999999);
+								testIndex = 0;
+								loadTest(filePaths[testIndex]);
+								State = EState.Markup;
+							}
+							else
+							{
+								((DocumentCtrl)document).clearText();
+								Console.WriteLine("test " + testIndex + " loaded for selection");
+								currentTestInstance = new Test(currentUser, filePaths[testIndex], testIndex);
+							}
+							break;
 					}
-					break;
+
 				case Key.S:
 					//Start/Stop recording data
 					if (State == EState.Ready)
@@ -289,6 +369,25 @@ namespace GazeTrackingAttentionDemo
 				default:
 					break;
 			}
+		}
+
+		public void startTest()
+		{
+			((DocumentCtrl)document).clearText();
+			Console.WriteLine("Starting test " + testIndex);
+			currentTestInstance = new Test(currentUser, filePaths[testIndex], testIndex);
+			currentTestInstance.fd.calibrate();
+			State = EState.Ready;
+		}
+
+		public void startSelection(String paragraph)
+		{
+			State = EState.ActiveSelection;
+		}
+
+		public void endSelection(String paragraph)
+		{
+			State = EState.Selection;
 		}
 
 		//Handle statechange

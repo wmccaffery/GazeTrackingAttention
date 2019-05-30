@@ -25,11 +25,12 @@
             <ColumnDefinition Width="4*" SharedSizeGroup="A"/>
         </Grid.ColumnDefinitions>
 
-        <Canvas Grid.Column="1" Grid.ColumnSpan="4" x:Name="MainCanvas"></Canvas>
         
         <ContentControl Grid.Column="2" x:Name="centerView">
         </ContentControl>
         <ContentControl Grid.Column="4" x:Name="rightView"/>
+
+        <Canvas Grid.Column="0" Grid.ColumnSpan="5" Panel.ZIndex="99" x:Name="MainCanvas"></Canvas>
 
 
     </Grid>

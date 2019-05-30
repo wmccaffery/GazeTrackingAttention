@@ -160,9 +160,9 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			String test_metadata = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
 
 			//create test paths
-			String fixationRawBeginPath = test_metadata + "_EYETRACKER_rawFixationData.csv ";
-			String fixationRawDataPath = test_metadata + "_EYETRACKER_rawFixationData.csv";
-			String fixationRawEndPath = test_metadata + "_EYETRACKER_rawFixationData.csv";
+			String fixationRawPath = test_metadata + "_EYETRACKER_rawFixationData.csv ";
+			//String fixationRawDataPath = test_metadata + "_EYETRACKER_rawFixationData.csv";
+			//String fixationRawEndPath = test_metadata + "_EYETRACKER_rawFixationData.csv";
 			String gazeRawPath = test_metadata + "_EYETRACKER_rawGazeData.csv";
 			String eegRawPath = test_metadata + "_EEG_rawEEGData.csv";
 
@@ -181,7 +181,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 						if (_record)
 						{
-							recordData(fixationRawBeginPath, "Fixation", "Begin", header, data ,timestamp);
+							recordData(fixationRawPath, "Fixation", "Begin", header, data ,timestamp);
 						}
 					})
 					.Data((x, y, timestamp) =>
@@ -194,7 +194,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 						if (_record)
 						{
-							recordData(fixationRawDataPath, "Fixation", "Data", header, data, timestamp);
+							recordData(fixationRawPath, "Fixation", "Data", header, data, timestamp);
 						}
 
 					})
@@ -208,7 +208,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 						if (_record)
 						{
-							recordData(fixationRawEndPath, "Fixation", "End", header, data, timestamp);
+							recordData(fixationRawPath, "Fixation", "End", header, data, timestamp);
 						}
 					});
 			}
@@ -288,6 +288,24 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			}
 		}
 
+		public void recordCleanedFixation(String rawPath, Fixation fixation)
+		{
+			
+
+			if (!File.Exists(rawPath))
+				{
+					File.WriteAllText(rawPath, "");
+					File.WriteAllText(rawPath, "Stream,X,Y,Timestamp" + Environment.NewLine);
+				}
+
+				File.AppendAllText(rawPath, "Begin," + fixation.startPos.x + "," + fixation.startPos.y + "," + fixation.startPos.timestamp + Environment.NewLine);
+				foreach(DataPoint d in fixation.dataPos)
+				{
+					File.AppendAllText(rawPath, "Data," + d.x + "," + d.y + "," + d.timestamp + Environment.NewLine);
+				}
+				File.AppendAllText(rawPath, "End," + fixation.endPos.x + "," + fixation.endPos.y + "," + fixation.endPos.timestamp + Environment.NewLine);
+		}
+
 		public List<Fixation> cleanFixations()
 		{
 			Boolean fixationStart = false;
@@ -314,6 +332,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 						f.endPos = t.Item2;
 						f.completeFixation();
 						validFixations.Add(f);
+						f = new Fixation();
 					}
 					else //add data to fixation
 					{
@@ -331,11 +350,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 				{ 
 					f = new Fixation();
 					f.dataPos = new List<DataPoint>();
-				} else
-				{
-					Console.WriteLine("An unhandled set of values was encountered while cleaning fixations!");
-					Environment.Exit(1);
-				}
+				} 
 			}
 			return validFixations;
 		}

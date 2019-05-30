@@ -271,6 +271,18 @@ namespace GazeTrackingAttentionDemo
 						currentTestInstance.testComplete();
 						currentTestInstance.fd.closeLslStreams();
 						currentTestInstance.cleanedFixations = currentTestInstance.fd.cleanFixations();
+
+						//gen cleaned fixation file pathname
+						String testDir = currentTestInstance.TestDir;
+						String uid = currentTestInstance.User;
+						int test = currentTestInstance.index;
+						DateTime time = DateTime.Now;
+						Int32 unixts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+						String rawPath = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts + "_EYETRACKER_cleanFixationData.csv";
+						foreach (Fixation f in currentTestInstance.cleanedFixations)
+						{
+							currentTestInstance.fd.recordCleanedFixation(rawPath, f);
+						}
 						State = EState.DoneRecording;
 					}
 					break;

@@ -17,13 +17,14 @@ namespace GazeTrackingAttentionDemo.DataVisualization
 		double endTime;
 
 		List<Fixation> fixations;
-		List<Tuple<Ellipse, TextBlock>> FixationPoints;
+		List<Tuple<Ellipse, TextBlock>> fixationPoints;
 		Canvas c;
 
 		
 		public GazePlot(List<Fixation> fixations, Canvas c) //TODO add gaze stream data
 		{
 			this.fixations = fixations;
+			fixationPoints = new List<Tuple<Ellipse, TextBlock>>();
 			this.c = c;
 
 			int i = 0;
@@ -32,10 +33,10 @@ namespace GazeTrackingAttentionDemo.DataVisualization
 				Ellipse e = new Ellipse();
 				e.Fill = new SolidColorBrush(Color.FromArgb(200, 0, 0, 204));
 				e.Stroke = Brushes.Black;
-				e.Width = e.Height = Math.Sqrt(f.duration / 100 / Math.PI);
+				e.Width = e.Height = Math.Sqrt(f.duration * 25 / Math.PI);
 
 				Canvas.SetLeft(e, f.centroid.X - (e.Width / 2));
-				Canvas.SetTop(e, f.centroid.X - (e.Height / 2));
+				Canvas.SetTop(e, f.centroid.Y - (e.Height / 2));
 
 				TextBlock t = new TextBlock();
 				t.Text = "" + i;
@@ -49,7 +50,9 @@ namespace GazeTrackingAttentionDemo.DataVisualization
 				//t.Background = new SolidColorBrush(Colors.Red);
 
 				Canvas.SetLeft(t, f.centroid.X - (e.Width / 2));
-				Canvas.SetTop(t, f.centroid.X - (e.Height / 2));
+				Canvas.SetTop(t, f.centroid.Y - (e.Height / 2));
+
+				fixationPoints.Add(Tuple.Create(e,t));
 
 				i++;
 
@@ -59,7 +62,7 @@ namespace GazeTrackingAttentionDemo.DataVisualization
 
 		public void renderPlot(bool showAll, bool showFixations, bool showSaccades, bool showGaze, double startRange, double endRange)
 		{
-			foreach(Tuple<Ellipse, TextBlock> t in FixationPoints)
+			foreach(Tuple<Ellipse, TextBlock> t in fixationPoints)
 			{
 				c.Children.Add(t.Item1);
 				c.Children.Add(t.Item2);

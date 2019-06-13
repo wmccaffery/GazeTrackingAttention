@@ -12,25 +12,26 @@ namespace GazeTrackingAttentionDemo.Models
 		public DataPoint startPos;
 		public DataPoint endPos;
 		public List<DataPoint> dataPos;
-
+		public int id;
 		public Point centroid;
 		public double duration;
 
-		public Fixation(DataPoint startPos, DataPoint endPos, List<DataPoint> dataPos)
-		{
-			this.startPos = startPos;
-			this.endPos = endPos;
-			this.dataPos = dataPos;
-			completeFixation();
-		}
+		//public Fixation(DataPoint startPos, DataPoint endPos, List<DataPoint> dataPos)
+		//{
+		//	this.startPos = startPos;
+		//	this.endPos = endPos;
+		//	this.dataPos = dataPos;
+		//	completeFixation();
+		//}
 
 		public Fixation()
 		{
 
 		}
 
-		public void completeFixation()
+		public void completeFixation(int i)
 		{
+			id = i;
 			centroid = getCentroid();
 			duration = endPos.timestamp - startPos.timestamp;
 		}

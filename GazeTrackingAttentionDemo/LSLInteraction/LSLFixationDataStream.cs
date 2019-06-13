@@ -43,27 +43,20 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 				fixationDataInlet = new liblsl.StreamInlet(fixationDataResultsInfo[0]);
 				fixationEndInlet = new liblsl.StreamInlet(fixationEndResultsInfo[0]);
 			}
-
-
-
-
-			//eegDataResultsInfo = liblsl.resolve_stream("type", "EEG", 1, 1);
-			//if (eegDataResultsInfo.Length < 1)
-			//{
-			//	Console.WriteLine("WARNING: NO EEG PRESENT");
-			//	eegPresent = false;
-			//}
-			//else
-			//{
-			//	eegPresent = true;
-			//	eegDataInlet = new liblsl.StreamInlet(eegDataResultsInfo[0]);
-			//}
 		}
 
+		//attempt to resolve stream on request
+		public static bool checkDevicePresent()
+		{
+			liblsl.StreamInfo[] beginResultsInfo = liblsl.resolve_stream("name", "FixationBegin", 1, 1);
+			liblsl.StreamInfo[] dataResultsInfo = liblsl.resolve_stream("name", "FixationData", 1, 1);
+			liblsl.StreamInfo[] endResultsInfo = liblsl.resolve_stream("name", "FixationEnd", 1, 1);
+			return !(beginResultsInfo.Length < 1 && dataResultsInfo.Length < 1 && endResultsInfo.Length < 1);
+		}
 
 		public LSLFixationDataStream Begin(Action<double, double, double> action)
 		{
-			fixationBeginStream = new Thread(() => recordFixationBeginStream(action));
+			fixationBeginStream = new Thread(() => getDataFromLSL(action));
 			fixationBeginStream.Start();
 			return this;
 
@@ -71,7 +64,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 
 		public LSLFixationDataStream Data(Action<double, double, double> action)
 		{
-			fixationDataStream = new Thread(() => recordFixationDataStream(action));
+			fixationDataStream = new Thread(() => getDataFromLSL(action));
 			fixationDataStream.Start();
 			return this;
 
@@ -79,12 +72,12 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 
 		public LSLFixationDataStream End(Action<double, double, double> action)
 		{
-			fixationEndStream = new Thread(() => recordFixationEndStream(action));
+			fixationEndStream = new Thread(() => getDataFromLSL(action));
 			fixationEndStream.Start();
 			return this;
 		}
 
-		private void recordFixationBeginStream(Action<double, double, double> action)
+		private void getDataFromLSL(Action<double, double, double> action)
 		{
 			while (true)
 			{
@@ -98,34 +91,49 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 				action(sample[0], sample[1], correction + timestamp);
 			}
 		}
-		private void recordFixationDataStream(Action<double, double, double> action)
-		{
-			while (true)
-			{
-				float[] sample = new float[2];
-				double timestamp;
-				double correction;
 
-				timestamp = fixationDataInlet.pull_sample(sample);
-				correction = fixationDataInlet.time_correction();
+		//private void recordFixationBeginStream(Action<double, double, double> action)
+		//{
+		//	while (true)
+		//	{
+		//		float[] sample = new float[2];
+		//		double timestamp;
+		//		double correction;
 
-				action(sample[0], sample[1], correction + timestamp);
-			}
-		}
-		private void recordFixationEndStream(Action<double, double, double> action)
-		{
-			while (true)
-			{
-				float[] sample = new float[2];
-				double timestamp;
-				double correction;
+		//		timestamp = fixationBeginInlet.pull_sample(sample);
+		//		correction = fixationBeginInlet.time_correction();
 
-				timestamp = fixationEndInlet.pull_sample(sample);
-				correction = fixationEndInlet.time_correction();
+		//		action(sample[0], sample[1], correction + timestamp);
+		//	}
+		//}
+		//private void recordFixationDataStream(Action<double, double, double> action)
+		//{
+		//	while (true)
+		//	{
+		//		float[] sample = new float[2];
+		//		double timestamp;
+		//		double correction;
 
-				action(sample[0], sample[1], correction + timestamp);
-			}
-		}
+		//		timestamp = fixationDataInlet.pull_sample(sample);
+		//		correction = fixationDataInlet.time_correction();
+
+		//		action(sample[0], sample[1], correction + timestamp);
+		//	}
+		//}
+		//private void recordFixationEndStream(Action<double, double, double> action)
+		//{
+		//	while (true)
+		//	{
+		//		float[] sample = new float[2];
+		//		double timestamp;
+		//		double correction;
+
+		//		timestamp = fixationEndInlet.pull_sample(sample);
+		//		correction = fixationEndInlet.time_correction();
+
+		//		action(sample[0], sample[1], correction + timestamp);
+		//	}
+		//}
 	}
 
 

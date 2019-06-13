@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace GazeTrackingAttentionDemo.Models
 {
 	public class User
 	{
+		public List<Test> tests;
+		public List<String> testPaths;
+		public int testIndex;
+
 		public User(String id, String groupName, String groupPath)
 		{
 			DateTime dateAndTime = DateTime.Now;
@@ -22,7 +27,42 @@ namespace GazeTrackingAttentionDemo.Models
 				File.WriteAllText(InfoPath, "");
 			}
 			File.AppendAllText(InfoPath, id + Environment.NewLine + groupName + Environment.NewLine);
+
+			testIndex = -1;
+			testPaths = getTestPaths();
+			tests = new List<Test>();
 		}
+
+
+		public List<String> getTestPaths()
+		{
+			//create sorted list of path strings
+			List<String>filePaths = new List<String>(Directory.GetFiles(GroupPath));
+			filePaths.Sort((String a, String b) =>
+			{
+				//sort files into order based on number in title
+				int a_num = Int32.Parse(Regex.Match(Path.GetFileNameWithoutExtension(a), @"\d+").Value);
+				int b_num = Int32.Parse(Regex.Match(Path.GetFileNameWithoutExtension(b), @"\d+").Value);
+
+				return a_num.CompareTo(b_num);
+			});
+			return filePaths;
+		}
+
+		public Test createTest(String testType)
+		{
+			testIndex++;
+			tests.Add(new Test(this, testType, testPaths[testIndex], testIndex));
+			return tests[testIndex];
+			//	currentTest = currentUser.tests[testIndex];
+			//	State = EState.Ready;
+		}
+
+		public Test getCurrentTest()
+		{
+			return tests[testIndex];
+		}
+
 
 		private String _id;
 		private String _groupName;

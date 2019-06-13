@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GazeTrackingAttentionDemo.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 		Boolean showSaccades;
 		Boolean dataRecorded;
 
+		Test test;
+		AOI aoi;
+
 		public MarkupCtrl()
 		{
 			InitializeComponent();
@@ -39,6 +43,58 @@ namespace GazeTrackingAttentionDemo.UserControls
 			//Callibrate.IsEnabled = true;
 			//Reset.IsEnabled = true;
 			//mainCanvas.Children.Clear();
+		}
+
+		public void onLoad(object sender, RoutedEventArgs e)
+		{
+			if (test == null)
+			{
+				timeline_group.IsEnabled = false;
+				visualisation_group.IsEnabled = false;
+				playback_group.IsEnabled = false;
+			}
+			if(aoi == null)
+			{
+				markup_group.IsEnabled = false;
+			}
+
+		}
+
+		public void onAOIChanged(AOI aoi)
+		{
+			this.aoi = aoi;
+			markup_group.IsEnabled = true;
+
+			//DisplaySlider.Maximum = test.fixations[test.fixations.Count - 1].endPos.timestamp;
+			//DisplaySlider.Minimum = test.fixations[0].startPos.timestamp;
+
+			//DisplaySlider.HigherValue = DisplaySlider.Maximum;
+			//DisplaySlider.LowerValue = DisplaySlider.Minimum;
+
+		}
+
+		public void onTestChanged(Test test)
+		{
+			this.test = test;
+			if (test != null)
+			{
+				timeline_group.IsEnabled = true;
+				visualisation_group.IsEnabled = true;
+				playback_group.IsEnabled = true;
+
+				if (test.fixations.Count > 0)
+				{
+					DisplaySlider.Maximum = test.fixations[test.fixations.Count - 1].endPos.timestamp;
+					DisplaySlider.Minimum = test.fixations[0].startPos.timestamp;
+				} else
+				{
+					DisplaySlider.Maximum = 0;
+					DisplaySlider.Minimum = 0;
+				}
+
+				DisplaySlider.HigherValue = DisplaySlider.Maximum;
+				DisplaySlider.LowerValue = DisplaySlider.Minimum;
+			}
 		}
 
 		private void btnPlay_Click(object sender, RoutedEventArgs e)
@@ -117,6 +173,54 @@ namespace GazeTrackingAttentionDemo.UserControls
 		private void CheckBox_Clicked(object sender, RoutedEventArgs e)
 		{
 			//    render();
+		}
+
+		private void Aoi_CheckBox_Checked(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void Aoi_CheckBox_Unchecked(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void DisplaySlider_LowerValueChanged(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void DisplaySlider_HigherValueChanged(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			test.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
+		}
+
+		private void Int_Checked(object sender, RoutedEventArgs e)
+		{
+			String name = ((RadioButton)e.Source).Name;
+			//updateVal("Interest", name);
+		}
+
+		private void Att_Checked(object sender, RoutedEventArgs e)
+		{
+			String name = ((RadioButton)e.Source).Name;
+			//updateVal("Attention", name);
+		}
+
+		private void Eff_Checked(object sender, RoutedEventArgs e)
+		{
+			String name = ((RadioButton)e.Source).Name;
+			//updateVal("Effort", name);
+		}
+
+		private void updateVal(String type, String name)
+		{
+
 		}
 	}
 }

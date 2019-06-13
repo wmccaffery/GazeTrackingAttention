@@ -1,4 +1,5 @@
-﻿using Microsoft.Expression.Encoder.Devices;
+﻿using GazeTrackingAttentionDemo.Models;
+using Microsoft.Expression.Encoder.Devices;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,7 +22,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 	/// <summary>
 	/// Interaction logic for WebcamCtrl.xaml
 	/// </summary>
-	public partial class WebcamCtrl : UserControl
+	public partial class TestCtrl : UserControl
 	{ 
 
 		public Collection<EncoderDevice> VideoDevices { get; set; }
@@ -29,11 +30,20 @@ namespace GazeTrackingAttentionDemo.UserControls
 		public EncoderDevice logiHdPro { get; set; }
 
 		private MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow;
+		private ControlWindow _parentWin;
+		User user;
+		Test currentTest;
 
 		private double startts;
 		private double endts;
-	
-		public WebcamCtrl()
+
+		public delegate void TestCompletedHandler();
+		public event TestCompletedHandler TestCompleted;
+
+		public delegate void StreamingHandler();
+		public event StreamingHandler Streaming;
+
+		public TestCtrl()
 		{
 
 			VideoDevices = EncoderDevices.FindDevices(EncoderDeviceType.Video);
@@ -61,8 +71,14 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		private void onLoad(object sender, RoutedEventArgs e)
 		{
+			_parentWin = (ControlWindow)Window.GetWindow(this);
+			user = _parentWin.user;
+			currentTest = user.getCurrentTest();
+
 			//WebcamViewer.StartPreview();
-			
+			TestCompleted += new TestCompletedHandler(_mainWindow.testCompleted);
+			Streaming += new StreamingHandler(_mainWindow.startStreaming);
+
 		}
 
 		public void setup(String path)
@@ -94,6 +110,17 @@ namespace GazeTrackingAttentionDemo.UserControls
 			endts = _mainWindow.stopwatch.ElapsedMilliseconds;
 			string[] video = Directory.GetFiles(WebcamViewer.VideoDirectory, "*.wmv");
 			File.Move(video[0], WebcamViewer.VideoDirectory + "//Subject" + _mainWindow.currentUser.Id  + "QPCstart" + startts + "end" + endts + ".wmv");
+		}
+
+		private void FinishTest_Click(object sender, RoutedEventArgs e)
+		{
+			currentTest.testComplete();
+			TestCompleted();
+		}
+
+		private void Stream_Click(object sender, RoutedEventArgs e)
+		{
+			Streaming();
 		}
 
 

@@ -27,23 +27,37 @@ namespace GazeTrackingAttentionDemo
     public partial class ControlWindow : Window
     {
 		System.Windows.Controls.UserControl newUserForm = new UserControls.UserCtrl();
-		System.Windows.Controls.UserControl webcam = new UserControls.WebcamCtrl();
+		System.Windows.Controls.UserControl testCtrl = new UserControls.TestCtrl();
+		System.Windows.Controls.UserControl calibrationCtrl = new UserControls.CalibrationCtrl();
+		System.Windows.Controls.UserControl overview = new UserControls.OverviewCtrl();
+		System.Windows.Controls.UserControl endCtrl = new UserControls.EndCtrl();
+
 		MainWindow mainWin = (MainWindow)System.Windows.Application.Current.MainWindow;
 
-		Test test;
+		public User user;
+		public int totalNumTests;
+
+		Boolean multiscreen;
 
 
-		private WebcamCtrl _webcam;
+		private TestCtrl _webcam;
 
 		public ControlWindow()
 		{
-			Screen s1 = Screen.AllScreens[1];
-			System.Drawing.Rectangle r1 = s1.WorkingArea;
-			this.Top = r1.Top;
-			this.Left = r1.Left;
-			this.Width = r1.Width;
-			this.Height = r1.Height;
+			Screen controlScreen;
 
+			if (Screen.AllScreens.Length > 1)
+			{
+				controlScreen = Screen.AllScreens[1];
+				System.Drawing.Rectangle r1 = controlScreen.WorkingArea;
+				this.Top = r1.Top;
+				this.Left = r1.Left;
+				this.Width = r1.Width;
+				this.Height = r1.Height;
+				multiscreen = true;
+			}
+
+			multiscreen = false;
 			InitializeComponent();
 
 			this.DataContext = this;
@@ -53,8 +67,17 @@ namespace GazeTrackingAttentionDemo
 
 		private void onLoad(object sender, RoutedEventArgs e)
 		{
-			this.WindowState = WindowState.Maximized;
-			this.KeyDown += new System.Windows.Input.KeyEventHandler(mainWin.MainWindow_KeyDown);
+			if (multiscreen)
+			{
+				this.WindowState = WindowState.Maximized;
+			} else
+			{
+				this.WindowStyle = WindowStyle.SingleBorderWindow;
+			}
+
+			currentTestLabel.Content = "Test 0 of 0";
+
+			//this.KeyDown += new System.Windows.Input.KeyEventHandler(mainWin.MainWindow_KeyDown);
 			mainWin.readyToRecord += new readyToRecordHandler(readyToRecord);
 
 			mainWin.recordingStarted += new recordingStartHandler(startRecording);
@@ -67,15 +90,23 @@ namespace GazeTrackingAttentionDemo
 
 		public void stateChanged(EState state)
 		{
-			stateLabel.Content = state.ToString().ToUpper();
-			if(state == EState.Ready)
+			switch (state)
 			{
-				test = mainWin.currentTestInstance;
-				paperBox.Visibility = Visibility.Visible;
-			} else
-			{
-				paperBox.Visibility = Visibility.Hidden;
+				case EState.Overview:
+					controller.Content = overview; 
+					break;
+				case EState.Ready:
+					controller.Content = testCtrl;
+					break;
+				case EState.Calibrating:
+					controller.Content = calibrationCtrl;
+					break;
+				case EState.Markup:
+					controller.Content = endCtrl;
+					break;
 			}
+			stateLabel.Content = state.ToString();
+
 		}
 
 		public void readyToRecord(Test test)
@@ -95,22 +126,24 @@ namespace GazeTrackingAttentionDemo
 
 		public void onUserCreated(User user)
 		{
-			controller.Content = webcam;
-			_webcam = (WebcamCtrl)webcam;
+			totalNumTests = user.getTestPaths().Count;
+			currentTestLabel.Content = "Test " + 0 + " of " + totalNumTests;
+			userLabel.Content = user.Id;
+			_webcam = (TestCtrl)testCtrl;
+			this.user = user;
 		}
 
-		private void PaperBox_Checked(object sender, RoutedEventArgs e)
+		public void testCreated(Test test)
 		{
-			test.isPaper = true;
-			File.WriteAllText(test.InfoPath, "");
-			File.AppendAllText(test.InfoPath, "ISPAPER=" + test.isPaper);
-		}
-
-		private void PaperBox_Unchecked(object sender, RoutedEventArgs e)
-		{
-			test.isPaper = false;
-			File.WriteAllText(test.InfoPath, "");
-			File.AppendAllText(test.InfoPath, "ISPAPER=" + test.isPaper);
+			currentTestLabel.Content = "Test " + (test.index + 1) + " of " + totalNumTests;
+			if (test.isPaper)
+			{
+				currentTestMedium.Content = "Paper";
+			} else
+			{
+				currentTestMedium.Content = "Screen";
+			}
+			currentTestName.Content = System.IO.Path.GetFileNameWithoutExtension(test.TestPath);
 		}
 	}
 }

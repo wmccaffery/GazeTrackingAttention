@@ -26,11 +26,14 @@
         </Grid.ColumnDefinitions>
 
         
-        <ContentControl Grid.Column="2" x:Name="centerView">
+        <ContentControl Grid.Column="2" x:Name="centerView" Panel.ZIndex="96">
         </ContentControl>
-        <ContentControl Grid.Column="4" x:Name="rightView"/>
+        <ContentControl Grid.Column="4" x:Name="rightView" Panel.ZIndex="99"/>
+        <ContentControl Grid.Column="0" x:Name="leftView" Panel.ZIndex="99"/>
 
-        <Canvas Grid.Column="0" Grid.ColumnSpan="5" Panel.ZIndex="99" x:Name="MainCanvas"></Canvas>
+
+        <Canvas Grid.Column="0" Grid.ColumnSpan="5" Panel.ZIndex="97" x:Name="MainCanvas" Background="Transparent"></Canvas>
+        <Canvas Grid.Column="0" Grid.ColumnSpan="5" Panel.ZIndex="98" x:Name="SelectionCanvas" MouseDown="MainCanvas_MouseDown" Background="Transparent"></Canvas>
 
 
     </Grid>

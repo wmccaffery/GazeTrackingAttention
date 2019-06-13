@@ -154,33 +154,49 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataVisualization\GazePlot.cs" />
+    <Compile Include="DataVisualization\GazeScatter.cs" />
     <Compile Include="LSL.cs" />
     <Compile Include="LSLInteraction\LSLEEGDataStream.cs" />
     <Compile Include="LSLInteraction\LSLFixationDataStream.cs" />
     <Compile Include="LSLInteraction\LSLGazeDataStream.cs" />
     <Compile Include="LSLInteraction\LSLStreamInteractionHost.cs" />
+    <Compile Include="Models\AOI.cs" />
+    <Compile Include="Models\AOIPoint.cs" />
     <Compile Include="Models\DataPoint.cs" />
     <Compile Include="Models\Fixation.cs" />
     <Compile Include="Models\Saccade.cs" />
     <Compile Include="Models\Test.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="DataProcessing\StreamReader.cs" />
+    <Compile Include="UserControls\CalibrationCtrl.xaml.cs">
+      <DependentUpon>CalibrationCtrl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\EndCtrl.xaml.cs">
+      <DependentUpon>EndCtrl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\MarkupCtrl.xaml.cs">
       <DependentUpon>MarkupCtrl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\SelectionCtrl.xaml.cs">
-      <DependentUpon>SelectionCtrl.xaml</DependentUpon>
+    <Compile Include="UserControls\AOICtrl.xaml.cs">
+      <DependentUpon>AOICtrl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\TestCalibrationCtrl.xaml.cs">
       <DependentUpon>TestCalibrationCtrl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\UserCtrl.xaml.cs">
-      <DependentUpon>UserCtrl.xaml</DependentUpon>
+    <Compile Include="UserControls\OverviewCtrl.xaml.cs">
+      <DependentUpon>OverviewCtrl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\WebcamCtrl.xaml.cs">
-      <DependentUpon>WebcamCtrl.xaml</DependentUpon>
+    <Compile Include="UserControls\UserCtl.xaml.cs">
+      <DependentUpon>UserCtl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\TestCtrl.xaml.cs">
+      <DependentUpon>TestCtrl.xaml</DependentUpon>
     </Compile>
     <Page Include="ControlWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\CalibrationCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -206,11 +222,15 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UserControls\EndCtrl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\MarkupCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\SelectionCtrl.xaml">
+    <Page Include="UserControls\AOICtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -218,11 +238,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\UserCtrl.xaml">
+    <Page Include="UserControls\OverviewCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\WebcamCtrl.xaml">
+    <Page Include="UserControls\UserCtl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\TestCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -256,12 +280,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="License-LGPL.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="liblsl32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="License-LGPL.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

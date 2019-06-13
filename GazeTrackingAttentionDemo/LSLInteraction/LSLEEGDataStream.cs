@@ -34,14 +34,20 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 				}
 		}
 
+		public static bool checkDevicePresent()
+		{
+			liblsl.StreamInfo[] dataResultsInfo = liblsl.resolve_stream("type", "EEG", 1, 1);
+			return !(dataResultsInfo.Length < 1);
+		}
+
 		public LSLEEGDataStream EEGData(Action<double, double, double, double, double, double, double, double, double> action)
 		{
-			eegDataStream = new Thread(() => recordEEGStream(action));
+			eegDataStream = new Thread(() => getDataFromLSL(action));
 			eegDataStream.Start();
 			return this;
 		}
 
-		private void recordEEGStream(Action<double, double, double, double, double, double, double, double, double> action)
+		private void getDataFromLSL(Action<double, double, double, double, double, double, double, double, double> action)
 		{
 			eegDataInlet.open_stream();
 			while (true)

@@ -7,7 +7,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GazeTrackingAttentionDemo"
              mc:Ignorable="d" 
-             d:DesignHeight="1200" d:DesignWidth="800">
+             d:DesignHeight="1200" d:DesignWidth="800"
+             Loaded="onLoad">
     <Grid x:Name="MarkupSubGrid" Grid.Column="4" ShowGridLines="False" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition SharedSizeGroup="A"/>
@@ -30,7 +31,7 @@
 
         </Grid.RowDefinitions>
 
-        <GroupBox x:Name="playback_group" Header="Playback" FontSize="18" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="4" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="15">
+        <GroupBox x:Name="playback_group" Header="Playback" FontSize="18" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="15">
             <Grid Margin="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition SharedSizeGroup="A"/>
@@ -81,7 +82,7 @@
 
         </GroupBox>
 
-        <GroupBox x:Name="visualisation_group" Header="Visualisation" Grid.Column="1" Grid.Row="4" Grid.RowSpan="2" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="15">
+        <GroupBox x:Name="visualisation_group" Header="Visualisation" Grid.Column="1" Grid.Row="3" Grid.RowSpan="3" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="15">
             <UniformGrid>
                 <StackPanel Orientation="Vertical">
                     <Label>Display</Label>
@@ -95,9 +96,12 @@
                         <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top" Checked="Saccade_CheckBox_Checked" Unchecked="Saccade_CheckBox_Unchecked" Click="CheckBox_Clicked" />
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
+                        <CheckBox x:Name="Aoi_CheckBox" Content="AOI" Checked="Aoi_CheckBox_Checked" Unchecked="Aoi_CheckBox_Unchecked" Click="CheckBox_Clicked" />
+                    </Viewbox>
+                    <Viewbox Height="30" HorizontalAlignment="Left">
                         <CheckBox x:Name="All_CheckBox" Content="All" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked" Click="CheckBox_Clicked" />
                     </Viewbox>
-                    <Button Height="30" FontSize="20" Margin="60,5,60,0">Render</Button>
+                    <Button Height="30" FontSize="20" Margin="60,5,60,0" Click="Button_Click">Render</Button>
                 </StackPanel>
                 <!--add key and highlight interface-->
             </UniformGrid>
@@ -122,59 +126,59 @@
                     <Label Grid.Row="1" Content="Interest" Grid.ColumnSpan="2"/>
                     <StackPanel Grid.Row="2" Orientation="Horizontal" Grid.ColumnSpan="2">
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Interest"/>
+                            <RadioButton x:Name="Int1" GroupName="Interest" Checked="Int_Checked"/>
                         </Viewbox>
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Interest"/>
+                            <RadioButton x:Name="Int2"  GroupName="Interest" Checked="Int_Checked"/>
                         </Viewbox>
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Interest"/>
+                            <RadioButton x:Name="Int3"  GroupName="Interest" Checked="Int_Checked"/>
                         </Viewbox>
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Interest"/>
+                            <RadioButton x:Name="Int4" GroupName="Interest" Checked="Int_Checked"/>
                         </Viewbox>
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Interest"/>
+                            <RadioButton x:Name="Int5" GroupName="Interest" Checked="Int_Checked"/>
                         </Viewbox>
                     </StackPanel>
                     <Label Grid.Row="3" Content="Attentiveness" Grid.ColumnSpan="2"/>
                     <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="2">
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Attentiveness"/>
+                            <RadioButton x:Name="Att1" GroupName="Attentiveness" Checked="Att_Checked"/>
                         </Viewbox>
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Attentiveness"/>
+                            <RadioButton x:Name="Att2" GroupName="Attentiveness" Checked="Att_Checked"/>
                         </Viewbox>
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Attentiveness"/>
+                            <RadioButton x:Name="Att3" GroupName="Attentiveness" Checked="Att_Checked"/>
                         </Viewbox>
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Attentiveness"/>
+                            <RadioButton x:Name="Att4" GroupName="Attentiveness" Checked="Att_Checked"/>
                         </Viewbox>
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Attentiveness"/>
+                            <RadioButton x:Name="Att5"  GroupName="Attentiveness" Checked="Att_Checked"/>
                         </Viewbox>
                     </StackPanel>
                     <Label Grid.Row="5" Content="Effort" Grid.ColumnSpan="2"/>
                     <StackPanel Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="2">
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Effort"/>
+                            <RadioButton x:Name="Eff1" GroupName="Effort" Checked="Eff_Checked"/>
                         </Viewbox>
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Effort"/>
+                            <RadioButton x:Name="Eff2" GroupName="Effort" Checked="Eff_Checked"/>
                         </Viewbox>
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Effort"/>
+                            <RadioButton x:Name="Eff3" GroupName="Effort" Checked="Eff_Checked"/>
                         </Viewbox>
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Effort"/>
+                            <RadioButton x:Name="Eff4" GroupName="Effort" Checked="Eff_Checked"/>
                         </Viewbox>
                         <Viewbox Height="50">
-                            <RadioButton GroupName="Effort"/>
+                            <RadioButton x:Name="Eff5" GroupName="Effort" Checked="Eff_Checked"/>
                         </Viewbox>
                     </StackPanel>
                     <Label Grid.Row="7" Grid.ColumnSpan="2">Comments</Label>
-                    <TextBox Grid.Row="8"  Margin="2,2,2,2" Grid.ColumnSpan="2"></TextBox>
+                    <TextBox x:Name="comments" Grid.Row="8"  Margin="2,2,2,2" Grid.ColumnSpan="2"></TextBox>
                 </StackPanel>
             </Grid>
         </GroupBox>
@@ -185,7 +189,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <xctk:RangeSlider x:Name="DisplaySlider" Grid.Row="0"  RenderTransformOrigin="0.5,0.5"  VerticalAlignment="Center" HorizontalAlignment="Center" Margin="-460,480,-457.5,486.5" Width="979" Height="22">
+                <xctk:RangeSlider x:Name="DisplaySlider" Grid.Row="0" RenderTransformOrigin="0.5,0.5"  VerticalAlignment="Center" HorizontalAlignment="Center" Margin="-460,480,-457.5,486.5" Width="979" Height="22" >
                     <xctk:RangeSlider.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform/>
@@ -195,9 +199,12 @@
                         </TransformGroup>
                     </xctk:RangeSlider.RenderTransform>
                 </xctk:RangeSlider>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBox x:Name="DisplaySlider_Lower" Text="{Binding ElementName=DisplaySlider,Path=LowerValue}" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Bottom" TextWrapping="Wrap" Height="24" Width="auto" BorderThickness="0"/>
+                    <Label>-</Label>
+                    <TextBox x:Name="DisplaySlider_Higher" Text="{Binding ElementName=DisplaySlider,Path=HigherValue}" Grid.Row="1"  HorizontalAlignment="Right" VerticalAlignment="Bottom" TextWrapping="Wrap" Height="24" Width="auto" BorderThickness="0"/>
+                </StackPanel>
 
-                <TextBox x:Name="DisplaySlider_Value" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Bottom"
- TextWrapping="Wrap" Height="24" Width="22"/>
                 <!--Text="{Binding Value, ElementName=DisplaySlider}"-->
 
             </Grid>

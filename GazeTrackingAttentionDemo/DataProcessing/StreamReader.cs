@@ -66,6 +66,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 			_lslHost = new LSLStreamInteractionHost();
 
+			//THIS NEEDS TO BE MOVED AN REENABLED. THIS CODE INITIALIZES ALL OF THE LSL STREAMS, BUT THIS SHOULDNT BE DONE WHEN THE STREAMREADER IS INITIALIZED, BUT AFTER WHEN READY TO START STREAMING
 			_lslFixationDataStream = _lslHost.CreateNewLslFixationDataStream();
 			_lslGazeDataStream = _lslHost.CreateNewLslGazeDataStream();
 			_lslEEGDataStream = _lslHost.CreateNewLslEEGDataStream();
@@ -152,9 +153,9 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 		public void readStreams()
 		{
-			String testDir = _mainWindow.currentTestInstance.TestDir;
-			String uid = _mainWindow.currentTestInstance.User;
-			int test = _mainWindow.currentTestInstance.index;
+			String testDir = _mainWindow.currentUser.getCurrentTest().TestDir;
+			String uid = _mainWindow.currentUser.getCurrentTest().User;
+			int test = _mainWindow.currentUser.getCurrentTest().index;
 			DateTime time = DateTime.Now;
 			Int32 unixts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
 			String test_metadata = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
@@ -181,7 +182,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 						if (_record)
 						{
-							recordData(fixationRawPath, "Fixation", "Begin", header, data ,timestamp);
+							recordStream(fixationRawPath, "Fixation", "Begin", header, data ,timestamp);
 						}
 					})
 					.Data((x, y, timestamp) =>
@@ -194,7 +195,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 						if (_record)
 						{
-							recordData(fixationRawPath, "Fixation", "Data", header, data, timestamp);
+							recordStream(fixationRawPath, "Fixation", "Data", header, data, timestamp);
 						}
 
 					})
@@ -208,7 +209,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 						if (_record)
 						{
-							recordData(fixationRawPath, "Fixation", "End", header, data, timestamp);
+							recordStream(fixationRawPath, "Fixation", "End", header, data, timestamp);
 						}
 					});
 			}
@@ -225,7 +226,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 					if (_record)
 					{
-						recordData(gazeRawPath, "Gaze", "", header, data, timestamp);
+						recordStream(gazeRawPath, "Gaze", "", header, data, timestamp);
 					}
 				});
 			}
@@ -240,13 +241,13 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 					if (_record)
 					{
-						recordData(eegRawPath, "EEG", "", header, data, timestamp);
+						recordStream(eegRawPath, "EEG", "", header, data, timestamp);
 					}
 				});
 			}
 
 		}
-		public void recordData(String rawPath, String streamType, String dataType, String fileHeader, double[] data, double timestamp)
+		public void recordStream(String rawPath, String streamType, String dataType, String fileHeader, double[] data, double timestamp)
 		{
 			if (_record)
 			{
@@ -288,10 +289,8 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			}
 		}
 
-		public void recordCleanedFixation(String rawPath, Fixation fixation)
+		public void recordFixations(String rawPath, Fixation fixation)
 		{
-			
-
 			if (!File.Exists(rawPath))
 				{
 					File.WriteAllText(rawPath, "");
@@ -306,7 +305,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 				File.AppendAllText(rawPath, "End," + fixation.endPos.x + "," + fixation.endPos.y + "," + fixation.endPos.timestamp + Environment.NewLine);
 		}
 
-		public List<Fixation> cleanFixations()
+		public List<Fixation> getFixations()
 		{
 			Boolean fixationStart = false;
 
@@ -316,6 +315,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			Fixation f = new Fixation();
 
 			//build valid fixations
+			int i = 0;
 			foreach(Tuple<string, DataPoint> t in rawFixationPoints)
 			{
 				if (fixationStart && isValid(t.Item2)) { //continue fixation
@@ -330,9 +330,10 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 					{
 						fixationStart = false;
 						f.endPos = t.Item2;
-						f.completeFixation();
+						f.completeFixation(i);
 						validFixations.Add(f);
 						f = new Fixation();
+						i++;
 					}
 					else //add data to fixation
 					{
@@ -355,9 +356,29 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			return validFixations;
 		}
 
-		public void getSaccades() //TODO actually get saccades
+		public List<Saccade> getSaccades(List<Fixation> fixations)
 		{
+			List<Saccade> saccades = new List<Saccade>();
+			Saccade s = new Saccade();
+			int i = 0;
+			foreach(Fixation f in fixations)
+			{
+				if(s.start == null)
+				{
+					s.start = f;
+				}
+				else
+				{
+					s.finish = f;
+					s.completeSaccade(i);
+					saccades.Add(s);
+					s = new Saccade();
+					s.start = f;
+					i++;
+				}
+			}
 
+			return saccades;
 		}
 
 		public bool isValid(DataPoint val)

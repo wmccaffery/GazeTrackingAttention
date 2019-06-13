@@ -31,13 +31,21 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 
 		}
 
+
+		//attempt to resolve stream on request
+		public static bool checkDevicePresent()
+		{
+			liblsl.StreamInfo[]  dataResultsInfo = liblsl.resolve_stream("name", "GazeData", 1, 1);
+			return !(dataResultsInfo.Length < 1);
+		}
+
 		public void GazeData(Action<double, double, double> action)
 		{
-			gazeStream = new Thread(() => recordGazeStream(action));
+			gazeStream = new Thread(() => getDataFromLSL(action));
 			gazeStream.Start();
 		}
 
-		private void recordGazeStream(Action<double, double, double> action)
+		private void getDataFromLSL(Action<double, double, double> action)
 		{
 			while (true)
 			{

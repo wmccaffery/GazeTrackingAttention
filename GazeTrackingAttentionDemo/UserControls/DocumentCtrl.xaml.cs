@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GazeTrackingAttentionDemo.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,23 +34,54 @@ namespace GazeTrackingAttentionDemo.UserControls
 			//PageText.Selection.Load(new FileStream(@"C:\MMAD\TestGroups\GroupA\Test1.rtf", FileMode.Open), DataFormats.Rtf);
 			//new font with correct
 			//PageText.Document.Blocks.Add(new Paragraph(new Run("Ready to start test ")));
-			numParagraphsFound += new numParagraphsFoundHandler(UserControls.SelectionCtrl.numParagraphsUpdated);
 			Console.WriteLine("Document control Loaded");
 		}
 
-		public void onTestLoaded(String test)
+		//public void onTestLoaded(String test)
+		//{
+		//	clearText();
+		//	PageText.Selection.Load(new FileStream(test, FileMode.Open), DataFormats.Rtf);
+		//	PageText.FontSize = 17.85;
+		//	PageText.FontFamily = new FontFamily("Calibri");
+
+		//	int  numParagraphs = 0;
+		//	foreach (var paragraph in PageText.Document.Paragraphs())
+		//	{
+		//		numParagraphs++;
+		//	}
+		//	numParagraphsFound(numParagraphs);
+		//}
+
+		//public void loadTestText(Test test)
+		//{
+		//	string testPath = test.TestPath;
+		//	clearText();
+		//	PageText.Selection.Load(new FileStream(testPath, FileMode.Open), DataFormats.Rtf);
+		//	PageText.FontSize = 17.85;
+		//	PageText.FontFamily = new FontFamily("Calibri");
+
+		//	int numParagraphs = 0;
+		//	foreach (var paragraph in PageText.Document.Paragraphs())
+		//	{
+		//		numParagraphs++;
+		//	}
+		//	numParagraphsFound(numParagraphs);
+		//}
+
+		public void loadText(String text)
 		{
 			clearText();
-			PageText.Selection.Load(new FileStream(test, FileMode.Open), DataFormats.Rtf);
+			FileStream fs = new FileStream(text, FileMode.Open);
+			PageText.Selection.Load(fs, DataFormats.Rtf);
+			fs.Close();
 			PageText.FontSize = 17.85;
 			PageText.FontFamily = new FontFamily("Calibri");
 
-			int  numParagraphs = 0;
+			int numParagraphs = 0;
 			foreach (var paragraph in PageText.Document.Paragraphs())
 			{
 				numParagraphs++;
 			}
-			numParagraphsFound(numParagraphs);
 		}
 
 		public void clearText()
@@ -61,20 +93,21 @@ namespace GazeTrackingAttentionDemo.UserControls
 		//Calculate sizes to draw a full sized A4 page 
 
 		private static double _a4Width = 8.27;
-			private static double _a4Height = 11.69;
-			private static double _a4MarginSize = 1;
-			private static double _xScreenRes = 1920;
-			private static double _yScreenRes = 1200;
-			private static double _xScreenDPI = 20.4;
-			private static double _yScreenDPI = 12.8;
+		private static double _a4Height = 11.69;
+		private static double _a4MarginSize = 1;
+		private static double _xScreenRes = 1920;
+		private static double _yScreenRes = 1200;
+		private static double _xScreenWidth = 20.4;
+		private static double _yScreenHeight = 12.8;
 
-			private double _documentWidth = (_a4Width * (_xScreenRes / _xScreenDPI));
 
-			private double _documentHeight = _a4Height * (_yScreenRes / _yScreenDPI);
+		private double _documentWidth = (_a4Width * (_xScreenRes / _xScreenWidth));
 
-			private double _documentMarginWidth = _a4MarginSize * (_xScreenRes / _xScreenDPI) - 10;
+			private double _documentHeight = _a4Height * (_yScreenRes / _yScreenHeight);
 
-			private double _documentMarginHeight = _a4MarginSize * (_xScreenRes / _xScreenDPI) - 10;
+			private double _documentMarginWidth = _a4MarginSize * (_xScreenRes / _xScreenWidth) - 10;
+
+			private double _documentMarginHeight = _a4MarginSize * (_xScreenRes / _xScreenWidth) - 10;
 
 
 			public double DocumentWidth { get => _documentWidth;}

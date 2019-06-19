@@ -17,26 +17,32 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 
 		public LSLGazeDataStream()
 		{
-			gazeDataResultsInfo = liblsl.resolve_stream("name", "GazeData",1,1);
+			//gazeDataResultsInfo = liblsl.resolve_stream("name", "GazeData",1,1);
 
-			if (gazeDataResultsInfo.Length < 1)
-			{
-				Console.WriteLine("WARNING: NO EYE TRACKER PRESENT");
-				eyeTrackerPresent = false;
-			} else
-			{
-				eyeTrackerPresent = true;
-				gazeDataInlet = new liblsl.StreamInlet(gazeDataResultsInfo[0]);
-			}
+			//if (gazeDataResultsInfo.Length < 1)
+			//{
+			//	Console.WriteLine("WARNING: NO EYE TRACKER PRESENT");
+			//	eyeTrackerPresent = false;
+			//} else
+			//{
+			//	eyeTrackerPresent = true;
+			//	gazeDataInlet = new liblsl.StreamInlet(gazeDataResultsInfo[0]);
+			//}
 
 		}
 
 
 		//attempt to resolve stream on request
-		public static bool checkDevicePresent()
+		public bool tryResolveStreams()
 		{
-			liblsl.StreamInfo[]  dataResultsInfo = liblsl.resolve_stream("name", "GazeData", 1, 1);
-			return !(dataResultsInfo.Length < 1);
+			gazeDataResultsInfo = liblsl.resolve_stream("name", "GazeData", 1, 1);
+			bool resolved;
+			if (!(resolved = gazeDataResultsInfo.Length < 1))
+			{
+				gazeDataInlet = new liblsl.StreamInlet(gazeDataResultsInfo[0]);
+			}
+			return eyeTrackerPresent = !resolved;
+
 		}
 
 		public void GazeData(Action<double, double, double> action)

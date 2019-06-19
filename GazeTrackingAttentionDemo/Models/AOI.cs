@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +11,7 @@ namespace GazeTrackingAttentionDemo.Models
 {
 	public class AOI
 	{
+		public string location;
 		string _name;
 		int _interest;
 		int _attentiveness;
@@ -17,10 +20,12 @@ namespace GazeTrackingAttentionDemo.Models
 		public Polygon p;
 		//data
 
-		public AOI()
+		public AOI(Recording parent)
 		{
-
+			this.location = parent.dataDir;
 		}
+
+		
 
 		public string Name { get => _name; set => _name = value; }
 		public int Interest { get => _interest; set => _interest = value; }
@@ -29,9 +34,6 @@ namespace GazeTrackingAttentionDemo.Models
 		public string Comments { get => _comments; set => _comments = value; }
 
 
-		public bool checkOverlap()
-		{
-			return false;
-		}
+
 	}
 }

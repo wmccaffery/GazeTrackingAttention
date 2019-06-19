@@ -33,6 +33,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 		public delegate void SelectedTestChangeHandler(Test test);
 		public event SelectedTestChangeHandler selectedTestChanged;
 
+		public delegate void SelectedRecordingChangeHandler(Recording test);
+		public event SelectedRecordingChangeHandler selectedRecordingChanged;
+
 		public delegate void SelectedAOIChangeHandler(AOI aoi);
 		public event SelectedAOIChangeHandler selectedAOIChanged;
 
@@ -42,11 +45,23 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		User user;
 		Test _selectedTest;
+		Recording _selectedRecording;
+
 		public Test SelectedTest
 		{
 			get { return _selectedTest; }
 			set { _selectedTest = value;
 				selectedTestChanged(_selectedTest);
+			}
+		}
+
+		public Recording SelectedRecording
+		{
+			get { return _selectedRecording; }
+			set
+			{
+				_selectedRecording = value;
+				selectedRecordingChanged(_selectedRecording);
 			}
 		}
 
@@ -69,30 +84,28 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void onLoad(object sender, RoutedEventArgs e)
 		{
-			List<string> testPaths = _mainWin.currentUser.getTestPaths();
+			user = _mainWin.currentUser;
+			List<string> testPaths = user.getTestPaths();
 			List<string> testNames = new List<string>();
 
 
-			foreach (string s in testPaths)
-			{
-				testNames.Add(System.IO.Path.GetFileNameWithoutExtension(s));
-			}
+			//foreach (string s in testPaths)
+			//{
+			//	testNames.Add(System.IO.Path.GetFileNameWithoutExtension(s));
+			//}
 
-			testList.ItemsSource = testNames;
-
-			user = _mainWin.currentUser;
-
-			
+			testList.ItemsSource = user.testList;
 
 			StartSelection += new StartSelectionHandler(_mainWin.onAOICreation);
 			selectedTestChanged += new SelectedTestChangeHandler(((MarkupCtrl)_mainWin.rightView.Content).onTestChanged);
+			selectedRecordingChanged += new SelectedRecordingChangeHandler(((MarkupCtrl)_mainWin.rightView.Content).onRecordingChanged);
 			selectedAOIChanged += new SelectedAOIChangeHandler(((MarkupCtrl)_mainWin.rightView.Content).onAOIChanged);
 
 		}
 
 		private void DrawAoi_Click(object sender, RoutedEventArgs e)
 		{
-			if (SelectedTest != null)
+			if (SelectedRecording != null)
 			{
 				StartSelection();
 			}
@@ -100,13 +113,13 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void endSelection(Polygon p)
 		{
-			AOI aoi = new AOI();
+			AOI aoi = new AOI(SelectedRecording);
 			aoi.p = p;
-			aoi.Name = "AOI_" + SelectedTest.Aois.Count;
-			SelectedTest.Aois.Add(aoi);
+			aoi.Name = "AOI_" + SelectedRecording.Aois.Count;
+			SelectedRecording.Aois.Add(aoi);
 			aoiList.Items.Refresh();
 
-			foreach (AOI a in SelectedTest.Aois)
+			foreach (AOI a in SelectedRecording.Aois)
 			{
 				a.p.Fill = new SolidColorBrush(Color.FromArgb(100, 255, 250, 205));
 				a.p.Stroke = new SolidColorBrush(Color.FromRgb(255, 250, 205));
@@ -120,57 +133,12 @@ namespace GazeTrackingAttentionDemo.UserControls
 			_mainWin.MainCanvas.Children.Clear();
 			_mainWin.SelectionCanvas.Children.Clear();
 
-
-
 			//render text
-			String selected = ((ListBox)e.Source).SelectedItem.ToString();
-			((DocumentCtrl)_mainWin.centerView.Content).loadText(_mainWin.currentUser.GroupPath + "\\" + selected + ".rtf");
+			SelectedTest = (Test)((ListBox)e.Source).SelectedItem;
+			((DocumentCtrl)_mainWin.centerView.Content).loadText(user.GroupPath + "\\" + SelectedTest.Name + ".rtf");
 
-
-			//render gaze plot
-			bool newTest = false ;
-			foreach(Test t in user.tests)
-			{
-				if (System.IO.Path.GetFileNameWithoutExtension(t.TestPath).Equals(selected))
-				{
-					SelectedTest = t;
-					newTest = true;
-				}
-			}
-			if (!newTest)
-			{
-				SelectedTest = null;
-			}
-
-			if (SelectedTest != null)
-			{
-				//update aoi list
-				aoiList.ItemsSource = SelectedTest.Aois;
-				aoiList.Items.Refresh();
-
-				//render areas of interest
-				_mainWin.SelectionCanvas.Children.Clear();
-				foreach (AOI a in SelectedTest.Aois)
-				{
-					a.p.Fill = new SolidColorBrush(Color.FromArgb(100, 255, 250, 205));
-					a.p.Stroke = new SolidColorBrush(Color.FromRgb(255, 250, 205));
-					_mainWin.SelectionCanvas.Children.Add(a.p);
-				}
-
-				//render gaze plot
-				SelectedTest.gp = new GazePlot(SelectedTest.fixations, SelectedTest.saccades, _mainWin.MainCanvas);
-				SelectedTest.gp.renderPlot(true, true, true, 0, 999999999);
-			}
-			else
-			{
-				//if for some reason test data is missing for a file provide an error message
-				AOI dummyAOI = new AOI();
-				dummyAOI.Name = "WARNING: No test data found for this file!";
-				aoiList.ItemsSource = new List<AOI>() { dummyAOI };
-				aoiList.Items.Refresh();
-			}
-
-
+			recordingList.ItemsSource = SelectedTest.recordings;
+			recordingList.Items.Refresh();
 
 		}
 
@@ -183,7 +151,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 			if (SelectedTest != null)
 			{
-				foreach (AOI a in SelectedTest.Aois)
+				foreach (AOI a in SelectedRecording.Aois)
 				{
 					if (Equals(a, SelectedAOI))
 					{
@@ -199,6 +167,48 @@ namespace GazeTrackingAttentionDemo.UserControls
 					_mainWin.SelectionCanvas.Children.Add(a.p);
 
 				}
+			}
+		}
+
+		private void RecordingList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			//clear canvas
+			_mainWin.MainCanvas.Children.Clear();
+			_mainWin.SelectionCanvas.Children.Clear();
+
+			//	//render text
+			//	String selected = ((ListBox)e.Source).SelectedItem.ToString();
+			//	((DocumentCtrl)_mainWin.centerView.Content).loadText(_mainWin.currentUser.GroupPath + "\\" + selected + ".rtf");
+			SelectedRecording = (Recording)((ListBox)e.Source).SelectedItem;
+
+			//render gaze plot
+
+			if (SelectedRecording != null)
+			{
+				//update aoi list
+				aoiList.ItemsSource = SelectedRecording.Aois;
+				aoiList.Items.Refresh();
+
+				//render areas of interest
+				_mainWin.SelectionCanvas.Children.Clear();
+				foreach (AOI a in SelectedRecording.Aois)
+				{
+					a.p.Fill = new SolidColorBrush(Color.FromArgb(100, 255, 250, 205));
+					a.p.Stroke = new SolidColorBrush(Color.FromRgb(255, 250, 205));
+					_mainWin.SelectionCanvas.Children.Add(a.p);
+				}
+
+				//render gaze plot
+				SelectedRecording.gp = new GazePlot(SelectedRecording.fixations, SelectedRecording.saccades, _mainWin.MainCanvas);
+				SelectedRecording.gp.renderPlot(true, true, true, 0, 999999999);
+			}
+			else
+			{
+				//if for some reason test data is missing for a file provide an error message
+				AOI dummyAOI = new AOI(SelectedRecording);
+				dummyAOI.Name = "WARNING: No test data found for this file!";
+				aoiList.ItemsSource = new List<AOI>() { dummyAOI };
+				aoiList.Items.Refresh();
 			}
 		}
 	}

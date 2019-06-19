@@ -226,10 +226,26 @@ namespace GazeTrackingAttentionDemo
 		public void onDirectLoad()
 		{
 			currentUser = new User("DummyUser", "Group1", "C:\\MMAD\\TestGroups\\Group1");
-			currentUser.tests = new List<Test>();
-			currentUser.tests.Add(new Test(currentUser, "SCREEN", @"C:\MMAD\TestGroups\Group1\BDS_07.rtf", 0));
-			currentUser.tests[0].fixations = new List<Fixation>();
-			
+			currentUser.testList = new List<Test>();
+			//gen tests
+			int j = 0;
+			List<String> testPaths = currentUser.getTestPaths();
+
+			foreach (String s in testPaths)
+			{
+				currentUser.testList.Add(new Test(currentUser, s, j));
+				j++;
+			}
+
+			Test t = currentUser.testList[0];
+			t.setMedium("SCREEN");
+			currentUser.testList.Add(t);
+			String dataPath = t.TestDir + "Recording_0";
+
+			currentUser.testList[0].recordings = new List<Recording>();
+			currentUser.testList[0].addNewRecording(currentUser);
+			currentUser.testList[0].currentRecording.fixations = new List<Fixation>();
+			currentUser.testList[0].currentRecording.saccades = new List<Saccade>();
 
 
 			//read from very old log file
@@ -265,7 +281,7 @@ namespace GazeTrackingAttentionDemo
 					{
 						f.endPos = new DataPoint(x, y, timestamp);
 						f.completeFixation(i);
-						currentUser.tests[0].fixations.Add(f);
+						currentUser.testList[0].currentRecording.fixations.Add(f);
 						f = new Fixation();
 						i++;
 						f.dataPos = new List<DataPoint>();
@@ -275,7 +291,9 @@ namespace GazeTrackingAttentionDemo
 			}
 			file.Close();
 
-			currentUser.tests[0].saccades = currentUser.tests[0].dataRecorder.getSaccades(currentUser.tests[0].fixations);
+			Console.WriteLine("COUNT " + currentUser.testList[0].currentRecording.fixations.Count);
+
+			currentUser.testList[0].currentRecording.saccades = currentUser.testList[0].dataRecorder.getSaccades(currentUser.testList[0].currentRecording.fixations);
 			State = EState.Markup;
 		}
 
@@ -436,45 +454,30 @@ namespace GazeTrackingAttentionDemo
 
 
 
-		public void testCreated(Test test)
+		public void testCreated()
 		{
-			//currentUser.tests[++testIndex] = new Test(currentUser, filePaths[testIndex], testIndex);
-			//currentTest = currentUser.tests[testIndex];
 			State = EState.Ready;
 		}
 
 		public void calibrateTest()
 		{
-			currentUser.getCurrentTest().dataRecorder.calibrate();
+			currentUser.CurrentTest.dataRecorder.calibrate();
 		}
 
 		public void calibrationComplete()
 		{
-			currentUser.getCurrentTest().isCalibrated = true;
+			currentUser.CurrentTest.currentRecording.isCalibrated = true;
 		}
 
 		public void startStreaming()
 		{
-			((DocumentCtrl)centerView.Content).loadText(currentUser.getCurrentTest().TestPath);
+			((DocumentCtrl)centerView.Content).loadText(currentUser.CurrentTest.StimuliPath);
 			//currentTest.dataRecorder.feedStreamsToLSL();
 			//currentTest.dataRecorder.readStreams();
 			//readyToRecord(currentTestInstance);
 			State = EState.Streaming;
 		}
 
-		public void startRecording()
-		{
-			currentUser.getCurrentTest().IncRecordingNum();
-			currentUser.getCurrentTest().dataRecorder.recordStreams();
-			//recordingStarted();
-			State = EState.Recording;
-		}
-
-		public void stopRecording()
-		{
-			currentUser.getCurrentTest().dataRecorder.stopRecording();
-			State = EState.Ready;
-		}
 
 		public void testCompleted()
 		{
@@ -501,7 +504,7 @@ namespace GazeTrackingAttentionDemo
 
 		public void startCalibration()
 		{
-			currentUser.getCurrentTest().dataRecorder.calibrate();
+			currentUser.CurrentTest.dataRecorder.calibrate();
 			State = EState.Calibrating;
 		}
 

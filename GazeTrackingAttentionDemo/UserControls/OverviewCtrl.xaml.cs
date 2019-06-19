@@ -24,14 +24,18 @@ namespace GazeTrackingAttentionDemo.UserControls
 	{
 		public List<String> testPaths;
 		public List<String> mediums;
+		
+		//public Test SelectedTest { get; set; }
 
-		public delegate void TestCreatedHandler(Test test);
-		public event TestCreatedHandler testCreated;
+		public delegate void TestLoadedHandler();
+		public event TestLoadedHandler testLoaded;
 
-		public delegate void AllTestsCompletedHandler();
-		public event AllTestsCompletedHandler allTestsCompleted;
+		public delegate void MarkupHandler();
+		public event MarkupHandler markupStarted;
 			
 		MainWindow mainWin = (MainWindow)Application.Current.MainWindow;
+		User user;
+
 		ControlWindow parentWin;
 
 		Boolean finishedAllTests;
@@ -40,48 +44,69 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			InitializeComponent();
 			DataContext = this;
+
 		}
 
 		public void onLoad(object sender, RoutedEventArgs e)
 		{
 			parentWin = (ControlWindow)Window.GetWindow(this);
-			testPaths = parentWin.user.getTestPaths();
-			testList.ItemsSource = testPaths;
+			user = mainWin.currentUser;
+			testPaths = user.getTestPaths();
+			if(user.testList.Count == 0)
+			{
+				genTests();
+			}
+			testList.ItemsSource = user.testList;
+			int highestTest = user.highestTestIndex;
+			if(highestTest < user.testList.Count - 1)
+			{
+				testList.SelectedItem = user.testList[user.highestTestIndex + 1];
+
+			}
 			mediums = new List<String> { "Select medium", "PAPER", "SCREEN" };
 			stimuliMedium.ItemsSource = mediums;
 			stimuliMedium.SelectedItem = "Select medium";
-			testCreated += new TestCreatedHandler(mainWin.testCreated);
-			testCreated += new TestCreatedHandler(parentWin.testCreated);
-			allTestsCompleted += new AllTestsCompletedHandler(mainWin.allTestsCompleted);
-
-
-
+			testLoaded += new TestLoadedHandler(mainWin.testCreated);
+			testLoaded += new TestLoadedHandler(parentWin.testCreated);
+			markupStarted += new MarkupHandler(mainWin.allTestsCompleted);
 		}
 
+		//fill list with test objects
+		private void genTests()
+		{
+			int i = 0;
+			foreach (String s in testPaths)
+			{
+				user.testList.Add(new Test(user, s, i));
+				i++;
+			}
+		}
+
+
+		//load selected test
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
-			String selection; 
-
-			if (finishedAllTests)
+			String medium; 
+			if((medium = stimuliMedium.SelectedItem.ToString()) != "Select medium")
 			{
-				allTestsCompleted();
+				Test test = (Test)testList.SelectedItem;
+				test.setMedium(medium);
+				test.dataRecorder.resolveAllStreams();
+				user.CurrentTest = test;
+				
+				testLoaded();
 			}
-			else if((selection = stimuliMedium.SelectedItem.ToString()) != "Select medium")
-			{
-				Test test = parentWin.user.createTest(selection);
-				testCreated(test);
+		}
 
+		private void TestList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			Test t = (Test)((ListBox)e.Source).SelectedItem;
+			nextBtn.Content = "Run Test " + Path.GetFileNameWithoutExtension(t.StimuliPath);
+		}
 
-				if (test.index + 1 == parentWin.totalNumTests)
-				{
-					nextBtn.Content = "Go To Markup";
-					finishedAllTests = true;
-				}
-				else
-				{
-					nextBtn.Content = "Start Test " + Path.GetFileNameWithoutExtension(testPaths[test.index + 1]);
-				}
-			}
+		private void StartMarkup_Click(object sender, RoutedEventArgs e)
+		{
+			mainWin.State = MainWindow.EState.Markup;
 		}
 	}
 

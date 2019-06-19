@@ -67,25 +67,20 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		{
 			return offset;
 		}
-
-		public Devices getDevicesPresent()
-		{
-			return new Devices(LSLFixationDataStream.checkDevicePresent(), LSLGazeDataStream.checkDevicePresent(), LSLEEGDataStream.checkDevicePresent());
-		}
 	}
 
-	public struct Devices
-	{
-		public Devices(bool eg, bool ef, bool eeg)
-		{
-			this.eyetracker_gaze = eg;
-			this.eyetracker_fixations = ef;
-			this.eeg = eeg;
+	//public struct Devices
+	//{
+	//	public Devices(bool eg, bool ef, bool eeg)
+	//	{
+	//		this.eyetracker_gaze = eg;
+	//		this.eyetracker_fixations = ef;
+	//		this.eeg = eeg;
 
-		}
+	//	}
 
-		bool eyetracker_gaze;
-		bool eyetracker_fixations;
-		bool eeg;
-	}
+	//	bool eyetracker_gaze;
+	//	bool eyetracker_fixations;
+	//	bool eeg;
+	//}
 }

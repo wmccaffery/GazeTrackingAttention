@@ -22,22 +22,27 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 
 		public LSLEEGDataStream()
 		{
-				eegDataResultsInfo = liblsl.resolve_stream("type", "EEG", 1, 1);
-				if(eegDataResultsInfo.Length < 1)
-				{
-				Console.WriteLine("WARNING: NO EEG PRESENT");
-				eegPresent = false;
-				} else
-				{
-					eegPresent = true;
-					eegDataInlet = new liblsl.StreamInlet(eegDataResultsInfo[0]);
-				}
+				//eegDataResultsInfo = liblsl.resolve_stream("type", "EEG", 1, 1);
+				//if(eegDataResultsInfo.Length < 1)
+				//{
+				//Console.WriteLine("WARNING: NO EEG PRESENT");
+				//eegPresent = false;
+				//} else
+				//{
+				//	eegPresent = true;
+				//	eegDataInlet = new liblsl.StreamInlet(eegDataResultsInfo[0]);
+				//}
 		}
 
-		public static bool checkDevicePresent()
+		public bool tryResolveStreams()
 		{
-			liblsl.StreamInfo[] dataResultsInfo = liblsl.resolve_stream("type", "EEG", 1, 1);
-			return !(dataResultsInfo.Length < 1);
+			eegDataResultsInfo = liblsl.resolve_stream("type", "EEG", 1, 1);
+			bool resolved;
+			if(!(resolved = eegDataResultsInfo.Length < 1))
+			{
+				eegDataInlet = new liblsl.StreamInlet(eegDataResultsInfo[0]);
+			}
+			return eegPresent = !resolved;
 		}
 
 		public LSLEEGDataStream EEGData(Action<double, double, double, double, double, double, double, double, double> action)

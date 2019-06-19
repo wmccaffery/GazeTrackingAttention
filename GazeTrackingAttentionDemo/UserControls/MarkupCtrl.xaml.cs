@@ -1,6 +1,8 @@
 ﻿using GazeTrackingAttentionDemo.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,8 +29,12 @@ namespace GazeTrackingAttentionDemo.UserControls
 		Boolean showSaccades;
 		Boolean dataRecorded;
 
+		private MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow;
+
+
 		Test test;
 		AOI aoi;
+		Recording recording;
 
 		public MarkupCtrl()
 		{
@@ -65,28 +71,29 @@ namespace GazeTrackingAttentionDemo.UserControls
 			this.aoi = aoi;
 			markup_group.IsEnabled = true;
 
-			//DisplaySlider.Maximum = test.fixations[test.fixations.Count - 1].endPos.timestamp;
-			//DisplaySlider.Minimum = test.fixations[0].startPos.timestamp;
-
-			//DisplaySlider.HigherValue = DisplaySlider.Maximum;
-			//DisplaySlider.LowerValue = DisplaySlider.Minimum;
-
 		}
 
-		public void onTestChanged(Test test)
+		public void onRecordingChanged(Recording recording)
 		{
-			this.test = test;
-			if (test != null)
+			this.recording = recording;
+
+			if (recording != null)
 			{
 				timeline_group.IsEnabled = true;
 				visualisation_group.IsEnabled = true;
-				playback_group.IsEnabled = true;
-
-				if (test.fixations.Count > 0)
+				string[] video = Directory.GetFiles(recording.dataDir, "*.wmv");
+				if (video.Length == 1)
 				{
-					DisplaySlider.Maximum = test.fixations[test.fixations.Count - 1].endPos.timestamp;
-					DisplaySlider.Minimum = test.fixations[0].startPos.timestamp;
-				} else
+					player.Source = new Uri(video[0]);
+					playback_group.IsEnabled = true;
+				}
+
+				if (test.currentRecording.fixations.Count > 0)
+				{
+					DisplaySlider.Maximum = recording.fixations[test.currentRecording.fixations.Count - 1].endPos.timestamp;
+					DisplaySlider.Minimum = recording.fixations[0].startPos.timestamp;
+				}
+				else
 				{
 					DisplaySlider.Maximum = 0;
 					DisplaySlider.Minimum = 0;
@@ -95,6 +102,14 @@ namespace GazeTrackingAttentionDemo.UserControls
 				DisplaySlider.HigherValue = DisplaySlider.Maximum;
 				DisplaySlider.LowerValue = DisplaySlider.Minimum;
 			}
+		}
+
+		public void onTestChanged(Test test)
+		{
+			this.test = test;
+			this.aoi = null;
+			markup_group.IsEnabled = false;
+
 		}
 
 		private void btnPlay_Click(object sender, RoutedEventArgs e)
@@ -111,19 +126,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 		private void btnStop_Click(object sender, RoutedEventArgs e)
 		{
 			player.Stop();
-		}
-
-		private void Render_Click(object sender, RoutedEventArgs e)
-		{
-			//DisplaySlider.Value = DisplaySlider.Maximum;
-			//DisplaySlider.Visibility = Visibility.Visible;
-			//DisplaySlider_Value.Visibility = Visibility.Visible;
-			//All_CheckBox.Visibility = Visibility.Visible;
-			//Saccade_CheckBox.Visibility = Visibility.Visible;
-			//Fixation_CheckBox.Visibility = Visibility.Visible;
-			//Gaze_CheckBox.Visibility = Visibility.Visible;
-			//Visualisation_Header.Visibility = Visibility.Visible;
-			//render();
 		}
 
 		private void Gaze_CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -170,56 +172,93 @@ namespace GazeTrackingAttentionDemo.UserControls
 			Gaze_CheckBox.IsChecked = false;
 		}
 
+		//re-render gaze plot if checkbox or slider changed
 		private void CheckBox_Clicked(object sender, RoutedEventArgs e)
 		{
-			//    render();
-		}
-
-		private void Aoi_CheckBox_Checked(object sender, RoutedEventArgs e)
-		{
-
-		}
-
-		private void Aoi_CheckBox_Unchecked(object sender, RoutedEventArgs e)
-		{
-
+			if (test.currentRecording.gp != null)
+			{
+				test.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
+			}
 		}
 
 		private void DisplaySlider_LowerValueChanged(object sender, RoutedEventArgs e)
 		{
-
+			if (test.currentRecording.gp != null)
+			{
+				test.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
+			}
 		}
 
 		private void DisplaySlider_HigherValueChanged(object sender, RoutedEventArgs e)
 		{
-
+			if (test.currentRecording.gp != null)
+			{
+				test.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
+			}
 		}
 
-		private void Button_Click(object sender, RoutedEventArgs e)
+		private void RadioBtn_Checked(object sender, RoutedEventArgs e)
 		{
-			test.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
+			String group = ((RadioButton)e.Source).GroupName;
+			int val = Int32.Parse(((RadioButton)e.Source).Content.ToString());
 		}
 
-		private void Int_Checked(object sender, RoutedEventArgs e)
+		private void AddAnnotation_Click(object sender, RoutedEventArgs e)
 		{
-			String name = ((RadioButton)e.Source).Name;
-			//updateVal("Interest", name);
+			if(aoi != null) {
+				writeToJSON(aoi);
+			}
+			
 		}
 
-		private void Att_Checked(object sender, RoutedEventArgs e)
+		public void writeToJSON(AOI aoi) //adapted from stackoverflow https://stackoverflow.com/questions/20626849/how-to-append-a-json-file-without-disturbing-the-formatting
 		{
-			String name = ((RadioButton)e.Source).Name;
-			//updateVal("Attention", name);
-		}
+			string filePath = recording.dataDir + "\\annotations.json";
+			List<AOI> aoiList;
+			String jsonData;
 
-		private void Eff_Checked(object sender, RoutedEventArgs e)
-		{
-			String name = ((RadioButton)e.Source).Name;
-			//updateVal("Effort", name);
-		}
+			// Read existing json data
+			if (!File.Exists(filePath))
+			{
+				File.WriteAllText(filePath, "");
+				aoiList = new List<AOI>();
+			}
+			else
+			{
 
-		private void updateVal(String type, String name)
-		{
+				jsonData = File.ReadAllText(filePath);
+
+				// De-serialize to object or create new list
+				aoiList = JsonConvert.DeserializeObject<List<AOI>>(jsonData)
+					  ?? new List<AOI>();
+			}
+
+			// Add new aoi
+			bool alreadyAnnotated = false;
+			int index = 0;
+			foreach (AOI a in aoiList)
+			{
+				if (Equals(aoi.Name, a.Name) && Equals(aoi.location, a.location))
+				{
+					index = aoiList.IndexOf(a);
+					alreadyAnnotated = true;
+				}
+			}
+
+			if (alreadyAnnotated)
+			{
+				aoiList[index] = aoi;
+			}
+			else
+			{
+				aoiList.Add(aoi);
+			}
+
+
+			// Update json data string
+			jsonData = JsonConvert.SerializeObject(aoiList);
+
+			System.IO.File.WriteAllText(filePath, jsonData);
 
 		}
 	}

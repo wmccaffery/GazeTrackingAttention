@@ -28,30 +28,35 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		public LSLFixationDataStream()
 		{
 
-			fixationBeginResultsInfo = liblsl.resolve_stream("name", "FixationBegin", 1, 1);
-			fixationDataResultsInfo = liblsl.resolve_stream("name", "FixationData", 1, 1);
-			fixationEndResultsInfo = liblsl.resolve_stream("name", "FixationEnd", 1, 1);
+			//fixationBeginResultsInfo = liblsl.resolve_stream("name", "FixationBegin", 1, 1);
+			//fixationDataResultsInfo = liblsl.resolve_stream("name", "FixationData", 1, 1);
+			//fixationEndResultsInfo = liblsl.resolve_stream("name", "FixationEnd", 1, 1);
 
-			if (fixationBeginResultsInfo.Length < 1 || fixationDataResultsInfo.Length < 1 || fixationEndResultsInfo.Length < 1) {
-				Console.WriteLine("WARNING: NO EYE TRACKER PRESENT");
-				eyeTrackerPresent = false;
-			}
-			else
-			{
-				eyeTrackerPresent = true;
-				fixationBeginInlet = new liblsl.StreamInlet(fixationBeginResultsInfo[0]);
-				fixationDataInlet = new liblsl.StreamInlet(fixationDataResultsInfo[0]);
-				fixationEndInlet = new liblsl.StreamInlet(fixationEndResultsInfo[0]);
-			}
+			//if (fixationBeginResultsInfo.Length < 1 || fixationDataResultsInfo.Length < 1 || fixationEndResultsInfo.Length < 1) {
+			//	Console.WriteLine("WARNING: NO EYE TRACKER PRESENT");
+			//	eyeTrackerPresent = false;
+			//}
+			//else
+			//{
+			//	eyeTrackerPresent = true;
+			//	fixationBeginInlet = new liblsl.StreamInlet(fixationBeginResultsInfo[0]);
+			//	fixationDataInlet = new liblsl.StreamInlet(fixationDataResultsInfo[0]);
+			//	fixationEndInlet = new liblsl.StreamInlet(fixationEndResultsInfo[0]);
+			//}
 		}
 
 		//attempt to resolve stream on request
-		public static bool checkDevicePresent()
+		public bool tryResolveStreams()
 		{
-			liblsl.StreamInfo[] beginResultsInfo = liblsl.resolve_stream("name", "FixationBegin", 1, 1);
-			liblsl.StreamInfo[] dataResultsInfo = liblsl.resolve_stream("name", "FixationData", 1, 1);
-			liblsl.StreamInfo[] endResultsInfo = liblsl.resolve_stream("name", "FixationEnd", 1, 1);
-			return !(beginResultsInfo.Length < 1 && dataResultsInfo.Length < 1 && endResultsInfo.Length < 1);
+			fixationBeginResultsInfo = liblsl.resolve_stream("name", "FixationBegin", 1, 1);
+			fixationDataResultsInfo = liblsl.resolve_stream("name", "FixationData", 1, 1);
+			fixationEndResultsInfo = liblsl.resolve_stream("name", "FixationEnd", 1, 1);
+			bool resolved;
+			if (!(resolved = fixationBeginResultsInfo.Length < 1 && fixationDataResultsInfo.Length < 1 && fixationEndResultsInfo.Length < 1))
+			{
+				fixationDataInlet = new liblsl.StreamInlet(fixationDataResultsInfo[0]);
+			}
+			return eyeTrackerPresent = !resolved;
 		}
 
 		public LSLFixationDataStream Begin(Action<double, double, double> action)

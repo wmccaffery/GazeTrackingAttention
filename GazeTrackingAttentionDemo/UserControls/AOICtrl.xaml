@@ -12,9 +12,28 @@
     <Grid x:Name="MarkupSubGrid" Grid.Column="4" ShowGridLines="False" Background="White">
         <StackPanel Margin="50,20,50,0" Orientation="Vertical">
             <Label FontSize="20">Tests</Label>
-            <ListBox x:Name="testList" Height="300" Margin="0,0,0,20" SelectionChanged="TestList_SelectionChanged"></ListBox>
+            <ListBox x:Name="testList" Height="200" Margin="0,0,0,20" SelectionChanged="TestList_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Label FontSize="20">Recordings</Label>
+            <ListBox x:Name="recordingList" Height="200" Margin="0,0,0,20" SelectionChanged="RecordingList_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Recording " />
+                            <TextBlock Text="{Binding Index}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
             <Label FontSize="20">Areas of Interest</Label>
-            <ListBox x:Name="aoiList" Height="300"  Margin="0,0,0,20" SelectionChanged="AoiList_SelectionChanged">
+            <ListBox x:Name="aoiList" Height="200"  Margin="0,0,0,20" SelectionChanged="AoiList_SelectionChanged">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}" />

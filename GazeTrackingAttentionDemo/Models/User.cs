@@ -10,9 +10,9 @@ namespace GazeTrackingAttentionDemo.Models
 {
 	public class User
 	{
-		public List<Test> tests;
+		public List<Test> testList;
 		public List<String> testPaths;
-		public int testIndex;
+		public int highestTestIndex;
 
 		public User(String id, String groupName, String groupPath)
 		{
@@ -28,9 +28,10 @@ namespace GazeTrackingAttentionDemo.Models
 			}
 			File.AppendAllText(InfoPath, id + Environment.NewLine + groupName + Environment.NewLine);
 
-			testIndex = -1;
 			testPaths = getTestPaths();
-			tests = new List<Test>();
+			testList = new List<Test>();
+
+			highestTestIndex = -1;
 		}
 
 
@@ -49,28 +50,23 @@ namespace GazeTrackingAttentionDemo.Models
 			return filePaths;
 		}
 
-		public Test createTest(String testType)
-		{
-			testIndex++;
-			tests.Add(new Test(this, testType, testPaths[testIndex], testIndex));
-			return tests[testIndex];
-			//	currentTest = currentUser.tests[testIndex];
-			//	State = EState.Ready;
-		}
-
-		public Test getCurrentTest()
-		{
-			return tests[testIndex];
-		}
-
+		//public Test createTest(String testType)
+		//{
+		//	testIndex++;
+		//	tests.Add(new Test(this, testType, testPaths[testIndex], testIndex));
+		//	return tests[testIndex];
+		//	//	currentTest = currentUser.tests[testIndex];
+		//	//	State = EState.Ready;
+		//}
 
 		private String _id;
 		private String _groupName;
 		private String _groupPath;
 		private String _dirPath;
 		private String _infoPath;
+		private Test _currentTest;
 
-
+		public Test CurrentTest { get => _currentTest ; set => _currentTest = value; }
 		public string Id { get => _id; set => _id = value; }
 		public string GroupName { get => _groupName; set => _groupName = value; }
 		public string GroupPath { get => _groupPath; set => _groupPath = value; }

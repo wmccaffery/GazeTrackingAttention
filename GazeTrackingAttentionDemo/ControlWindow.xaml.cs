@@ -39,9 +39,6 @@ namespace GazeTrackingAttentionDemo
 
 		Boolean multiscreen;
 
-
-		private TestCtrl _webcam;
-
 		public ControlWindow()
 		{
 			Screen controlScreen;
@@ -75,14 +72,8 @@ namespace GazeTrackingAttentionDemo
 				this.WindowStyle = WindowStyle.SingleBorderWindow;
 			}
 
-			currentTestLabel.Content = "Test 0 of 0";
-
 			//this.KeyDown += new System.Windows.Input.KeyEventHandler(mainWin.MainWindow_KeyDown);
-			mainWin.readyToRecord += new readyToRecordHandler(readyToRecord);
-
-			mainWin.recordingStarted += new recordingStartHandler(startRecording);
-
-			mainWin.recordingStopped += new recordingEndHandler(stopRecording);
+			//mainWin.readyToRecord += new readyToRecordHandler(readyToRecord); //used to start webcam
 
 			mainWin.progStateChanged += new stateChangedHandler(stateChanged);
 
@@ -96,7 +87,7 @@ namespace GazeTrackingAttentionDemo
 					controller.Content = overview; 
 					break;
 				case EState.Ready:
-					controller.Content = testCtrl;
+					controller.Content = new TestCtrl();
 					break;
 				case EState.Calibrating:
 					controller.Content = calibrationCtrl;
@@ -109,33 +100,16 @@ namespace GazeTrackingAttentionDemo
 
 		}
 
-		public void readyToRecord(Test test)
-		{
-			_webcam.setup(test.TestDir);
-			_webcam.startPreview();
-		}
-
-		public void startRecording()
-		{
-			_webcam.startRecording();
-		}
-		public void stopRecording()
-		{
-			_webcam.stopRecording();
-		}
-
 		public void onUserCreated(User user)
 		{
 			totalNumTests = user.getTestPaths().Count;
-			currentTestLabel.Content = "Test " + 0 + " of " + totalNumTests;
 			userLabel.Content = user.Id;
-			_webcam = (TestCtrl)testCtrl;
 			this.user = user;
 		}
 
-		public void testCreated(Test test)
+		public void testCreated()
 		{
-			currentTestLabel.Content = "Test " + (test.index + 1) + " of " + totalNumTests;
+			Test test = user.CurrentTest;
 			if (test.isPaper)
 			{
 				currentTestMedium.Content = "Paper";
@@ -143,7 +117,7 @@ namespace GazeTrackingAttentionDemo
 			{
 				currentTestMedium.Content = "Screen";
 			}
-			currentTestName.Content = System.IO.Path.GetFileNameWithoutExtension(test.TestPath);
+			currentTestName.Content = System.IO.Path.GetFileNameWithoutExtension(test.StimuliPath);
 		}
 	}
 }

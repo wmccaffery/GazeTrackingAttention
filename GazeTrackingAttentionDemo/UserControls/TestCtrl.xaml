@@ -31,7 +31,7 @@
                     
                     FrameRate="60"       
 
-                    VideoDirectory="C:\Videos"
+                    VideoDirectory="C:\MMAD\Videos"
 
                     VideoDevice="{Binding logiHdPro}"/>
 
@@ -41,7 +41,7 @@
         </StackPanel>
         <StackPanel Grid.Row="2"  Orientation="Horizontal">
             <Button x:Name="stream" FontSize="18" Margin="5,5,5,5" Width="90" Click="Stream_Click">Stream</Button>
-            <Button x:Name="record" FontSize="18" Margin="5,5,5,5" Width="90">Record</Button>
+            <Button x:Name="record" FontSize="18" Margin="5,5,5,5" Width="90" Click="Record_Click">Record</Button>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal">
             <Button x:Name="finishTest" FontSize="18" Margin="5,5,5,5" Width="90" Click="FinishTest_Click">End Test</Button>

@@ -14,34 +14,31 @@ namespace GazeTrackingAttentionDemo.Models
 		private string _stimuliPath;	//path of stimuli for test
 		private string _metaDataPath;	//path to store data on test
 		private string _currentUser;    //string username of user taking test
+		private string _testName;
+		private string _recordingDir;
 		private int _recordingNum;
 		public DataProcessing.StreamReader dataRecorder;
 		public Boolean isPaper;
-		public Boolean isCalibrated;
 		public String infoPath;
 		public int index;
-		public List<Fixation> fixations;
-		public GazePlot gp;
-		public List<Saccade> saccades;
+		public List<Recording> recordings;
+		public Recording currentRecording;
 
-		List<AOI> _aois;
-		public List<AOI> Aois { get => _aois; set => _aois = value; }
 		
 
-		public Test(User user, String medium, String testPath, int testIndex)
+		public Test(User user, String testPath, int testIndex)
 		{
 			DateTime dateTime = DateTime.Now;
 			this.index = testIndex;
-			TestPath = testPath;
-			Console.WriteLine(TestPath);
-			isPaper = (medium.Equals("PAPER"));
+			StimuliPath = testPath;
+			_testName = Path.GetFileNameWithoutExtension(_stimuliPath);
+			Console.WriteLine(StimuliPath);
 
 			//create new instance of data recorder
 			dataRecorder = new DataProcessing.StreamReader();
 
 			//create path for test
-			TestDir = user.DirPath + "\\" + user.Id + "_test" + testIndex + "_" + Path.GetFileNameWithoutExtension(TestPath) + "_" + dateTime.ToString("dd-MM-yyyy--HH-mm-ss");
-			InfoPath = TestDir + "\\meta.txt";
+			TestDir = user.DirPath + "\\" + user.Id + "_test" + testIndex + "_" + Path.GetFileNameWithoutExtension(StimuliPath) + "_" + dateTime.ToString("dd-MM-yyyy");
 
 
 
@@ -49,57 +46,58 @@ namespace GazeTrackingAttentionDemo.Models
 			DirectoryInfo di;
 			di = Directory.CreateDirectory(TestDir);
 
-			//erase existing file
-			if (File.Exists(InfoPath))
-			{
-				File.WriteAllText(InfoPath, "");
-			}
+			recordings = new List<Recording>();
+
+			_recordingNum = -1;
+
+		}
+
+		public void addNewRecording(User user)
+		{
+			DateTime dateTime = DateTime.Now;
+			Console.WriteLine("TESTDIR " + TestDir);
+			DataDir = "";
+			DataDir = TestDir + "\\Recording_" + (++_recordingNum) + "_" + dateTime.ToString("HH-mm-ss");
+			DirectoryInfo di = Directory.CreateDirectory(DataDir);
+			InfoPath = DataDir + "\\meta.txt";
+			currentRecording = new Recording(_recordingNum, isPaper, DataDir);
+			recordings.Add(currentRecording);
+
 
 			//append content
-			File.AppendAllText(InfoPath, "Current User " + user.Id);
-			File.AppendAllText(InfoPath, "Current User Group " + user.GroupName);
-			File.AppendAllText(InfoPath, "Test Name " + Path.GetFileNameWithoutExtension(TestPath));
-			File.AppendAllText(InfoPath, "Test Number " + testIndex);
+			File.AppendAllText(InfoPath, "Current User " + user.Id + Environment.NewLine);
+			File.AppendAllText(InfoPath, "Current User Group " + user.GroupName + Environment.NewLine);
+			File.AppendAllText(InfoPath, "Test Name " + Path.GetFileNameWithoutExtension(StimuliPath) + Environment.NewLine);
+			File.AppendAllText(InfoPath, "Test Number " + index + Environment.NewLine);
 
 			if (isPaper)
 			{
-				File.AppendAllText(InfoPath, "Test Medium: Paper");
-			} else
+				File.AppendAllText(InfoPath, "Test Medium: Paper" + Environment.NewLine);
+			}
+			else
 			{
-				File.AppendAllText(InfoPath, "Test Medium: Screen");
+				File.AppendAllText(InfoPath, "Test Medium: Screen" + Environment.NewLine);
 			}
 
-			File.AppendAllText(InfoPath, "Original Test Path: " + TestPath);
-			File.AppendAllText(InfoPath, "Original Group Path: " + user.GroupPath);
+			File.AppendAllText(InfoPath, "Original Test Path: " + StimuliPath + Environment.NewLine);
+			File.AppendAllText(InfoPath, "Original Group Path: " + user.GroupPath + Environment.NewLine);
 
 
-			//create directory for recording
-			//RecordingNum = 0;
-			//DataDir = TestDir + "Recording_" + RecordingNum;
-			//di = Directory.CreateDirectory(DataDir);
-
-
-			//hold completed fixations
-			fixations = new List<Fixation>();
-
-			//hold areas of interest
-			Aois = new List<AOI>();
 		}
 
-		public void IncRecordingNum()
+		public void setMedium(String medium)
 		{
-
-			DataDir = TestDir + "Recording_" + (++_recordingNum);
-			DirectoryInfo di = Directory.CreateDirectory(DataDir);
+			isPaper = (medium.Equals("PAPER"));
 		}
 
 
-
-		public string TestPath { get => _stimuliPath; set => _stimuliPath = value; }
+		public string Name { get => _testName; set => _testName = value; }
+		public string StimuliPath { get => _stimuliPath; set => _stimuliPath = value; }
 		public string User { get => _currentUser; set => _currentUser = value; }
 		public string TestDir { get => _testDataDir; set => _testDataDir = value; }
-		public string DataDir { get => _testDataDir; set => _testDataDir = value; }
+		public string DataDir { get => _recordingDir; set => _recordingDir = value; }
 		public string InfoPath { get => _metaDataPath; set => _metaDataPath = value; }
+		public int RecordingNum { get => _recordingNum; set => RecordingNum = value; }
 
 		public void testComplete()
 		{

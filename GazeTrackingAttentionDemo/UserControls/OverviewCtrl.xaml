@@ -13,19 +13,29 @@
             <RowDefinition/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Label FontSize="30">Tests in Group</Label>
-        <ListBox x:Name="testList" Grid.Row="1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+    <Label FontSize="30">Tests in Group</Label>
+        <ListBox x:Name="testList" FontSize="18" Grid.Row="1" Grid.ColumnSpan="2" SelectionChanged="TestList_SelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding}" />
+                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock Text="   "/>
+                        <TextBlock Text="{Binding RecordingNum}" />
+                        <TextBlock Text=" Recordings"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <Button x:Name="nextBtn" Click="Button_Click">Start Test</Button>
-            <ComboBox x:Name="stimuliMedium"></ComboBox>
+            <Button x:Name="nextBtn" Click="Button_Click" FontSize="18">Start Test</Button>
+            <ComboBox x:Name="stimuliMedium" FontSize="18"></ComboBox>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Right" Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+            <Button x:Name="startMarkup" Click="StartMarkup_Click"  FontSize="18" Height="30" VerticalAlignment="Top">Markup</Button>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -49,6 +49,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		public liblsl.StreamOutlet fixationEndOutlet;
 
 
+
 		public StreamReader()
 		{
 			MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow;
@@ -66,11 +67,46 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 			_lslHost = new LSLStreamInteractionHost();
 
-			//THIS NEEDS TO BE MOVED AN REENABLED. THIS CODE INITIALIZES ALL OF THE LSL STREAMS, BUT THIS SHOULDNT BE DONE WHEN THE STREAMREADER IS INITIALIZED, BUT AFTER WHEN READY TO START STREAMING
 			_lslFixationDataStream = _lslHost.CreateNewLslFixationDataStream();
 			_lslGazeDataStream = _lslHost.CreateNewLslGazeDataStream();
 			_lslEEGDataStream = _lslHost.CreateNewLslEEGDataStream();
 		}
+
+		public bool resolveAllStreams()
+		{
+			return resolveFixationStream() && resolveGazeStream() && resolveEEGStream();
+		}
+
+		public bool resolveFixationStream()
+		{
+			bool resolved;
+			if (!(resolved = _lslGazeDataStream.tryResolveStreams()))
+			{
+				Console.WriteLine("Fixation Stream not found");
+			}
+			return resolved; 
+		}
+
+		public bool resolveGazeStream()
+		{
+			bool resolved;
+			if (!(resolved = _lslFixationDataStream.tryResolveStreams()))
+			{
+				Console.WriteLine("Gaze Stream not found");
+			}
+			return resolved;
+		}
+
+		public bool resolveEEGStream()
+		{
+			bool resolved;
+			if (!(resolved = _lslEEGDataStream.tryResolveStreams()))
+			{
+				Console.WriteLine("EEG Stream not found");
+			}
+			return resolved;
+		}
+
 
 		public void initLSL()
 		{
@@ -153,9 +189,9 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 		public void readStreams()
 		{
-			String testDir = _mainWindow.currentUser.getCurrentTest().TestDir;
-			String uid = _mainWindow.currentUser.getCurrentTest().User;
-			int test = _mainWindow.currentUser.getCurrentTest().index;
+			String testDir = _mainWindow.currentUser.CurrentTest.TestDir;
+			String uid = _mainWindow.currentUser.CurrentTest.User;
+			int test = _mainWindow.currentUser.CurrentTest.index;
 			DateTime time = DateTime.Now;
 			Int32 unixts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
 			String test_metadata = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;

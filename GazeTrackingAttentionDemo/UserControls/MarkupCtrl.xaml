@@ -9,6 +9,45 @@
              mc:Ignorable="d" 
              d:DesignHeight="1200" d:DesignWidth="800"
              Loaded="onLoad">
+    <UserControl.Resources>
+        <Style x:Key="RadioButton" TargetType="RadioButton">
+            <Setter Property="SnapsToDevicePixels" Value="true"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <StackPanel Margin="5,0,5,0">
+                            <TextBlock HorizontalAlignment="Center"  Foreground="Black" Text="{TemplateBinding Content}" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,2" />
+                            <BulletDecorator Grid.Column="0" Background="Transparent" >
+                                <BulletDecorator.Bullet>
+                                    <Grid Width="45" Height="45" >
+                                        <Ellipse x:Name="Border" Fill="Transparent" StrokeThickness="2" Stroke="Black" />
+                                        <Ellipse x:Name="CheckMark" Margin="4" Fill="Black"/>
+                                    </Grid>
+                                </BulletDecorator.Bullet>
+                            </BulletDecorator>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="false">
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter TargetName="Border" Property="Fill" Value="LightGray" />
+                                <Setter TargetName="Border" Property="Stroke" Value="Black" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="Border" Property="Fill" Value="White" />
+                                <Setter TargetName="Border" Property="Stroke" Value="Black" />
+                                <Setter TargetName="Border" Property="StrokeThickness" Value="4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+    </UserControl.Resources>
     <Grid x:Name="MarkupSubGrid" Grid.Column="4" ShowGridLines="False" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition SharedSizeGroup="A"/>
@@ -48,7 +87,7 @@
                     <RowDefinition SharedSizeGroup="A"/>
                 </Grid.RowDefinitions>
 
-                <MediaElement Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="10" Source="C:\Videos\Webcam 01-03-2019 09.31.09.wmv" LoadedBehavior="Manual" Name="player" />
+                <MediaElement Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="10" LoadedBehavior="Manual" Name="player" />
                 <StackPanel Grid.Row="3" Grid.ColumnSpan="3">
                     <WrapPanel HorizontalAlignment="Center">
                         <Button Name="btnPlay" Click="btnPlay_Click">Play</Button>
@@ -87,21 +126,21 @@
                 <StackPanel Orientation="Vertical">
                     <Label>Display</Label>
                     <Viewbox Height="30" HorizontalAlignment="Left">
-                        <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Checked="Gaze_CheckBox_Checked" Unchecked="Gaze_CheckBox_Unchecked" Click="CheckBox_Clicked"  IsChecked="True"/>
+                        <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Click="CheckBox_Clicked"/>
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
-                        <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Checked="Fixation_CheckBox_Checked" Unchecked="Fixation_CheckBox_Unchecked" Click="CheckBox_Clicked" />
+                        <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Click="CheckBox_Clicked" IsChecked="True" />
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
-                        <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top" Checked="Saccade_CheckBox_Checked" Unchecked="Saccade_CheckBox_Unchecked" Click="CheckBox_Clicked" />
+                        <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top"  Click="CheckBox_Clicked"  />
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
-                        <CheckBox x:Name="Aoi_CheckBox" Content="AOI" Checked="Aoi_CheckBox_Checked" Unchecked="Aoi_CheckBox_Unchecked" Click="CheckBox_Clicked" />
+                        <CheckBox x:Name="Aoi_CheckBox" Content="AOI" Click="CheckBox_Clicked" />
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
-                        <CheckBox x:Name="All_CheckBox" Content="All" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked" Click="CheckBox_Clicked" />
+                        <CheckBox x:Name="All_CheckBox" Content="All" Click="CheckBox_Clicked" />
                     </Viewbox>
-                    <Button Height="30" FontSize="20" Margin="60,5,60,0" Click="Button_Click">Render</Button>
+                    <!--<Button Height="30" FontSize="20" Margin="60,5,60,0" Click="Button_Click">Render</Button>-->
                 </StackPanel>
                 <!--add key and highlight interface-->
             </UniformGrid>
@@ -122,63 +161,31 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Right" Width="289">
-                    <TextBlock Foreground="Red" FontSize="20" Grid.Row="0" Grid.ColumnSpan="2"> &lt;no element selected&gt;</TextBlock>
-                    <Label Grid.Row="1" Content="Interest" Grid.ColumnSpan="2"/>
+                    <Label Grid.Row="1" Content="Interest" FontSize="20" FontWeight="DemiBold" Grid.ColumnSpan="2"/>
                     <StackPanel Grid.Row="2" Orientation="Horizontal" Grid.ColumnSpan="2">
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Int1" GroupName="Interest" Checked="Int_Checked"/>
-                        </Viewbox>
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Int2"  GroupName="Interest" Checked="Int_Checked"/>
-                        </Viewbox>
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Int3"  GroupName="Interest" Checked="Int_Checked"/>
-                        </Viewbox>
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Int4" GroupName="Interest" Checked="Int_Checked"/>
-                        </Viewbox>
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Int5" GroupName="Interest" Checked="Int_Checked"/>
-                        </Viewbox>
+                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Interest" Checked="RadioBtn_Checked">1</RadioButton>
+                        <RadioButton Style="{StaticResource RadioButton}"  GroupName="Interest" Checked="RadioBtn_Checked">2</RadioButton>
+                        <RadioButton Style="{StaticResource RadioButton}"  GroupName="Interest" Checked="RadioBtn_Checked">3</RadioButton>
+                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Interest" Checked="RadioBtn_Checked">4</RadioButton>
+                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Interest" Checked="RadioBtn_Checked">5</RadioButton>
                     </StackPanel>
-                    <Label Grid.Row="3" Content="Attentiveness" Grid.ColumnSpan="2"/>
+                    <Label Grid.Row="3" Content="Attentiveness" FontSize="20" FontWeight="DemiBold" Grid.ColumnSpan="2"/>
                     <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="2">
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Att1" GroupName="Attentiveness" Checked="Att_Checked"/>
-                        </Viewbox>
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Att2" GroupName="Attentiveness" Checked="Att_Checked"/>
-                        </Viewbox>
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Att3" GroupName="Attentiveness" Checked="Att_Checked"/>
-                        </Viewbox>
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Att4" GroupName="Attentiveness" Checked="Att_Checked"/>
-                        </Viewbox>
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Att5"  GroupName="Attentiveness" Checked="Att_Checked"/>
-                        </Viewbox>
+                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Attentiveness" Checked="RadioBtn_Checked">1</RadioButton>
+                        <RadioButton Style="{StaticResource RadioButton}"  GroupName="Attentiveness" Checked="RadioBtn_Checked">2</RadioButton>
+                        <RadioButton Style="{StaticResource RadioButton}"  GroupName="Attentiveness" Checked="RadioBtn_Checked">3</RadioButton>
+                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Attentiveness" Checked="RadioBtn_Checked">4</RadioButton>
+                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Attentiveness" Checked="RadioBtn_Checked">5</RadioButton>
                     </StackPanel>
-                    <Label Grid.Row="5" Content="Effort" Grid.ColumnSpan="2"/>
+                    <Label Grid.Row="5" Content="Effort" FontSize="20" FontWeight="DemiBold" Grid.ColumnSpan="2"/>
                     <StackPanel Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="2">
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Eff1" GroupName="Effort" Checked="Eff_Checked"/>
-                        </Viewbox>
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Eff2" GroupName="Effort" Checked="Eff_Checked"/>
-                        </Viewbox>
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Eff3" GroupName="Effort" Checked="Eff_Checked"/>
-                        </Viewbox>
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Eff4" GroupName="Effort" Checked="Eff_Checked"/>
-                        </Viewbox>
-                        <Viewbox Height="50">
-                            <RadioButton x:Name="Eff5" GroupName="Effort" Checked="Eff_Checked"/>
-                        </Viewbox>
+                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Effort" Checked="RadioBtn_Checked">1</RadioButton>
+                        <RadioButton Style="{StaticResource RadioButton}"  GroupName="Effort" Checked="RadioBtn_Checked">2</RadioButton>
+                        <RadioButton Style="{StaticResource RadioButton}"  GroupName="Effort" Checked="RadioBtn_Checked">3</RadioButton>
+                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Effort" Checked="RadioBtn_Checked">4</RadioButton>
+                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Effort" Checked="RadioBtn_Checked">5</RadioButton>
                     </StackPanel>
-                    <Label Grid.Row="7" Grid.ColumnSpan="2">Comments</Label>
-                    <TextBox x:Name="comments" Grid.Row="8"  Margin="2,2,2,2" Grid.ColumnSpan="2"></TextBox>
+                    <Button x:Name="addAnnotation"  Click="AddAnnotation_Click"> Add Annotation</Button>
                 </StackPanel>
             </Grid>
         </GroupBox>
@@ -189,7 +196,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <xctk:RangeSlider x:Name="DisplaySlider" Grid.Row="0" RenderTransformOrigin="0.5,0.5"  VerticalAlignment="Center" HorizontalAlignment="Center" Margin="-460,480,-457.5,486.5" Width="979" Height="22" >
+                <xctk:RangeSlider x:Name="DisplaySlider" Grid.Row="0" RenderTransformOrigin="0.5,0.5"  VerticalAlignment="Center" HorizontalAlignment="Center" LowerValueChanged="DisplaySlider_LowerValueChanged" HigherValueChanged="DisplaySlider_HigherValueChanged" Margin="-460,480,-457.5,486.5" Width="979" Height="22" >
                     <xctk:RangeSlider.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform/>

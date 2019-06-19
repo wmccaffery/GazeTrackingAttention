@@ -21,7 +21,6 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Label x:Name="stateLabel" FontSize="18" >Setup</Label>
             <Label x:Name="userLabel" FontSize="18">User</Label>
-            <Label x:Name="currentTestLabel" FontSize="18">Test 0 of 0</Label>
             <Label x:Name="currentTestName" FontSize="18">NO TEST</Label>
             <Label x:Name="currentTestMedium" FontSize="18">NO TEST</Label>
 

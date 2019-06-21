@@ -121,6 +121,9 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			fixationEndInfo = new liblsl.StreamInfo("FixationEnd", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
 			fixationEndOutlet = new liblsl.StreamOutlet(fixationEndInfo);
 
+			Console.WriteLine("LSL providers intialized");
+
+
 		}
 
 		//send data to LSL

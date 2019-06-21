@@ -93,8 +93,10 @@ namespace GazeTrackingAttentionDemo.UserControls
 				Test test = (Test)testList.SelectedItem;
 				test.dataRecorder = new DataProcessing.StreamReader();
 				test.setMedium(medium);
+				test.dataRecorder.initLSLProviders();
 				test.dataRecorder.resolveAllStreams();
 				user.CurrentTest = test;
+				Console.WriteLine("Test Loaded!");
 				
 				testLoaded();
 			}

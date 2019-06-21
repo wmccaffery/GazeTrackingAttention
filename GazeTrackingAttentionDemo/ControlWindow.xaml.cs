@@ -26,11 +26,11 @@ namespace GazeTrackingAttentionDemo
     /// </summary>
     public partial class ControlWindow : Window
     {
-		System.Windows.Controls.UserControl newUserForm = new UserControls.UserCtrl();
-		System.Windows.Controls.UserControl testCtrl = new UserControls.TestCtrl();
-		System.Windows.Controls.UserControl calibrationCtrl = new UserControls.CalibrationCtrl();
-		System.Windows.Controls.UserControl overview = new UserControls.OverviewCtrl();
-		System.Windows.Controls.UserControl endCtrl = new UserControls.EndCtrl();
+		public System.Windows.Controls.UserControl newUserForm = new UserControls.UserCtrl();
+		public System.Windows.Controls.UserControl testCtrl = new UserControls.TestCtrl();
+		public System.Windows.Controls.UserControl calibrationCtrl = new UserControls.CalibrationCtrl();
+		public System.Windows.Controls.UserControl overview = new UserControls.OverviewCtrl();
+		public System.Windows.Controls.UserControl endCtrl = new UserControls.EndCtrl();
 
 		MainWindow mainWin = (MainWindow)System.Windows.Application.Current.MainWindow;
 

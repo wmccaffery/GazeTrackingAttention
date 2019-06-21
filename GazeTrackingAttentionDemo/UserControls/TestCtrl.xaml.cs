@@ -83,6 +83,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void startRecording()
 		{
+			user.CurrentTest.dataRecorder.recordStreams();
 			WebcamViewer.StartRecording();
 			startts = _mainWindow.stopwatch.ElapsedMilliseconds;
 			//recordingStarted();
@@ -90,11 +91,13 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void stopRecording()
 		{
+			user.CurrentTest.dataRecorder.stopRecording();
 			WebcamViewer.StopRecording();
 			endts = _mainWindow.stopwatch.ElapsedMilliseconds;
 			WebcamViewer.StopPreview();
 			string[] video = Directory.GetFiles(WebcamViewer.VideoDirectory, "*.wmv");
 			File.Move(video[0], user.CurrentTest.DataDir + "//Subject" + _mainWindow.currentUser.Id  + "QPCstart" + startts + "end" + endts + ".wmv");
+			user.CurrentTest.currentRecording.fixations = user.CurrentTest.dataRecorder.getFixations();
 		}
 
 		private void FinishTest_Click(object sender, RoutedEventArgs e)
@@ -106,6 +109,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 		private void Stream_Click(object sender, RoutedEventArgs e)
 		{
 			user.CurrentTest.dataRecorder.initLSLProviders();
+			user.CurrentTest.dataRecorder.feedStreamsToLSL();
+			user.CurrentTest.dataRecorder.readStreams(false);
 			WebcamViewer.StartPreview();
 			Streaming();
 		}
@@ -114,7 +119,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			if(_mainWindow.State == MainWindow.EState.Recording)
 			{
+
 				stopRecording();
+
 				if(user.CurrentTest.index > user.highestTestIndex)
 				{
 					user.highestTestIndex = user.CurrentTest.index;
@@ -128,12 +135,15 @@ namespace GazeTrackingAttentionDemo.UserControls
 				user.CurrentTest.addNewRecording(user);
 				startRecording();
 				((Button)e.Source).Content = "Stop Recording";
-				//user.CurrentTest.dataRecorder.recordStreams();
 				_mainWindow.State = MainWindow.EState.Recording;
 			}
-		} 
+		}
 
-
+		private void StartCalibration_Click(object sender, RoutedEventArgs e)
+		{
+			user.CurrentTest.dataRecorder.calibrate();
+			_mainWindow.State = MainWindow.EState.Calibrating;
+		}
 
 		//private void Record_Click(object sender, RoutedEventArgs e)
 		//{

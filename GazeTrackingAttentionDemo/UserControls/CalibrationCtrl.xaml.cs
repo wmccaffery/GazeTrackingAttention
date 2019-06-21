@@ -20,9 +20,26 @@ namespace GazeTrackingAttentionDemo.UserControls
 	/// </summary>
 	public partial class CalibrationCtrl : UserControl
 	{
+
+		MainWindow _mainWin = (MainWindow)Application.Current.MainWindow;
+
+		//public delegate void endCalibrationHandler();
+		//public event endCalibrationHandler endCalibration;
+
 		public CalibrationCtrl()
 		{
 			InitializeComponent();
+		}
+
+		private void onLoad(object sender, RoutedEventArgs e)
+		{
+			//	endCalibration += new endCalibrationHandler((_mainWin.ctrlwin.controller.ContentendCalibration);
+
+		}
+
+		private void DoneCalibrating_Click(object sender, RoutedEventArgs e)
+		{
+			_mainWin.State = MainWindow.EState.Ready;
 		}
 	}
 }

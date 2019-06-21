@@ -21,6 +21,8 @@ namespace GazeTrackingAttentionDemo.DataVisualization
 		List<Tuple<Ellipse, TextBlock, float, float>> fixationPoints;
 		List<Tuple<Line, float, float>> saccadeLines;
 		Canvas c;
+		TextBlock noDataMsg;
+		bool noData;
 
 		private MainWindow _mainWin = (MainWindow) System.Windows.Application.Current.MainWindow;
 
@@ -33,65 +35,85 @@ namespace GazeTrackingAttentionDemo.DataVisualization
 
 			this.c = c;
 
-			foreach (Fixation f in fixations)
+			if (fixations == null || saccades == null)
 			{
+				noDataMsg = new TextBlock();
+				noDataMsg.Text = "NO DATA AVAILABLE FOR PLOT";
+				noDataMsg.FontSize = 30;
+				noDataMsg.Background = Brushes.LightGray;
+				Canvas.SetLeft(noDataMsg, _mainWin.MainCanvas.ActualWidth / 2 - (noDataMsg.Width / 2));
+				Canvas.SetTop(noDataMsg, _mainWin.MainCanvas.ActualHeight / 2 - (noDataMsg.Height / 2));
+				noData = true;
 
-				//draw ellipse
-				Ellipse e = new Ellipse();
-				e.Fill = new SolidColorBrush(Color.FromArgb(200, 0, 0, 204));
-				e.Stroke = Brushes.Black;
-				e.Width = e.Height = (Math.Sqrt(f.duration/ Math.PI) * 5) + 25; //scale and add width of text block to radius
-
-				//get window coordinates for rendering point
-				Point rp = _mainWin.MainCanvas.PointFromScreen(f.centroid);
-				//Point rp = f.centroid;
-
-
-				//set ellipse position
-				Canvas.SetLeft(e, rp.X - (e.Width / 2));
-				Canvas.SetTop(e, rp.Y - (e.Height / 2));
-
-				//draw number on ellipse
-				TextBlock t = new TextBlock();
-				t.Text = "" + f.id;
-				t.Foreground = new SolidColorBrush(Colors.White);
-				t.Height = 25;
-				t.Width = 25;
-				t.TextAlignment = TextAlignment.Center;
-				t.VerticalAlignment = VerticalAlignment.Center;
-				t.FontSize = 20;
-				t.FontWeight = FontWeights.Bold;
-				
-				//t.Background = new SolidColorBrush(Colors.Red);
-				
-				//set text position
-				Canvas.SetLeft(t, rp.X - (t.Width / 2));
-				Canvas.SetTop(t, rp.Y - (t.Height / 2));
-
-				//add to list to be rendered
-				fixationPoints.Add(Tuple.Create(e,t, f.startPos.timestamp, f.endPos.timestamp));
-				//    e.Fill = mySolidColorBrush;
 			}
-
-			foreach(Saccade s in saccades)
+			else
 			{
-				Line l = new Line();
-				Point spos = _mainWin.MainCanvas.PointFromScreen(s.start.centroid);
-				Point epos = _mainWin.MainCanvas.PointFromScreen(s.finish.centroid);
+				noData = false;
+				foreach (Fixation f in fixations)
+				{
 
-				l.X1 = spos.X;
-				l.X2 = epos.X;
-				l.Y1 = spos.Y;
-				l.Y2 = epos.Y;
-				l.Stroke = Brushes.Black;
+					//draw ellipse
+					Ellipse e = new Ellipse();
+					e.Fill = new SolidColorBrush(Color.FromArgb(200, 0, 0, 204));
+					e.Stroke = Brushes.Black;
+					e.Width = e.Height = (Math.Sqrt(f.duration / Math.PI) * 5) + 25; //scale and add width of text block to radius
 
-				saccadeLines.Add(Tuple.Create(l, s.start.endPos.timestamp, s.finish.endPos.timestamp));
+					//get window coordinates for rendering point
+					Point rp = _mainWin.MainCanvas.PointFromScreen(f.centroid);
+					//Point rp = f.centroid;
+
+
+					//set ellipse position
+					Canvas.SetLeft(e, rp.X - (e.Width / 2));
+					Canvas.SetTop(e, rp.Y - (e.Height / 2));
+
+					//draw number on ellipse
+					TextBlock t = new TextBlock();
+					t.Text = "" + f.id;
+					t.Foreground = new SolidColorBrush(Colors.White);
+					t.Height = 25;
+					t.Width = 25;
+					t.TextAlignment = TextAlignment.Center;
+					t.VerticalAlignment = VerticalAlignment.Center;
+					t.FontSize = 20;
+					t.FontWeight = FontWeights.Bold;
+
+					//t.Background = new SolidColorBrush(Colors.Red);
+
+					//set text position
+					Canvas.SetLeft(t, rp.X - (t.Width / 2));
+					Canvas.SetTop(t, rp.Y - (t.Height / 2));
+
+					//add to list to be rendered
+					fixationPoints.Add(Tuple.Create(e, t, f.startPos.timestamp, f.endPos.timestamp));
+					//    e.Fill = mySolidColorBrush;
+				}
+
+				foreach (Saccade s in saccades)
+				{
+					Line l = new Line();
+					Point spos = _mainWin.MainCanvas.PointFromScreen(s.start.centroid);
+					Point epos = _mainWin.MainCanvas.PointFromScreen(s.finish.centroid);
+
+					l.X1 = spos.X;
+					l.X2 = epos.X;
+					l.Y1 = spos.Y;
+					l.Y2 = epos.Y;
+					l.Stroke = Brushes.Black;
+
+					saccadeLines.Add(Tuple.Create(l, s.start.endPos.timestamp, s.finish.endPos.timestamp));
+				}
 			}
 		}
 
 		public void renderPlot(bool showAll, bool showFixations, bool showSaccades, double startRange, double endRange)
 		{
 			c.Children.Clear();
+
+			if (noData)
+			{
+				c.Children.Add(noDataMsg);
+			}
 			if (showFixations) {
 				foreach (Tuple<Ellipse, TextBlock, float, float> t in fixationPoints)
 				{

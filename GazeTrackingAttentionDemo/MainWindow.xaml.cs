@@ -52,6 +52,7 @@ namespace GazeTrackingAttentionDemo
 		UserControl selectionCtrl;
 		UserControl markupCtrl;
 		UserControl calibrationTest;
+		UserControl calibrationCtrl;
 
 		//second window
 		public ControlWindow ctrlwin;
@@ -188,6 +189,7 @@ namespace GazeTrackingAttentionDemo
 			selectionCtrl = new AoiCtrl();
 			markupCtrl = new MarkupCtrl();
 			calibrationTest = new UserControls.TestCalibrationCtrl();
+			calibrationCtrl = new UserControls.CalibrationCtrl();
 
 			aoiSelectionComplete += new selectionCompleteHandler(((AoiCtrl)selectionCtrl).endSelection);
 			progStateChanged += new stateChangedHandler(ctrlwin.stateChanged);
@@ -221,6 +223,18 @@ namespace GazeTrackingAttentionDemo
 					((AoiCtrl)selectionCtrl).recordingList.SelectedItem = null;
 					((AoiCtrl)selectionCtrl).testList.SelectedItem = null;
 
+					break;
+				case EState.Calibrating:
+					leftView.Content = null;
+					rightView.Content = null;
+					centerView.Content = calibrationCtrl; 
+					break;
+				case EState.Ready:
+					if (!Equals(ctrlwin.controller.Content.GetType(),ctrlwin.testCtrl.GetType()))
+					{
+						ctrlwin.controller.Content = ctrlwin.testCtrl;
+						centerView.Content = stimuliDisplayArea;
+					}
 					break;
 			}
 		}
@@ -315,6 +329,152 @@ namespace GazeTrackingAttentionDemo
 			
 			State = EState.Markup;
 		}
+
+		public void testCreated()
+		{
+			State = EState.Ready;
+		}
+
+		public void startStreaming()
+		{
+			((DocumentCtrl)centerView.Content).loadText(currentUser.CurrentTest.StimuliPath);
+			State = EState.Streaming;
+		}
+
+		public void testCompleted()
+		{
+			//currentTest.testComplete();
+			State = EState.Overview;
+		}
+
+		public void allTestsCompleted()
+		{
+			State = EState.Markup;
+		}
+
+		public void startCalibration()
+		{
+			currentUser.CurrentTest.dataRecorder.calibrate();
+			State = EState.Calibrating;
+		}
+
+		public void endCalibration()
+		{
+			State = EState.Ready;
+		}
+
+		public void onAOICreation()
+		{
+			PointOfOrigin = null;
+			ellipseCount = 0;
+			drawingAOI = true;
+			aoi = new Polygon();
+		}
+
+
+
+		private void MainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			if (drawingAOI)
+			{
+				Point mp = Mouse.GetPosition(this);
+				aoi.Points.Add(mp);
+
+				Ellipse ellipse = new Ellipse();
+				ellipse.Fill = Brushes.Yellow;
+				ellipse.Stroke = Brushes.Black;
+				ellipse.Width = ellipse.Height = 25;
+
+				//set ellipse position
+				Canvas.SetLeft(ellipse, mp.X - (ellipse.Width / 2));
+				Canvas.SetTop(ellipse, mp.Y - (ellipse.Height / 2));
+
+
+				if(ellipseCount == 0)
+				{
+					ellipse.Stroke = Brushes.Red;
+					PointOfOrigin = ellipse;
+				}
+
+				ellipseCount++;
+				if (Type.Equals(e.OriginalSource, PointOfOrigin))
+				{
+					drawingAOI = false;
+					SelectionCanvas.Children.Clear();
+					aoiSelectionComplete(aoi);
+				}
+				else
+				{
+					SelectionCanvas.Children.Add(ellipse);
+				}
+
+				Console.WriteLine("OriginalSource " + e.OriginalSource.GetType());
+			}
+
+		}
+
+		public void shutdown()
+		{
+			Application.Current.Shutdown();
+		}
+
+		//old code
+
+		//public void startSelection(String paragraph)
+		//{
+		//	State = EState.Drawing;
+		//}
+
+		//public void endSelection(String paragraph)
+		//{
+		//	State = EState.Markup;
+		//}
+
+		//Handle statechange
+		//public void stateChanged(EState state)
+		//{
+		//	switch (State)
+		//	{
+		//		case EState.Streaming:
+
+		//	}
+		//}
+
+		//public void onDeviceCalibration(object sender, EngineStateValue<EyeTrackingDeviceStatus> e)
+		//{
+		//	EngineStateObserver<EyeTrackingDeviceStatus> _sender = (EngineStateObserver<EyeTrackingDeviceStatus>)sender;
+		//	if (!_sender.CurrentValue.Equals(EyeTrackingDeviceStatus.Configuring)) { 
+		//		Console.WriteLine("CALIBRATED " + sender.GetType());
+		//		loadTest(filePaths[testIndex]);
+		//		State = EState.Ready;
+		//	}
+		//}
+
+
+		//private void DisplayTime_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		//      {
+		//          //displayTime = DisplaySlider.Value;
+		//          //render();
+		//      }	
+
+		//public void startTest()
+		//{
+		//	((DocumentCtrl)stimuliDisplayArea).clearText();
+		//	Console.WriteLine("Starting test " + testIndex);
+		//	currentTest = new Test(currentUser, filePaths[testIndex], testIndex);
+		//	//currentTest.testDataRecorder.calibrate();
+		//	State = EState.Ready;
+		//}
+
+		//public void calibrateTest()
+		//{
+		//	currentUser.CurrentTest.dataRecorder.calibrate();
+		//}
+
+		//public void calibrationComplete()
+		//{
+		//	currentUser.CurrentTest.currentRecording.isCalibrated = true;
+		//}
 
 		//return current test path
 		//public String getCurrentTest()
@@ -471,158 +631,6 @@ namespace GazeTrackingAttentionDemo
 		//	}
 		//}
 
-
-
-		public void testCreated()
-		{
-			State = EState.Ready;
-		}
-
-		public void calibrateTest()
-		{
-			currentUser.CurrentTest.dataRecorder.calibrate();
-		}
-
-		public void calibrationComplete()
-		{
-			currentUser.CurrentTest.currentRecording.isCalibrated = true;
-		}
-
-		public void startStreaming()
-		{
-			((DocumentCtrl)centerView.Content).loadText(currentUser.CurrentTest.StimuliPath);
-			//currentTest.dataRecorder.feedStreamsToLSL();
-			//currentTest.dataRecorder.readStreams();
-			//readyToRecord(currentTestInstance);
-			State = EState.Streaming;
-		}
-
-
-		public void testCompleted()
-		{
-			//currentTest.testComplete();
-			State = EState.Overview;
-		}
-
-		public void allTestsCompleted()
-		{
-			State = EState.Markup;
-		}
-
-		
-
-
-		//public void startTest()
-		//{
-		//	((DocumentCtrl)stimuliDisplayArea).clearText();
-		//	Console.WriteLine("Starting test " + testIndex);
-		//	currentTest = new Test(currentUser, filePaths[testIndex], testIndex);
-		//	//currentTest.testDataRecorder.calibrate();
-		//	State = EState.Ready;
-		//}
-
-		public void startCalibration()
-		{
-			currentUser.CurrentTest.dataRecorder.calibrate();
-			State = EState.Calibrating;
-		}
-
-		public void endCalibration()
-		{
-			State = EState.Ready;
-		}
-
-		public void onAOICreation()
-		{
-			PointOfOrigin = null;
-			ellipseCount = 0;
-			drawingAOI = true;
-			aoi = new Polygon();
-		}
-
-
-
-		private void MainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
-		{
-			if (drawingAOI)
-			{
-				Point mp = Mouse.GetPosition(this);
-				aoi.Points.Add(mp);
-
-				Ellipse ellipse = new Ellipse();
-				ellipse.Fill = Brushes.Yellow;
-				ellipse.Stroke = Brushes.Black;
-				ellipse.Width = ellipse.Height = 25;
-
-				//set ellipse position
-				Canvas.SetLeft(ellipse, mp.X - (ellipse.Width / 2));
-				Canvas.SetTop(ellipse, mp.Y - (ellipse.Height / 2));
-
-
-				if(ellipseCount == 0)
-				{
-					ellipse.Stroke = Brushes.Red;
-					PointOfOrigin = ellipse;
-				}
-
-				ellipseCount++;
-				if (Type.Equals(e.OriginalSource, PointOfOrigin))
-				{
-					drawingAOI = false;
-					SelectionCanvas.Children.Clear();
-					aoiSelectionComplete(aoi);
-				}
-				else
-				{
-					SelectionCanvas.Children.Add(ellipse);
-				}
-
-				Console.WriteLine("OriginalSource " + e.OriginalSource.GetType());
-			}
-
-		}
-
-		public void shutdown()
-		{
-			Application.Current.Shutdown();
-		}
-
-		//public void startSelection(String paragraph)
-		//{
-		//	State = EState.Drawing;
-		//}
-
-		//public void endSelection(String paragraph)
-		//{
-		//	State = EState.Markup;
-		//}
-
-		//Handle statechange
-		//public void stateChanged(EState state)
-		//{
-		//	switch (State)
-		//	{
-		//		case EState.Streaming:
-
-		//	}
-		//}
-
-		//public void onDeviceCalibration(object sender, EngineStateValue<EyeTrackingDeviceStatus> e)
-		//{
-		//	EngineStateObserver<EyeTrackingDeviceStatus> _sender = (EngineStateObserver<EyeTrackingDeviceStatus>)sender;
-		//	if (!_sender.CurrentValue.Equals(EyeTrackingDeviceStatus.Configuring)) { 
-		//		Console.WriteLine("CALIBRATED " + sender.GetType());
-		//		loadTest(filePaths[testIndex]);
-		//		State = EState.Ready;
-		//	}
-		//}
-
-
-		//private void DisplayTime_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-		//      {
-		//          //displayTime = DisplaySlider.Value;
-		//          //render();
-		//      }	
 	}
 }
 

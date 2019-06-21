@@ -5,11 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GazeTrackingAttentionDemo.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Loaded="onLoad">
     <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
         <StackPanel>
             <Label FontSize="45">Calibrating Eye Tracker...</Label>
-            <Button FontSize="18" Margin="0,50,0,0" Width="150">Done</Button>
+            <Button x:Name="doneCalibrating"  FontSize="18" Margin="0,50,0,0" Width="150" Click="DoneCalibrating_Click">Done</Button>
         </StackPanel>
     </Grid>
 </UserControl>

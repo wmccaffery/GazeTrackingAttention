@@ -455,6 +455,14 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 		}
 
+		public void closeLslEEGStream()
+		{
+			Console.WriteLine("Closing lsl streams...");
+			_lslHost.closeStream(_lslEEGDataStream);
+			Console.WriteLine("Done");
+
+		}
+
 
 		//read fixations from eye tracker stream
 		//      public void readFixationStream()

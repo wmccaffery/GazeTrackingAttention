@@ -106,6 +106,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		private void Stream_Click(object sender, RoutedEventArgs e)
 		{
+			user.CurrentTest.addNewRecording(user);
 			user.CurrentTest.dataRecorder.readStreams(false);
 			WebcamViewer.StartPreview();
 			Streaming();
@@ -148,7 +149,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 			}
 			else if(_mainWindow.State == MainWindow.EState.Streaming)
 			{
-				user.CurrentTest.addNewRecording(user);
 				startRecording();
 				((Button)e.Source).Content = "Stop Recording";
 				_mainWindow.State = MainWindow.EState.Recording;

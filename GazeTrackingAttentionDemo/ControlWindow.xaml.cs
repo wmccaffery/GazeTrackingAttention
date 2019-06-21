@@ -53,8 +53,10 @@ namespace GazeTrackingAttentionDemo
 				this.Height = r1.Height;
 				multiscreen = true;
 			}
-
-			multiscreen = false;
+			else
+			{
+				multiscreen = false;
+			}
 			InitializeComponent();
 
 			this.DataContext = this;

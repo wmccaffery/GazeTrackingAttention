@@ -209,7 +209,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 				test_metadata = customFileDir + "//EEG_Baseline_" + uid + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
 			} else
 			{
-				testDir = _mainWindow.currentUser.CurrentTest.TestDir;
+				testDir = _mainWindow.currentUser.CurrentTest.currentRecording.dataDir;
 				test = _mainWindow.currentUser.CurrentTest.index;
 				test_metadata = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
 			}

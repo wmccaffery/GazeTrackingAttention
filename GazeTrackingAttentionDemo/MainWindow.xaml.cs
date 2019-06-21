@@ -52,7 +52,6 @@ namespace GazeTrackingAttentionDemo
 		UserControl selectionCtrl;
 		UserControl markupCtrl;
 		UserControl calibrationTest;
-		UserControl calibrationCtrl;
 
 		//second window
 		public ControlWindow ctrlwin;
@@ -189,7 +188,6 @@ namespace GazeTrackingAttentionDemo
 			selectionCtrl = new AoiCtrl();
 			markupCtrl = new MarkupCtrl();
 			calibrationTest = new UserControls.TestCalibrationCtrl();
-			calibrationCtrl = new UserControls.CalibrationCtrl();
 
 			aoiSelectionComplete += new selectionCompleteHandler(((AoiCtrl)selectionCtrl).endSelection);
 			progStateChanged += new stateChangedHandler(ctrlwin.stateChanged);
@@ -225,9 +223,7 @@ namespace GazeTrackingAttentionDemo
 
 					break;
 				case EState.Calibrating:
-					leftView.Content = null;
-					rightView.Content = null;
-					centerView.Content = calibrationCtrl; 
+
 					break;
 				case EState.Ready:
 					if (!Equals(ctrlwin.controller.Content.GetType(),ctrlwin.testCtrl.GetType()))

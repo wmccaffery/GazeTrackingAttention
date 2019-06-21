@@ -124,11 +124,16 @@ namespace GazeTrackingAttentionDemo.UserControls
 				eegDataRecorder.readStreams(true, @"C:\MMAD\" + user.DirPath + @"\");
 				eegDataRecorder.recordStreams();
 				eegrecord = true;
-			} else
+				((Button)e.Source).Content = "Stop Recording";
+			}
+			else
 			{
 				eegDataRecorder.stopRecording();
 				eegDataRecorder.Dispose();
+				eegrecord = false;
+				((Button)e.Source).Content = "Record EEG";
 			}
+
 			
 		}
 	}

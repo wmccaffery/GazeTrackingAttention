@@ -200,7 +200,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 			if (customFile)
 			{
-				test_metadata =  customFileDir + "//EEG_Baseline_" + uid + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
+				test_metadata = customFileDir + "//EEG_Baseline_" + uid + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
 			} else
 			{
 				testDir = _mainWindow.currentUser.CurrentTest.TestDir;

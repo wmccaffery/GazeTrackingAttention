@@ -38,7 +38,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		ControlWindow parentWin;
 
-		Boolean finishedAllTests;
 
 		public OverviewCtrl()
 		{
@@ -94,6 +93,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 				test.dataRecorder = new DataProcessing.StreamReader();
 				test.setMedium(medium);
 				test.dataRecorder.initLSLProviders();
+				test.dataRecorder.feedStreamsToLSL();
 				test.dataRecorder.resolveAllStreams();
 				user.CurrentTest = test;
 				Console.WriteLine("Test Loaded!");
@@ -129,6 +129,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			} else
 			{
 				eegDataRecorder.stopRecording();
+				eegDataRecorder.closeLslStreams();
 				eegDataRecorder.Dispose();
 			}
 			

@@ -56,13 +56,16 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			//Device
 			_host = new Host();
 
+			//init tobii streams
 			_fixationDataStream = _host.Streams.CreateFixationDataStream();
 			//_fixationDataStream = _host.Streams.CreateFixationDataStream(Tobii.Interaction.Framework.FixationDataMode.Slow);
 			_gazePointDataStream = _host.Streams.CreateGazePointDataStream();
 
-
+			//init lslinteractionhost
 			_lslHost = new LSLStreamInteractionHost();
 
+
+			//init lsl streams, without outlets and inlets
 			_lslFixationDataStream = _lslHost.CreateNewLslFixationDataStream();
 			_lslGazeDataStream = _lslHost.CreateNewLslGazeDataStream();
 			_lslEEGDataStream = _lslHost.CreateNewLslEEGDataStream();
@@ -195,8 +198,8 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			int test;
 			DateTime time = DateTime.Now;
 			Int32 unixts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-			String test_metadata;
 
+			String test_metadata;
 			String fixationRawPath;
 			String gazeRawPath;
 			String eegRawPath;
@@ -213,15 +216,13 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 			//create test paths
 			fixationRawPath = test_metadata + "_EYETRACKER_rawFixationData.csv ";
-			//String fixationRawDataPath = test_metadata + "_EYETRACKER_rawFixationData.csv";
-			//String fixationRawEndPath = test_metadata + "_EYETRACKER_rawFixationData.csv";
 			gazeRawPath = test_metadata + "_EYETRACKER_rawGazeData.csv";
 			eegRawPath = test_metadata + "_EEG_rawEEGData.csv";
 
+
 			//record data
-			if (_lslFixationDataStream.eyeTrackerPresent)
-			{
-				Console.WriteLine("recording streams");
+			if (_lslFixationDataStream.eyeTrackerPresent) {
+				Console.WriteLine("reading streams");
 				_lslFixationDataStream
 					.Begin((x, y, tobiits, timestamp) =>
 					{
@@ -233,7 +234,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 						if (_record)
 						{
-							recordStream(fixationRawPath, "Fixation", "Begin", header, data ,timestamp);
+							recordStream(fixationRawPath, "Fixation", "Begin", header, data, timestamp);
 						}
 					})
 					.Data((x, y, tobiits, timestamp) =>

@@ -35,21 +35,27 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 
 		public void closeStream(LSLGazeDataStream stream)
 		{
-			stream.gazeStream.Abort();
-			stream.gazeDataInlet.close_stream();
+			if (stream != null)
+			{
+				stream.gazeStream.Abort();
+				stream.gazeDataInlet.close_stream();
+			}
 
 		}
 		public void closeStream(LSLFixationDataStream stream)
 		{
 			//close threads
-			stream.fixationBeginStream.Abort();
-			stream.fixationDataStream.Abort();
-			stream.fixationEndStream.Abort();
+			if (stream != null)
+			{
+				stream.fixationBeginStream.Abort();
+				stream.fixationDataStream.Abort();
+				stream.fixationEndStream.Abort();
 
-			//close lsl streams
-			stream.fixationBeginInlet.close_stream();
-			stream.fixationDataInlet.close_stream();
-			stream.fixationEndInlet.close_stream();
+				//close lsl streams
+				stream.fixationBeginInlet.close_stream();
+				stream.fixationDataInlet.close_stream();
+				stream.fixationEndInlet.close_stream();
+			}
 		}
 		public void closeStream(LSLEEGDataStream stream)
 		{

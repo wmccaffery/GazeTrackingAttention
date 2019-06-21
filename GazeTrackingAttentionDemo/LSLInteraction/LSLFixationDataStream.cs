@@ -99,6 +99,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		//	}
 		//}
 
+		
 		private void getBeginFromLSL(Action<double, double, double, double> action)
 		{
 			while (true)

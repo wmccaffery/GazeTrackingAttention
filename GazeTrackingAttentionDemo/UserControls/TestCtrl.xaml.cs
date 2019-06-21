@@ -91,13 +91,11 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void stopRecording()
 		{
-			user.CurrentTest.dataRecorder.stopRecording();
 			WebcamViewer.StopRecording();
 			endts = _mainWindow.stopwatch.ElapsedMilliseconds;
 			WebcamViewer.StopPreview();
 			string[] video = Directory.GetFiles(WebcamViewer.VideoDirectory, "*.wmv");
 			File.Move(video[0], user.CurrentTest.DataDir + "//Subject" + _mainWindow.currentUser.Id  + "QPCstart" + startts + "end" + endts + ".wmv");
-			user.CurrentTest.currentRecording.fixations = user.CurrentTest.dataRecorder.getFixations();
 		}
 
 		private void FinishTest_Click(object sender, RoutedEventArgs e)
@@ -108,8 +106,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		private void Stream_Click(object sender, RoutedEventArgs e)
 		{
-			//user.CurrentTest.dataRecorder.initLSLProviders();
-			user.CurrentTest.dataRecorder.feedStreamsToLSL();
 			user.CurrentTest.dataRecorder.readStreams(false);
 			WebcamViewer.StartPreview();
 			Streaming();
@@ -119,10 +115,30 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			if(_mainWindow.State == MainWindow.EState.Recording)
 			{
-
+				String dataPath = user.CurrentTest.currentRecording.dataDir;
+				DataProcessing.StreamReader dr = user.CurrentTest.dataRecorder;
+				dr.stopRecording();
+				dr.closeLslStreams();
 				stopRecording();
 
-				if(user.CurrentTest.index > user.highestTestIndex)
+				user.CurrentTest.currentRecording.fixations = dr.getFixations();
+
+				//gen cleaned fixation file pathname
+				String testDir = dataPath;
+				String uid = user.Id;
+				int test = user.CurrentTest.index;
+				DateTime time = DateTime.Now;
+				Int32 unixts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+				String rawPath = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts + "_EYETRACKER_cleanFixationData.csv";
+
+				//write fixations
+				foreach (Fixation f in user.CurrentTest.currentRecording.fixations)
+				{
+					dr.recordFixations(rawPath, f);
+				}
+
+				//set highest test
+				if (user.CurrentTest.index > user.highestTestIndex)
 				{
 					user.highestTestIndex = user.CurrentTest.index;
 				}

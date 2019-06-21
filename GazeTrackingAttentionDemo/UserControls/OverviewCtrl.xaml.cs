@@ -110,6 +110,27 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			mainWin.State = MainWindow.EState.Markup;
 		}
+
+		Boolean eegrecord;
+		DataProcessing.StreamReader eegDataRecorder;
+
+
+		private void RecordEEG_Click(object sender, RoutedEventArgs e)
+		{
+			if (!eegrecord)
+			{
+				eegDataRecorder = new DataProcessing.StreamReader();
+				eegDataRecorder.resolveEEGStream();
+				eegDataRecorder.readStreams(true, @"C:\MMAD\" + user.DirPath + @"\");
+				eegDataRecorder.recordStreams();
+				eegrecord = true;
+			} else
+			{
+				eegDataRecorder.stopRecording();
+				eegDataRecorder.Dispose();
+			}
+			
+		}
 	}
 
 }

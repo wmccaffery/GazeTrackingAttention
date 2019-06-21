@@ -106,7 +106,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		}
 
 
-		public void initLSL()
+		public void initLSLProviders()
 		{
 			//provider
 			gazeDataInfo = new liblsl.StreamInfo("GazeData", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
@@ -185,21 +185,35 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 				});
 		}
 
-		public void readStreams()
+		public void readStreams(bool customFile, string customFileDir="")
 		{
-			String testDir = _mainWindow.currentUser.CurrentTest.TestDir;
-			String uid = _mainWindow.currentUser.CurrentTest.User;
-			int test = _mainWindow.currentUser.CurrentTest.index;
+			String testDir;
+			String uid = _mainWindow.currentUser.Id;
+			int test;
 			DateTime time = DateTime.Now;
 			Int32 unixts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-			String test_metadata = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
+			String test_metadata;
+
+			String fixationRawPath;
+			String gazeRawPath;
+			String eegRawPath;
+
+			if (customFile)
+			{
+				test_metadata =  customFileDir + "//EEG_Baseline_" + uid + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
+			} else
+			{
+				testDir = _mainWindow.currentUser.CurrentTest.TestDir;
+				test = _mainWindow.currentUser.CurrentTest.index;
+				test_metadata = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
+			}
 
 			//create test paths
-			String fixationRawPath = test_metadata + "_EYETRACKER_rawFixationData.csv ";
+			fixationRawPath = test_metadata + "_EYETRACKER_rawFixationData.csv ";
 			//String fixationRawDataPath = test_metadata + "_EYETRACKER_rawFixationData.csv";
 			//String fixationRawEndPath = test_metadata + "_EYETRACKER_rawFixationData.csv";
-			String gazeRawPath = test_metadata + "_EYETRACKER_rawGazeData.csv";
-			String eegRawPath = test_metadata + "_EEG_rawEEGData.csv";
+			gazeRawPath = test_metadata + "_EYETRACKER_rawGazeData.csv";
+			eegRawPath = test_metadata + "_EEG_rawEEGData.csv";
 
 			//record data
 			if (_lslFixationDataStream.eyeTrackerPresent)

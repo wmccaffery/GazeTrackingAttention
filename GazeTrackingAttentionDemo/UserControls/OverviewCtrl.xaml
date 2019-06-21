@@ -35,6 +35,8 @@
             <ComboBox x:Name="stimuliMedium" FontSize="18"></ComboBox>
         </StackPanel>
         <StackPanel HorizontalAlignment="Right" Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+            <Button x:Name="recordEEG" Click="RecordEEG_Click"  FontSize="18" Height="30" VerticalAlignment="Top" Margin="0,0,10,0">Record EEG</Button>
+
             <Button x:Name="startMarkup" Click="StartMarkup_Click"  FontSize="18" Height="30" VerticalAlignment="Top">Markup</Button>
         </StackPanel>
     </Grid>

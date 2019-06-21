@@ -105,7 +105,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		private void Stream_Click(object sender, RoutedEventArgs e)
 		{
-			user.CurrentTest.dataRecorder.initLSL();
+			user.CurrentTest.dataRecorder.initLSLProviders();
 			WebcamViewer.StartPreview();
 			Streaming();
 		}

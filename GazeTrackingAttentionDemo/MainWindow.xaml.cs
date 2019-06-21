@@ -57,7 +57,8 @@ namespace GazeTrackingAttentionDemo
 		ControlWindow ctrlwin;
 
 		public Stopwatch stopwatch = new Stopwatch();
-		
+		public Int32 unixStartTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+
 		//program state
 		public enum EState {Setup, Overview, Ready, Calibrating,Streaming, Recording, Drawing, Markup}
 		private EState _state;

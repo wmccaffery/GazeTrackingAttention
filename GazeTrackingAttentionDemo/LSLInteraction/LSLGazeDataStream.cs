@@ -45,13 +45,13 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 
 		}
 
-		public void GazeData(Action<double, double, double> action)
+		public void GazeData(Action<double, double, double, double> action)
 		{
 			gazeStream = new Thread(() => getDataFromLSL(action));
 			gazeStream.Start();
 		}
 
-		private void getDataFromLSL(Action<double, double, double> action)
+		private void getDataFromLSL(Action<double, double, double, double> action)
 		{
 			while (true)
 			{
@@ -60,7 +60,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 				double correction;
 				timestamp = gazeDataInlet.pull_sample(sample);
 				correction = gazeDataInlet.time_correction();
-				action(sample[0], sample[1], timestamp + correction);
+				action(sample[0], sample[1], sample[2], timestamp + correction);
 			}
 		}
 	}

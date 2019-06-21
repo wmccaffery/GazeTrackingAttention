@@ -80,7 +80,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			bool resolved;
 			if (!(resolved = _lslGazeDataStream.tryResolveStreams()))
 			{
-				Console.WriteLine("Fixation Stream not found");
+				Console.WriteLine("WARNING: Fixation Stream not found");
 			}
 			return resolved; 
 		}
@@ -90,7 +90,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			bool resolved;
 			if (!(resolved = _lslFixationDataStream.tryResolveStreams()))
 			{
-				Console.WriteLine("Gaze Stream not found");
+				Console.WriteLine("WARNING: Gaze Stream not found");
 			}
 			return resolved;
 		}
@@ -100,7 +100,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			bool resolved;
 			if (!(resolved = _lslEEGDataStream.tryResolveStreams()))
 			{
-				Console.WriteLine("EEG Stream not found");
+				Console.WriteLine("WARNING: EEG Stream not found");
 			}
 			return resolved;
 		}
@@ -109,24 +109,24 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		public void initLSLProviders()
 		{
 			//provider
-			gazeDataInfo = new liblsl.StreamInfo("GazeData", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+			gazeDataInfo = new liblsl.StreamInfo("GazeData", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
 			gazeDataOutlet = new liblsl.StreamOutlet(gazeDataInfo);
 
-			fixationBeginInfo = new liblsl.StreamInfo("FixationBegin", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+			fixationBeginInfo = new liblsl.StreamInfo("FixationBegin", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
 			fixationBeginOutlet = new liblsl.StreamOutlet(fixationBeginInfo);
 
-			fixationDataInfo = new liblsl.StreamInfo("FixationData", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+			fixationDataInfo = new liblsl.StreamInfo("FixationData", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
 			fixationDataOutlet = new liblsl.StreamOutlet(fixationDataInfo);
 
-			fixationEndInfo = new liblsl.StreamInfo("FixationEnd", "Gaze", 2, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+			fixationEndInfo = new liblsl.StreamInfo("FixationEnd", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
 			fixationEndOutlet = new liblsl.StreamOutlet(fixationEndInfo);
 
 		}
 
 		//send data to LSL
-		public void sendGazeToLSL(liblsl.StreamOutlet outlet, double x, double y)
+		public void sendGazeToLSL(liblsl.StreamOutlet outlet, double x, double y, double ts)
 		{
-			double[] data = { x, y };
+			double[] data = { x, y, ts };
 			outlet.push_sample(data);
 		}
 
@@ -163,7 +163,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		{
 			_gazePointDataStream.GazePoint((x, y, timestamp) =>
 			{
-				sendGazeToLSL(gazeDataOutlet, x, y);
+				sendGazeToLSL(gazeDataOutlet, x, y, timestamp);
 			});
 		}
 
@@ -172,16 +172,16 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			_fixationDataStream
 				.Begin((x, y, timestamp) =>
 				{
-					sendGazeToLSL(fixationBeginOutlet, x, y);
+					sendGazeToLSL(fixationBeginOutlet, x, y, timestamp);
 				})
 				 .Data((x, y, timestamp) =>
 				 {
-					 sendGazeToLSL(fixationDataOutlet, x, y);
+					 sendGazeToLSL(fixationDataOutlet, x, y, timestamp);
 
 				 })
 				.End((x, y, timestamp) =>
 				{
-					sendGazeToLSL(fixationEndOutlet, x, y);
+					sendGazeToLSL(fixationEndOutlet, x, y, timestamp);
 				});
 		}
 
@@ -220,26 +220,26 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			{
 				Console.WriteLine("recording streams");
 				_lslFixationDataStream
-					.Begin((x, y, timestamp) =>
+					.Begin((x, y, tobiits, timestamp) =>
 					{
 						timestamp = timestamp * 1000;
 						timestamp += _lslHost.offset;
 						Console.WriteLine("Fixation Begin\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
-						string header = "Stream,X,Y,Timestamp" + Environment.NewLine;
-						double[] data = { x, y };
+						string header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
+						double[] data = { x, y, tobiits };
 
 						if (_record)
 						{
 							recordStream(fixationRawPath, "Fixation", "Begin", header, data ,timestamp);
 						}
 					})
-					.Data((x, y, timestamp) =>
+					.Data((x, y, tobiits, timestamp) =>
 					{
 						timestamp = timestamp * 1000;
 						timestamp += _lslHost.offset;
 						Console.WriteLine("Fixation Data\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
-						string header = "Stream,X,Y,Timestamp" + Environment.NewLine;
-						double[] data = { x, y };
+						string header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
+						double[] data = { x, y, tobiits };
 
 						if (_record)
 						{
@@ -247,30 +247,27 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 						}
 
 					})
-					.End((x, y, timestamp) =>
+					.End((x, y, tobiits, timestamp) =>
 					{
 						timestamp = timestamp * 1000;
 						timestamp += _lslHost.offset;
 						Console.WriteLine("Fixation End\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
-						string header = "Stream,X,Y,Timestamp" + Environment.NewLine;
-						double[] data = { x, y };
+						string header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
+						double[] data = { x, y, tobiits };
 
 						if (_record)
 						{
 							recordStream(fixationRawPath, "Fixation", "End", header, data, timestamp);
 						}
 					});
-			}
 
-			if (_lslGazeDataStream.eyeTrackerPresent)
-			{
-				_lslGazeDataStream.GazeData((x, y, timestamp) =>
+				_lslGazeDataStream.GazeData((x, y, tobiits, timestamp) =>
 				{
 					timestamp = timestamp * 1000;
 					timestamp += _lslHost.offset;
 					Console.WriteLine("Gaze\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
-					string header = "X,Y,Timestamp" + Environment.NewLine;
-					double[] data = { x, y };
+					string header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
+					double[] data = { x, y, tobiits };
 
 					if (_record)
 					{
@@ -284,7 +281,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 				_lslEEGDataStream.EEGData((c0, c1, c2, c3, c4, c5, c6, c7, timestamp) =>
 				{
 					Console.WriteLine("EEG\tCHANNEL1 {0}\tCHANNEL2 {1}\tCHANNEL3 {2}\tCHANNEL4 {3}\tCHANNEL5 {4}\tCHANNEL6 {5}\tCHANNEL7 {6}\tCHANNEL8 {7}\ttimestamp {2}", c0, c1, c2, c3, c4, c5, c6, c7, timestamp);
-					string header = "C1,C2,C3,C4,C5,C6,C7,C8,Timestamp" + Environment.NewLine;
+					string header = "C1,C2,C3,C4,C5,C6,C7,C8,Timestamp, AdjustedUnix" + Environment.NewLine;
 					double[] data = { c0, c1, c2, c3, c4, c5, c6, c7 };
 
 					if (_record)
@@ -317,7 +314,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 					{
 						datastr += (d + ",");
 					}
-					datastr += (timestamp + Environment.NewLine);
+					datastr += (timestamp + "," + (TimeSpan.FromMilliseconds(timestamp).Seconds + _mainWindow.unixStartTime) +  Environment.NewLine);
 
 					//store in program for cleaning and assigning
 					rawFixationPoints.Add(Tuple.Create(dataType, new DataPoint((float)data[0], (float)data[1], (float)timestamp)));
@@ -328,7 +325,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 					{
 						datastr += (d + ",");
 					}
-					datastr += (timestamp + Environment.NewLine);
+					datastr += (timestamp + "," + (TimeSpan.FromMilliseconds(timestamp).Seconds + _mainWindow.unixStartTime) +  Environment.NewLine);
 				}
 
 				//write csv line to file

@@ -7,8 +7,8 @@
         xmlns:cam="clr-namespace:WebcamControl;assembly=WebcamControl"
         mc:Ignorable="d"
         Title="ControlWindow" 
-        Width="1920"
-        Height="1200"
+        Width="1680"
+        Height="1050"
         Loaded="onLoad"
         WindowStyle="None"
         >

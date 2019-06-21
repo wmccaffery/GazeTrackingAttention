@@ -34,6 +34,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 		public delegate void DirectLoadHandler();
 		public event DirectLoadHandler DirectLoad;
 
+		public delegate void ExitHandler();
+		public event ExitHandler exitApp;
+
 		MainWindow mainWin = (MainWindow)Application.Current.MainWindow;
 		ControlWindow parentWin;
 
@@ -66,6 +69,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			UserCreated += new UserCreatedHandler(mainWin.onUserCreated);
 			UserCreated += new UserCreatedHandler(parentWin.onUserCreated);
 			DirectLoad += new DirectLoadHandler(mainWin.onDirectLoad);
+			exitApp += new ExitHandler(mainWin.shutdown);
 		}
 
 
@@ -79,6 +83,11 @@ namespace GazeTrackingAttentionDemo.UserControls
 		private void Debug_Directload_Click(object sender, RoutedEventArgs e)
 		{
 			DirectLoad();
+		}
+
+		private void Exit_Click(object sender, RoutedEventArgs e)
+		{
+			exitApp();
 		}
 	}
 }

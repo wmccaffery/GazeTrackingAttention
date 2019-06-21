@@ -75,7 +75,7 @@ namespace GazeTrackingAttentionDemo
 			//this.KeyDown += new System.Windows.Input.KeyEventHandler(mainWin.MainWindow_KeyDown);
 			//mainWin.readyToRecord += new readyToRecordHandler(readyToRecord); //used to start webcam
 
-			mainWin.progStateChanged += new stateChangedHandler(stateChanged);
+			//mainWin.progStateChanged += new stateChangedHandler(stateChanged);
 
 		}
 

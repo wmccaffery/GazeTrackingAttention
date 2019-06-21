@@ -26,6 +26,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		private MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow;
 
+		public delegate void endMarkupHandler();
+		public event endMarkupHandler endMarkup;
+
 
 		Test test;
 		AOI aoi;
@@ -52,16 +55,40 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void onLoad(object sender, RoutedEventArgs e)
 		{
-			if (test == null)
+			//if (test == null)
+			//{
+			test = null;
+			aoi = null;
+			recording = null;
+			effort = 0;
+			attentiveness = 0;
+			interest = 0;
+			DisplaySlider.LowerValue = 0;
+			DisplaySlider.HigherValue = 0;
+			DisplaySlider.Maximum = 0;
+			DisplaySlider.Minimum = 0;
+			timeline_group.IsEnabled = false;
+			visualisation_group.IsEnabled = false;
+			playback_group.IsEnabled = false;
+			foreach (UIElement element in ((Grid)markup_group.Content).Children)
 			{
-				timeline_group.IsEnabled = false;
-				visualisation_group.IsEnabled = false;
-				playback_group.IsEnabled = false;
+				if (Equals(element.GetType(), Attentiveness.GetType())) {
+					foreach (UIElement innerelement in ((StackPanel)element).Children)
+					{
+						if (Equals(innerelement.GetType(), i1.GetType()))
+						{
+							((RadioButton)innerelement).IsChecked = false;
+						}
+					}
+				}
 			}
-			if(aoi == null)
-			{
+			//}
+			//if(aoi == null)
+			//{
 				markup_group.IsEnabled = false;
-			}
+			//}
+
+			endMarkup += new endMarkupHandler(((EndCtrl)_mainWindow.ctrlwin.controller.Content).markupExitComplete);
 
 		}
 
@@ -175,21 +202,34 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		private void DisplaySlider_LowerValueChanged(object sender, RoutedEventArgs e)
 		{
-			if (test.currentRecording.gp != null)
+			if (test != null)
 			{
-				test.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
+				if (test.currentRecording.gp != null)
+				{
+					test.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
+				}
+				if (aoi != null)
+				{
+					aoi.timeRangeStart = ((Xceed.Wpf.Toolkit.RangeSlider)e.Source).LowerValue;
+					writeToJSON(aoi);
+				}
 			}
 		}
 
 		private void DisplaySlider_HigherValueChanged(object sender, RoutedEventArgs e)
 		{
-			if (test.currentRecording.gp != null)
+			if (test != null)
 			{
-				test.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
-				aoi.timeRangeEnd = ((Xceed.Wpf.Toolkit.RangeSlider)e.Source).HigherValue;
+				if (test.currentRecording.gp != null)
+				{
+					test.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
+				}
+				if (aoi != null)
+				{
+					aoi.timeRangeEnd = ((Xceed.Wpf.Toolkit.RangeSlider)e.Source).HigherValue;
+					writeToJSON(aoi);
+				}
 			}
-
-
 		}
 
 		private void RadioBtn_Checked(object sender, RoutedEventArgs e)
@@ -208,6 +248,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 					effort = val;
 					break;
 			}
+			writeToJSON(aoi);
+			
 		}
 
 		public void setCheckBoxes()
@@ -294,6 +336,15 @@ namespace GazeTrackingAttentionDemo.UserControls
 				System.IO.File.WriteAllText(filePath, jsonData);
 			}
 
+		}
+
+		public void exit()
+		{
+			if(aoi != null)
+			{
+				writeToJSON(aoi);
+			}
+			endMarkup();
 		}
 
 		private void Aoi_CheckBox_Click(object sender, RoutedEventArgs e)

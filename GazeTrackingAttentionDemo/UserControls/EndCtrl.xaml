@@ -5,8 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GazeTrackingAttentionDemo.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Loaded="onLoad">
     <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="end">EndSession</Button> 
+        <StackPanel>
+            <Button x:Name="BackToOverview" Height="20"  Margin="0,0, 0,10" VerticalAlignment="Top" Click="BackToOverview_Click" >BackToOverview</Button>
+        <Button x:Name="end" Height="20" Margin="0,10, 0,0" VerticalAlignment="Top" Click="End_Click">EndSession</Button>
+        </StackPanel>
     </Grid>
 </UserControl>

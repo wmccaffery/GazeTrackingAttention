@@ -138,7 +138,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 				timestamp = fixationEndInlet.pull_sample(sample);
 				correction = fixationEndInlet.time_correction();
 
-				action(sample[0], sample[1], sample[2] correction + timestamp);
+				action(sample[0], sample[1], sample[2], correction + timestamp);
 			}
 		}
 	}

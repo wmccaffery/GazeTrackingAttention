@@ -136,13 +136,21 @@ namespace GazeTrackingAttentionDemo.UserControls
 			SelectedTest = (Test)((ListBox)e.Source).SelectedItem;
 
 			//render text
-			((DocumentCtrl)_mainWin.centerView.Content).loadText(user.GroupPath + "\\" + SelectedTest.Name + ".rtf");
+			if (SelectedTest != null)
+			{
+				((DocumentCtrl)_mainWin.centerView.Content).loadText(user.GroupPath + "\\" + SelectedTest.Name + ".rtf");
 
-			recordingList.ItemsSource = SelectedTest.recordings;
-			recordingList.Items.Refresh();
+				recordingList.ItemsSource = SelectedTest.recordings;
+				recordingList.Items.Refresh();
+			} else
+			{
+				recordingList.ItemsSource = null;
+				recordingList.Items.Refresh();
+			}
 
 			aoiList.ItemsSource = null;
 			aoiList.Items.Refresh();
+
 		}
 
 		//should change test listbox to use templates better like this

@@ -54,7 +54,7 @@ namespace GazeTrackingAttentionDemo
 		UserControl calibrationTest;
 
 		//second window
-		ControlWindow ctrlwin;
+		public ControlWindow ctrlwin;
 
 		public Stopwatch stopwatch = new Stopwatch();
 		public Int32 unixStartTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
@@ -190,6 +190,7 @@ namespace GazeTrackingAttentionDemo
 			calibrationTest = new UserControls.TestCalibrationCtrl();
 
 			aoiSelectionComplete += new selectionCompleteHandler(((AoiCtrl)selectionCtrl).endSelection);
+			progStateChanged += new stateChangedHandler(ctrlwin.stateChanged);
 			//this.KeyDown += new System.Windows.Input.KeyEventHandler(MainWindow_KeyDown);
 		}
 
@@ -198,6 +199,16 @@ namespace GazeTrackingAttentionDemo
 			switch (state)
 			{
 				case EState.Overview:
+					centerView.Content = stimuliDisplayArea;
+					leftView.Content = null;
+					rightView.Content = null;
+					MainCanvas.Children.Clear();
+					SelectionCanvas.Children.Clear();
+					if(Equals(centerView.Content.GetType(), stimuliDisplayArea.GetType()))
+					{
+						((DocumentCtrl)centerView.Content).clearText();
+					}
+
 					break;
 				case EState.Streaming:
 					break;
@@ -206,6 +217,10 @@ namespace GazeTrackingAttentionDemo
 					leftView.Content = selectionCtrl;
 					centerView.Content = stimuliDisplayArea;
 					((DocumentCtrl)stimuliDisplayArea).clearText();
+					((AoiCtrl)selectionCtrl).aoiList.SelectedItem = null;
+					((AoiCtrl)selectionCtrl).recordingList.SelectedItem = null;
+					((AoiCtrl)selectionCtrl).testList.SelectedItem = null;
+
 					break;
 			}
 		}
@@ -214,7 +229,6 @@ namespace GazeTrackingAttentionDemo
 		//handle user being created in ControlWindow
 		public void onUserCreated(User user)
 		{
-			centerView.Content = stimuliDisplayArea;
 
 			currentUser = user;
 			//State = EState.ReadyToCalibrate;
@@ -557,15 +571,21 @@ namespace GazeTrackingAttentionDemo
 					drawingAOI = false;
 					SelectionCanvas.Children.Clear();
 					aoiSelectionComplete(aoi);
-				} else
+				}
+				else
 				{
 					SelectionCanvas.Children.Add(ellipse);
 				}
 
 				Console.WriteLine("OriginalSource " + e.OriginalSource.GetType());
+			}
+
 		}
 
-	}
+		public void shutdown()
+		{
+			Application.Current.Shutdown();
+		}
 
 		//public void startSelection(String paragraph)
 		//{

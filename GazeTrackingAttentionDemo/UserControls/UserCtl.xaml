@@ -21,8 +21,6 @@
             </ComboBox>
             <Button Margin="300,20,300,20" Click="CreateUser_Click">Create</Button>
             <Button Margin="300,20,300,20" Click="Debug_Directload_Click">DEBUG DIRECTLOAD</Button>
-            <Button x:Name="exit" Margin="300,20,300,20" Click="Exit_Click">EXIT</Button>
-
         </StackPanel>
     </Grid>
 </UserControl>

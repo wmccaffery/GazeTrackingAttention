@@ -61,16 +61,14 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			_gazePointDataStream = _host.Streams.CreateGazePointDataStream();
 
 
-
-		//LSL
-		initLSL();
-
 			_lslHost = new LSLStreamInteractionHost();
 
 			_lslFixationDataStream = _lslHost.CreateNewLslFixationDataStream();
 			_lslGazeDataStream = _lslHost.CreateNewLslGazeDataStream();
 			_lslEEGDataStream = _lslHost.CreateNewLslEEGDataStream();
 		}
+
+
 
 		public bool resolveAllStreams()
 		{

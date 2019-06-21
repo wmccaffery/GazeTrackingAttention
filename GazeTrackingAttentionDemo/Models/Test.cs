@@ -13,7 +13,7 @@ namespace GazeTrackingAttentionDemo.Models
 		private string _testDataDir;	//path to store all data collected during the test
 		private string _stimuliPath;	//path of stimuli for test
 		private string _metaDataPath;	//path to store data on test
-		private string _currentUser;    //string username of user taking test
+		private string _userID;    //string username of user taking test
 		private string _testName;
 		private string _recordingDir;
 		private int _recordingNum;
@@ -23,6 +23,7 @@ namespace GazeTrackingAttentionDemo.Models
 		public int index;
 		public List<Recording> recordings;
 		public Recording currentRecording;
+		//public String testName;
 
 		
 
@@ -31,11 +32,14 @@ namespace GazeTrackingAttentionDemo.Models
 			DateTime dateTime = DateTime.Now;
 			this.index = testIndex;
 			StimuliPath = testPath;
+			//testName = Path.GetFileNameWithoutExtension(StimuliPath) + Environment.NewLine;
 			_testName = Path.GetFileNameWithoutExtension(_stimuliPath);
+			_userID = user.Id;
 			Console.WriteLine(StimuliPath);
 
 			//create new instance of data recorder
-			dataRecorder = new DataProcessing.StreamReader();
+			//dataRecorder = new DataProcessing.StreamReader(); this is done externally now
+			
 
 			//create path for test
 			TestDir = user.DirPath + "\\" + user.Id + "_test" + testIndex + "_" + Path.GetFileNameWithoutExtension(StimuliPath) + "_" + dateTime.ToString("dd-MM-yyyy");
@@ -60,14 +64,14 @@ namespace GazeTrackingAttentionDemo.Models
 			DataDir = TestDir + "\\Recording_" + (++_recordingNum) + "_" + dateTime.ToString("HH-mm-ss");
 			DirectoryInfo di = Directory.CreateDirectory(DataDir);
 			InfoPath = DataDir + "\\meta.txt";
-			currentRecording = new Recording(_recordingNum, isPaper, DataDir);
+			currentRecording = new Recording(_recordingNum, isPaper, this);
 			recordings.Add(currentRecording);
 
 
 			//append content
 			File.AppendAllText(InfoPath, "Current User " + user.Id + Environment.NewLine);
 			File.AppendAllText(InfoPath, "Current User Group " + user.GroupName + Environment.NewLine);
-			File.AppendAllText(InfoPath, "Test Name " + Path.GetFileNameWithoutExtension(StimuliPath) + Environment.NewLine);
+			File.AppendAllText(InfoPath, "Test Name " + Name);
 			File.AppendAllText(InfoPath, "Test Number " + index + Environment.NewLine);
 
 			if (isPaper)
@@ -93,11 +97,13 @@ namespace GazeTrackingAttentionDemo.Models
 
 		public string Name { get => _testName; set => _testName = value; }
 		public string StimuliPath { get => _stimuliPath; set => _stimuliPath = value; }
-		public string User { get => _currentUser; set => _currentUser = value; }
+		public string User { get => _userID; set => _userID = value; }
 		public string TestDir { get => _testDataDir; set => _testDataDir = value; }
 		public string DataDir { get => _recordingDir; set => _recordingDir = value; }
 		public string InfoPath { get => _metaDataPath; set => _metaDataPath = value; }
 		public int RecordingNum { get => _recordingNum; set => RecordingNum = value; }
+
+		public int RecordingNumDisp { get => _recordingNum + 1; }
 
 		public void testComplete()
 		{

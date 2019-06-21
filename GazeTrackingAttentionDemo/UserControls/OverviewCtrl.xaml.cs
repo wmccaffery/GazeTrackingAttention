@@ -69,6 +69,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			testLoaded += new TestLoadedHandler(mainWin.testCreated);
 			testLoaded += new TestLoadedHandler(parentWin.testCreated);
 			markupStarted += new MarkupHandler(mainWin.allTestsCompleted);
+			testList.Items.Refresh();
 		}
 
 		//fill list with test objects
@@ -90,6 +91,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			if((medium = stimuliMedium.SelectedItem.ToString()) != "Select medium")
 			{
 				Test test = (Test)testList.SelectedItem;
+				test.dataRecorder = new DataProcessing.StreamReader();
 				test.setMedium(medium);
 				test.dataRecorder.resolveAllStreams();
 				user.CurrentTest = test;

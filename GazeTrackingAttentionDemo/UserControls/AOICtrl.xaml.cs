@@ -113,7 +113,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void endSelection(Polygon p)
 		{
-			AOI aoi = new AOI(SelectedRecording);
+			AOI aoi = new AOI(SelectedRecording.testName, SelectedRecording.user);
 			aoi.p = p;
 			aoi.Name = "AOI_" + SelectedRecording.Aois.Count;
 			SelectedRecording.Aois.Add(aoi);
@@ -133,13 +133,16 @@ namespace GazeTrackingAttentionDemo.UserControls
 			_mainWin.MainCanvas.Children.Clear();
 			_mainWin.SelectionCanvas.Children.Clear();
 
-			//render text
 			SelectedTest = (Test)((ListBox)e.Source).SelectedItem;
+
+			//render text
 			((DocumentCtrl)_mainWin.centerView.Content).loadText(user.GroupPath + "\\" + SelectedTest.Name + ".rtf");
 
 			recordingList.ItemsSource = SelectedTest.recordings;
 			recordingList.Items.Refresh();
 
+			aoiList.ItemsSource = null;
+			aoiList.Items.Refresh();
 		}
 
 		//should change test listbox to use templates better like this
@@ -149,7 +152,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 			_mainWin.SelectionCanvas.Children.Clear();
 
-			if (SelectedTest != null)
+			if (SelectedAOI != null)
 			{
 				foreach (AOI a in SelectedRecording.Aois)
 				{
@@ -202,14 +205,14 @@ namespace GazeTrackingAttentionDemo.UserControls
 				SelectedRecording.gp = new GazePlot(SelectedRecording.fixations, SelectedRecording.saccades, _mainWin.MainCanvas);
 				SelectedRecording.gp.renderPlot(true, true, true, 0, 999999999);
 			}
-			else
-			{
-				//if for some reason test data is missing for a file provide an error message
-				AOI dummyAOI = new AOI(SelectedRecording);
-				dummyAOI.Name = "WARNING: No test data found for this file!";
-				aoiList.ItemsSource = new List<AOI>() { dummyAOI };
-				aoiList.Items.Refresh();
-			}
+			//else
+			//{
+			//	//if for some reason test data is missing for a file provide an error message
+			//	AOI dummyAOI = new AOI(SelectedRecording);
+			//	dummyAOI.Name = "WARNING: No test data found for this file!";
+			//	aoiList.ItemsSource = new List<AOI>() { dummyAOI };
+			//	aoiList.Items.Refresh();
+			//}
 		}
 	}
 }

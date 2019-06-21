@@ -15,18 +15,19 @@ namespace GazeTrackingAttentionDemo.Models
 		public Boolean isPaper;
 		public Boolean isCalibrated;
 		public String dataDir;
+		public String user;
+		public String testName;
 
 		List<AOI> _aois;
 		public List<AOI> Aois { get => _aois; set => _aois = value; }
 
-		public Recording(int index, bool isPaper, String dataPath)
+		public Recording(int index, bool isPaper, Test t)
 		{
 			Index = index;
 			this.isPaper = isPaper;
-			this.dataDir = dataPath;
-			//hold completed fixations
-			fixations = new List<Fixation>();
-			saccades = new List<Saccade>();
+			this.dataDir = t.DataDir;
+			this.testName = t.Name;
+			this.user = t.User;
 			//hold areas of interest
 			Aois = new List<AOI>();
 			

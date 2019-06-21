@@ -132,10 +132,10 @@
                         <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Click="CheckBox_Clicked" IsChecked="True" />
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
-                        <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top"  Click="CheckBox_Clicked"  />
+                        <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top"  Click="CheckBox_Clicked" IsChecked="True"  />
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
-                        <CheckBox x:Name="Aoi_CheckBox" Content="AOI" Click="CheckBox_Clicked" />
+                        <CheckBox x:Name="Aoi_CheckBox" Content="AOI" Click="Aoi_CheckBox_Click" />
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
                         <CheckBox x:Name="All_CheckBox" Content="All" Click="CheckBox_Clicked" />
@@ -162,53 +162,55 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Right" Width="289">
                     <Label Grid.Row="1" Content="Interest" FontSize="20" FontWeight="DemiBold" Grid.ColumnSpan="2"/>
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" Grid.ColumnSpan="2">
-                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Interest" Checked="RadioBtn_Checked">1</RadioButton>
-                        <RadioButton Style="{StaticResource RadioButton}"  GroupName="Interest" Checked="RadioBtn_Checked">2</RadioButton>
-                        <RadioButton Style="{StaticResource RadioButton}"  GroupName="Interest" Checked="RadioBtn_Checked">3</RadioButton>
-                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Interest" Checked="RadioBtn_Checked">4</RadioButton>
-                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Interest" Checked="RadioBtn_Checked">5</RadioButton>
+                    <StackPanel x:Name="Interest" Grid.Row="2" Orientation="Horizontal" Grid.ColumnSpan="2">
+                        <RadioButton x:Name="i1" Style="{StaticResource RadioButton}" GroupName="Interest" Checked="RadioBtn_Checked" Content="1"/>
+                        <RadioButton x:Name="i2" Style="{StaticResource RadioButton}"  GroupName="Interest" Checked="RadioBtn_Checked" Content="2"/>
+                        <RadioButton x:Name="i3" Style="{StaticResource RadioButton}"  GroupName="Interest" Checked="RadioBtn_Checked" Content="3"/>
+                        <RadioButton x:Name="i4" Style="{StaticResource RadioButton}" GroupName="Interest" Checked="RadioBtn_Checked" Content="4"/>
+                        <RadioButton x:Name="i5" Style="{StaticResource RadioButton}" GroupName="Interest" Checked="RadioBtn_Checked" Content="5"/>
                     </StackPanel>
                     <Label Grid.Row="3" Content="Attentiveness" FontSize="20" FontWeight="DemiBold" Grid.ColumnSpan="2"/>
-                    <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="2">
-                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Attentiveness" Checked="RadioBtn_Checked">1</RadioButton>
-                        <RadioButton Style="{StaticResource RadioButton}"  GroupName="Attentiveness" Checked="RadioBtn_Checked">2</RadioButton>
-                        <RadioButton Style="{StaticResource RadioButton}"  GroupName="Attentiveness" Checked="RadioBtn_Checked">3</RadioButton>
-                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Attentiveness" Checked="RadioBtn_Checked">4</RadioButton>
-                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Attentiveness" Checked="RadioBtn_Checked">5</RadioButton>
+                    <StackPanel x:Name="Attentiveness" Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="2">
+                        <RadioButton x:Name="a1" Style="{StaticResource RadioButton}" GroupName="Attentiveness" Checked="RadioBtn_Checked" Content="1"/>
+                        <RadioButton x:Name="a2" Style="{StaticResource RadioButton}"  GroupName="Attentiveness" Checked="RadioBtn_Checked" Content="2"/>
+                        <RadioButton x:Name="a3" Style="{StaticResource RadioButton}"  GroupName="Attentiveness" Checked="RadioBtn_Checked" Content="3"/>
+                        <RadioButton x:Name="a4" Style="{StaticResource RadioButton}" GroupName="Attentiveness" Checked="RadioBtn_Checked" Content="4"/>
+                        <RadioButton x:Name="a5" Style="{StaticResource RadioButton}" GroupName="Attentiveness" Checked="RadioBtn_Checked" Content="5"/>
                     </StackPanel>
                     <Label Grid.Row="5" Content="Effort" FontSize="20" FontWeight="DemiBold" Grid.ColumnSpan="2"/>
-                    <StackPanel Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="2">
-                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Effort" Checked="RadioBtn_Checked">1</RadioButton>
-                        <RadioButton Style="{StaticResource RadioButton}"  GroupName="Effort" Checked="RadioBtn_Checked">2</RadioButton>
-                        <RadioButton Style="{StaticResource RadioButton}"  GroupName="Effort" Checked="RadioBtn_Checked">3</RadioButton>
-                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Effort" Checked="RadioBtn_Checked">4</RadioButton>
-                        <RadioButton Style="{StaticResource RadioButton}" GroupName="Effort" Checked="RadioBtn_Checked">5</RadioButton>
+                    <StackPanel x:Name="Effort" Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="2">
+                        <RadioButton x:Name="e1" Style="{StaticResource RadioButton}" GroupName="Effort" Checked="RadioBtn_Checked" Content="1"/>
+                        <RadioButton x:Name="e2" Style="{StaticResource RadioButton}"  GroupName="Effort" Checked="RadioBtn_Checked" Content="2"/>
+                        <RadioButton x:Name="e3" Style="{StaticResource RadioButton}"  GroupName="Effort" Checked="RadioBtn_Checked" Content="3"/>
+                        <RadioButton x:Name="e4" Style="{StaticResource RadioButton}" GroupName="Effort" Checked="RadioBtn_Checked" Content="4"/>
+                        <RadioButton x:Name="e5" Style="{StaticResource RadioButton}" GroupName="Effort" Checked="RadioBtn_Checked" Content="5"/>
                     </StackPanel>
-                    <Button x:Name="addAnnotation"  Click="AddAnnotation_Click"> Add Annotation</Button>
                 </StackPanel>
             </Grid>
         </GroupBox>
 
-        <GroupBox x:Name="timeline_group" Grid.Row="0" Grid.RowSpan="10" Header="Timeline" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20">
+        <GroupBox x:Name="timeline_group" Grid.Row="0" Grid.RowSpan="10" Header="Timeline" Margin="20">
             <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <xctk:RangeSlider x:Name="DisplaySlider" Grid.Row="0" RenderTransformOrigin="0.5,0.5"  VerticalAlignment="Center" HorizontalAlignment="Center" LowerValueChanged="DisplaySlider_LowerValueChanged" HigherValueChanged="DisplaySlider_HigherValueChanged" Margin="-460,480,-457.5,486.5" Width="979" Height="22" >
-                    <xctk:RangeSlider.RenderTransform>
+                <xctk:RangeSlider x:Name="DisplaySlider" Orientation="Vertical" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Center" LowerValueChanged="DisplaySlider_LowerValueChanged" HigherValueChanged="DisplaySlider_HigherValueChanged" RenderTransformOrigin="0.5,0.5">
+                    <xctk:RangeSlider.LayoutTransform>
                         <TransformGroup>
-                            <ScaleTransform/>
+                            <ScaleTransform ScaleY="1.5" ScaleX="1.5"/>
                             <SkewTransform/>
-                            <RotateTransform Angle="90"/>
-                            <TranslateTransform/>
+                            <RotateTransform Angle="180"/>
+                            <TranslateTransform X="1" Y="1"/>
                         </TransformGroup>
-                    </xctk:RangeSlider.RenderTransform>
+                    </xctk:RangeSlider.LayoutTransform>
+                    <!--<xctk:RangeSlider.LayoutTransform>
+                        <ScaleTransform ScaleX="2" ScaleY="2" CenterX="0.5" CenterY="0.5"/>
+                    </xctk:RangeSlider.LayoutTransform>-->
                 </xctk:RangeSlider>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBox x:Name="DisplaySlider_Lower" Text="{Binding ElementName=DisplaySlider,Path=LowerValue}" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Bottom" TextWrapping="Wrap" Height="24" Width="auto" BorderThickness="0"/>
-                    <Label>-</Label>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                    <TextBox x:Name="DisplaySlider_Lower" Text="{Binding ElementName=DisplaySlider,Path=LowerValue}" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Bottom" TextWrapping="Wrap" Height="24" Width="auto" BorderThickness="0" Margin="0,0,0,0.5"/>
+                    <Label Grid.Row="1"></Label>
                     <TextBox x:Name="DisplaySlider_Higher" Text="{Binding ElementName=DisplaySlider,Path=HigherValue}" Grid.Row="1"  HorizontalAlignment="Right" VerticalAlignment="Bottom" TextWrapping="Wrap" Height="24" Width="auto" BorderThickness="0"/>
                 </StackPanel>
 

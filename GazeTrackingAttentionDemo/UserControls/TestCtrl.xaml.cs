@@ -81,17 +81,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		}
 
-		//public void setup(String path)
-		//{
-		//	WebcamViewer.VideoDirectory = path;
-		//	Console.WriteLine("VID DIR SET TO " + WebcamViewer.VideoDirectory);
-		//	string[] video = Directory.GetFiles(WebcamViewer.VideoDirectory, "*.wmv");
-		//	foreach (String s in video)
-		//	{
-		//		File.Delete(s);
-		//	}
-		//}
-
 		public void startRecording()
 		{
 			WebcamViewer.StartRecording();
@@ -116,7 +105,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		private void Stream_Click(object sender, RoutedEventArgs e)
 		{
-		
+			user.CurrentTest.dataRecorder.initLSL();
 			WebcamViewer.StartPreview();
 			Streaming();
 		}

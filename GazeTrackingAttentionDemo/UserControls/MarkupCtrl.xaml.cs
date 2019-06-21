@@ -24,17 +24,16 @@ namespace GazeTrackingAttentionDemo.UserControls
 	public partial class MarkupCtrl : UserControl
 	{
 
-		Boolean showGaze;
-		Boolean showFixations;
-		Boolean showSaccades;
-		Boolean dataRecorded;
-
 		private MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow;
 
 
 		Test test;
 		AOI aoi;
 		Recording recording;
+
+		int effort;
+		int attentiveness;
+		int interest;
 
 		public MarkupCtrl()
 		{
@@ -68,17 +67,27 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void onAOIChanged(AOI aoi)
 		{
-			this.aoi = aoi;
-			markup_group.IsEnabled = true;
+			if(this.aoi != null)
+			{
+				writeToJSON(this.aoi);
+			}
+			if (aoi != null)
+			{
+				this.aoi = aoi;
+				effort = aoi.Effort;
+				attentiveness = aoi.Attentiveness;
+				interest = aoi.Interest;
+				setCheckBoxes();
+				markup_group.IsEnabled = true;
+			}
 
 		}
 
 		public void onRecordingChanged(Recording recording)
 		{
-			this.recording = recording;
-
 			if (recording != null)
 			{
+				this.recording = recording;
 				timeline_group.IsEnabled = true;
 				visualisation_group.IsEnabled = true;
 				string[] video = Directory.GetFiles(recording.dataDir, "*.wmv");
@@ -101,14 +110,27 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 				DisplaySlider.HigherValue = DisplaySlider.Maximum;
 				DisplaySlider.LowerValue = DisplaySlider.Minimum;
+			} 
+			if(this.aoi != null)
+			{
+				writeToJSON(aoi);
 			}
+			aoi = null;
+			markup_group.IsEnabled = false;
+
 		}
 
 		public void onTestChanged(Test test)
 		{
 			this.test = test;
+			if (this.aoi != null)
+			{
+				writeToJSON(aoi);
+			}
 			this.aoi = null;
 			markup_group.IsEnabled = false;
+			timeline_group.IsEnabled = false;
+			visualisation_group.IsEnabled = false;
 
 		}
 
@@ -126,36 +148,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 		private void btnStop_Click(object sender, RoutedEventArgs e)
 		{
 			player.Stop();
-		}
-
-		private void Gaze_CheckBox_Checked(object sender, RoutedEventArgs e)
-		{
-			showGaze = true;
-		}
-
-		private void Gaze_CheckBox_Unchecked(object sender, RoutedEventArgs e)
-		{
-			showGaze = false;
-		}
-
-		private void Fixation_CheckBox_Checked(object sender, RoutedEventArgs e)
-		{
-			showFixations = true;
-		}
-
-		private void Fixation_CheckBox_Unchecked(object sender, RoutedEventArgs e)
-		{
-			showFixations = false;
-		}
-
-		private void Saccade_CheckBox_Checked(object sender, RoutedEventArgs e)
-		{
-			showSaccades = true;
-		}
-
-		private void Saccade_CheckBox_Unchecked(object sender, RoutedEventArgs e)
-		{
-			showSaccades = false;
 		}
 
 		private void All_CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -194,72 +186,125 @@ namespace GazeTrackingAttentionDemo.UserControls
 			if (test.currentRecording.gp != null)
 			{
 				test.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
+				aoi.timeRangeEnd = ((Xceed.Wpf.Toolkit.RangeSlider)e.Source).HigherValue;
 			}
+
+
 		}
 
 		private void RadioBtn_Checked(object sender, RoutedEventArgs e)
 		{
 			String group = ((RadioButton)e.Source).GroupName;
 			int val = Int32.Parse(((RadioButton)e.Source).Content.ToString());
+			switch (group)
+			{
+				case "Interest":
+					interest = val;
+					break;
+				case "Attentiveness":
+					attentiveness = val;
+					break;
+				case "Effort":
+					effort = val;
+					break;
+			}
 		}
 
-		private void AddAnnotation_Click(object sender, RoutedEventArgs e)
+		public void setCheckBoxes()
 		{
-			if(aoi != null) {
-				writeToJSON(aoi);
-			}
-			
+			UIElementCollection ae = Attentiveness.Children;
+			UIElementCollection ee = Effort.Children;
+			UIElementCollection ie = Interest.Children;
+			setcheck(ae, attentiveness);
+			setcheck(ee, effort);
+			setcheck(ie, interest);
 		}
 
-		public void writeToJSON(AOI aoi) //adapted from stackoverflow https://stackoverflow.com/questions/20626849/how-to-append-a-json-file-without-disturbing-the-formatting
+		private void setcheck(UIElementCollection elements, int val)
 		{
-			string filePath = recording.dataDir + "\\annotations.json";
-			List<AOI> aoiList;
-			String jsonData;
-
-			// Read existing json data
-			if (!File.Exists(filePath))
+			foreach (RadioButton e in elements)
 			{
-				File.WriteAllText(filePath, "");
-				aoiList = new List<AOI>();
-			}
-			else
-			{
-
-				jsonData = File.ReadAllText(filePath);
-
-				// De-serialize to object or create new list
-				aoiList = JsonConvert.DeserializeObject<List<AOI>>(jsonData)
-					  ?? new List<AOI>();
-			}
-
-			// Add new aoi
-			bool alreadyAnnotated = false;
-			int index = 0;
-			foreach (AOI a in aoiList)
-			{
-				if (Equals(aoi.Name, a.Name) && Equals(aoi.location, a.location))
+				if (Int32.Parse(e.Content.ToString()) == val)
 				{
-					index = aoiList.IndexOf(a);
-					alreadyAnnotated = true;
+					e.IsChecked = true;
 				}
 			}
+		}
 
-			if (alreadyAnnotated)
+
+		public void writeToJSON(AOI aoi) //adapted from https://stackoverflow.com/questions/20626849/how-to-append-a-json-file-without-disturbing-the-formatting
+		{
+			if (aoi != null)
 			{
-				aoiList[index] = aoi;
+				//set values
+				aoi.timeRangeStart = DisplaySlider.LowerValue;
+				aoi.timeRangeEnd = DisplaySlider.HigherValue;
+				aoi.Interest = interest;
+				aoi.Attentiveness = attentiveness;
+				aoi.Effort = effort;
+
+
+				aoi.convertPolygon();
+
+				string filePath = recording.dataDir + "\\annotations.json";
+				List<AOI> aoiList;
+				String jsonData;
+
+				// Read existing json data
+				if (!File.Exists(filePath))
+				{
+					File.WriteAllText(filePath, "");
+					aoiList = new List<AOI>();
+				}
+				else
+				{
+
+					jsonData = File.ReadAllText(filePath);
+
+					// De-serialize to object or create new list
+					aoiList = JsonConvert.DeserializeObject<List<AOI>>(jsonData)
+						  ?? new List<AOI>();
+				}
+
+				// Add new aoi
+				bool alreadyAnnotated = false;
+				int index = 0;
+				foreach (AOI a in aoiList)
+				{
+					if (Equals(aoi.Name, a.Name) && Equals(aoi.test, a.test))
+					{
+						index = aoiList.IndexOf(a);
+						alreadyAnnotated = true;
+					}
+				}
+
+				if (alreadyAnnotated)
+				{
+					aoiList[index] = aoi;
+				}
+				else
+				{
+					aoiList.Add(aoi);
+				}
+
+
+				// Update json data string
+				jsonData = JsonConvert.SerializeObject(aoiList);
+
+				System.IO.File.WriteAllText(filePath, jsonData);
 			}
-			else
+
+		}
+
+		private void Aoi_CheckBox_Click(object sender, RoutedEventArgs e)
+		{
+			if ((bool)((CheckBox)e.Source).IsChecked)
 			{
-				aoiList.Add(aoi);
+				_mainWindow.SelectionCanvas.Visibility = Visibility.Visible;
+			} else
+			{
+				_mainWindow.SelectionCanvas.Visibility = Visibility.Hidden;
 			}
-
-
-			// Update json data string
-			jsonData = JsonConvert.SerializeObject(aoiList);
-
-			System.IO.File.WriteAllText(filePath, jsonData);
-
 		}
 	}
 }

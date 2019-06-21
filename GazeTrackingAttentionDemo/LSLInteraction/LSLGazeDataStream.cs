@@ -55,7 +55,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		{
 			while (true)
 			{
-				float[] sample = new float[2];
+				float[] sample = new float[3];
 				double timestamp;
 				double correction;
 				timestamp = gazeDataInlet.pull_sample(sample);

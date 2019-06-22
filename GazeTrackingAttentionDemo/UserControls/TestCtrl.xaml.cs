@@ -117,6 +117,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			dr.stopRecording();
 
 			user.CurrentTest.currentRecording.fixations = dr.getFixations();
+			user.CurrentTest.currentRecording.saccades = dr.getSaccades(user.CurrentTest.currentRecording.fixations);
 
 			String fixationpath = dr.getCleanFixationPath();
 

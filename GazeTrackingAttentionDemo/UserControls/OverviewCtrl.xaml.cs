@@ -127,6 +127,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 				eegDataRecorder.readStreams();
 				eegDataRecorder.recordStreams();
 				((Button)e.Source).Content = "Stop Recording";
+				startMarkup.IsEnabled = false;
+				nextBtn.IsEnabled = false;
+				stimuliMedium.IsEnabled = false;
 				eegrecord = true;
 			} else
 			{
@@ -134,6 +137,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 				eegDataRecorder.closeLslEEGStream();
 				eegDataRecorder.Dispose();
 				((Button)e.Source).Content = "Record EEG";
+				startMarkup.IsEnabled = true;
+				nextBtn.IsEnabled = true;
+				stimuliMedium.IsEnabled = true;
 				eegrecord = false;
 
 			}

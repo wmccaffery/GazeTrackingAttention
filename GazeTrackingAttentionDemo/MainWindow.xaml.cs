@@ -252,84 +252,6 @@ namespace GazeTrackingAttentionDemo
 			State = EState.Overview;
 		}
 
-		public void onDirectLoad()
-		{
-			currentUser = new User("DummyUser", "Group1", "C:\\MMAD\\TestGroups\\Group1");
-			currentUser.testList = new List<Test>();
-			//gen tests
-			int j = 0;
-			List<String> testPaths = currentUser.getTestPaths();
-
-			foreach (String s in testPaths)
-			{
-				currentUser.testList.Add(new Test(currentUser, s, j));
-				j++;
-			}
-
-			Test t = currentUser.testList[0];
-			t.setMedium("SCREEN");
-			t.dataRecorder = new DataProcessing.StreamReader();
-			//currentUser.testList.Add(t);
-			String dataPath = t.TestDir + "Recording_0";
-
-			currentUser.testList[0].recordings = new List<Recording>();
-			currentUser.testList[0].addNewRecording(currentUser);
-			currentUser.testList[0].currentRecording.fixations = new List<Fixation>();
-			currentUser.testList[0].currentRecording.saccades = new List<Saccade>();
-
-
-			//read from very old log file
-			string videopath = @"C:\MMAD\DummyData\postTermUser21_Group_TestGroup_30-05-2019--09-15-17\postTermUser21_test0rtf30-05-2019--09-15-22\SubjectpostTermUser21QPCstart29355end35130.wmv";
-			File.Copy(videopath, (currentUser.testList[0].currentRecording.dataDir + "\\SubjectpostTermUser21QPCstart29355end35130.wmv"));
-			string filepath = @"C:\MMAD\DummyData\postTermUser21_Group_TestGroup_30-05-2019--09-15-17\postTermUser21_test0rtf30-05-2019--09-15-22\_test_030-05-2019--09-15-40_U1559204140_EYETRACKER_cleanFixationData.csv";
-			System.IO.StreamReader file = new System.IO.StreamReader(filepath);
-			string line;
-			Fixation f = new Fixation();
-			f.dataPos = new List<DataPoint>();
-			int linenum = 0;
-
-			//read in file
-			int i = 0;
-			while ((line = file.ReadLine()) != null)
-			{
-				if (linenum != 0)
-				{
-					string[] values = line.Split(',');
-					String type = values[0];
-					float x = float.Parse(values[1], System.Globalization.CultureInfo.InvariantCulture);
-					float y = float.Parse(values[2], System.Globalization.CultureInfo.InvariantCulture);
-					float timestamp = float.Parse(values[3], System.Globalization.CultureInfo.InvariantCulture);
-
-
-					if (type.Equals("Begin"))
-					{
-						f.startPos = new DataPoint(x, y, timestamp);
-					}
-					else if (type.Equals("Data"))
-					{
-						f.dataPos.Add(new DataPoint(x, y, timestamp));
-					}
-					else
-					{
-						f.endPos = new DataPoint(x, y, timestamp);
-						f.completeFixation(i);
-						currentUser.testList[0].currentRecording.fixations.Add(f);
-						f = new Fixation();
-						i++;
-						f.dataPos = new List<DataPoint>();
-					}
-				}
-				linenum++;
-			}
-			file.Close();
-
-			Console.WriteLine("COUNT " + currentUser.testList[0].currentRecording.fixations.Count);
-
-			currentUser.testList[0].currentRecording.saccades = currentUser.testList[0].dataRecorder.getSaccades(currentUser.testList[0].currentRecording.fixations);
-			
-			State = EState.Markup;
-		}
-
 		public void testCreated()
 		{
 			State = EState.Ready;
@@ -415,12 +337,87 @@ namespace GazeTrackingAttentionDemo
 
 				Console.WriteLine("OriginalSource " + e.OriginalSource.GetType());
 			}
-
 		}
 
 		public void shutdown()
 		{
 			Application.Current.Shutdown();
+		}
+
+		public void onDirectLoad()
+		{
+			currentUser = new User("DummyUser", "Group1", "C:\\MMAD\\TestGroups\\Group1");
+			currentUser.testList = new List<Test>();
+			//gen tests
+			int j = 0;
+			List<String> testPaths = currentUser.getTestPaths();
+
+			foreach (String s in testPaths)
+			{
+				currentUser.testList.Add(new Test(currentUser, s, j));
+				j++;
+			}
+
+			Test t = currentUser.testList[0];
+			t.setMedium("SCREEN");
+			t.dataRecorder = new DataProcessing.StreamReader();
+			//currentUser.testList.Add(t);
+			String dataPath = t.TestDir + "Recording_0";
+
+			currentUser.testList[0].recordings = new List<Recording>();
+			currentUser.testList[0].addNewRecording(currentUser);
+			currentUser.testList[0].currentRecording.fixations = new List<Fixation>();
+			currentUser.testList[0].currentRecording.saccades = new List<Saccade>();
+
+
+			//read from very old log file
+			string videopath = @"C:\MMAD\DummyData\postTermUser21_Group_TestGroup_30-05-2019--09-15-17\postTermUser21_test0rtf30-05-2019--09-15-22\SubjectpostTermUser21QPCstart29355end35130.wmv";
+			File.Copy(videopath, (currentUser.testList[0].currentRecording.dataDir + "\\SubjectpostTermUser21QPCstart29355end35130.wmv"));
+			string filepath = @"C:\MMAD\DummyData\postTermUser21_Group_TestGroup_30-05-2019--09-15-17\postTermUser21_test0rtf30-05-2019--09-15-22\_test_030-05-2019--09-15-40_U1559204140_EYETRACKER_cleanFixationData.csv";
+			System.IO.StreamReader file = new System.IO.StreamReader(filepath);
+			string line;
+			Fixation f = new Fixation();
+			f.dataPos = new List<DataPoint>();
+			int linenum = 0;
+
+			//read in file
+			int i = 0;
+			while ((line = file.ReadLine()) != null)
+			{
+				if (linenum != 0)
+				{
+					string[] values = line.Split(',');
+					String type = values[0];
+					float x = float.Parse(values[1], System.Globalization.CultureInfo.InvariantCulture);
+					float y = float.Parse(values[2], System.Globalization.CultureInfo.InvariantCulture);
+					float timestamp = float.Parse(values[3], System.Globalization.CultureInfo.InvariantCulture);
+
+
+					if (type.Equals("Begin"))
+					{
+						f.startPos = new DataPoint(x, y, timestamp);
+					}
+					else if (type.Equals("Data"))
+					{
+						f.dataPos.Add(new DataPoint(x, y, timestamp));
+					}
+					else
+					{
+						f.endPos = new DataPoint(x, y, timestamp);
+						f.completeFixation(i);
+						currentUser.testList[0].currentRecording.fixations.Add(f);
+						f = new Fixation();
+						i++;
+						f.dataPos = new List<DataPoint>();
+					}
+				}
+				linenum++;
+			}
+			file.Close();
+
+			currentUser.testList[0].currentRecording.saccades = currentUser.testList[0].dataRecorder.getSaccades(currentUser.testList[0].currentRecording.fixations);
+
+			State = EState.Markup;
 		}
 
 		//old code

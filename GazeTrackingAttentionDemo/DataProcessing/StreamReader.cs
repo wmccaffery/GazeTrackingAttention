@@ -439,7 +439,6 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 					i++;
 				}
 			}
-
 			return saccades;
 		}
 

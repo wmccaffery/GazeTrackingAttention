@@ -341,6 +341,11 @@ namespace GazeTrackingAttentionDemo
 			State = EState.Streaming;
 		}
 
+		public void stopStreaming()
+		{
+			State = EState.Ready;
+		}
+
 		public void testCompleted()
 		{
 			//currentTest.testComplete();

@@ -123,7 +123,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 			{
 				eegDataRecorder = new DataProcessing.StreamReader();
 				eegDataRecorder.resolveEEGStream();
-				eegDataRecorder.readStreams(true, user.DirPath + @"\");
+				eegDataRecorder.setRecordingPaths(true, user.DirPath + @"\");
+				eegDataRecorder.readStreams();
 				eegDataRecorder.recordStreams();
 				((Button)e.Source).Content = "Stop Recording";
 				eegrecord = true;

@@ -37,11 +37,10 @@
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button x:Name="startCalibration" FontSize="18" Margin="5,5,5,5" Width="90" Click="StartCalibration_Click">Calibrate</Button>
-            <Label x:Name="calibrationStatus" Margin="5,5,5,5" FontSize="18"> NOT CALIBRATED </Label>
         </StackPanel>
         <StackPanel Grid.Row="2"  Orientation="Horizontal">
             <Button x:Name="stream" FontSize="18" Margin="5,5,5,5" Width="90" Click="Stream_Click">Stream</Button>
-            <Button x:Name="record" FontSize="18" Margin="5,5,5,5" Width="90" Click="Record_Click">Record</Button>
+            <Button x:Name="record" FontSize="18" Margin="5,5,5,5" Width="90" Click="Record_Click" IsEnabled="False">Record</Button>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal">
             <Button x:Name="finishTest" FontSize="18" Margin="5,5,5,5" Width="90" Click="FinishTest_Click">End Test</Button>

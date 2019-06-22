@@ -42,6 +42,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 		public delegate void StreamingHandler();
 		public event StreamingHandler Streaming;
 
+		public delegate void NotStreamingHandler();
+		public event NotStreamingHandler NotStreaming;
+
 		public TestCtrl()
 		{
 
@@ -78,11 +81,29 @@ namespace GazeTrackingAttentionDemo.UserControls
 			//WebcamViewer.StartPreview();
 			TestCompleted += new TestCompletedHandler(_mainWindow.testCompleted);
 			Streaming += new StreamingHandler(_mainWindow.startStreaming);
+			NotStreaming += new NotStreamingHandler(_mainWindow.stopStreaming);
 
+
+		}
+
+		public void startStreaming()
+		{
+			user.CurrentTest.dataRecorder.readStreams();
+			WebcamViewer.StartPreview();
+			Streaming();
+		}
+
+		public void stopStreaming()
+		{
+			user.CurrentTest.dataRecorder.closeAllLslStreams();
+			WebcamViewer.StopPreview();
+			NotStreaming();
 		}
 
 		public void startRecording()
 		{
+			user.CurrentTest.addNewRecording(user);
+			user.CurrentTest.dataRecorder.setRecordingPaths(false);
 			user.CurrentTest.dataRecorder.recordStreams();
 			WebcamViewer.StartRecording();
 			startts = _mainWindow.stopwatch.ElapsedMilliseconds;
@@ -91,67 +112,80 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void stopRecording()
 		{
+			String dataPath = user.CurrentTest.currentRecording.dataDir;
+			DataProcessing.StreamReader dr = user.CurrentTest.dataRecorder;
+			dr.stopRecording();
+
+			user.CurrentTest.currentRecording.fixations = dr.getFixations();
+
+			String fixationpath = dr.getCleanFixationPath();
+
+			//write fixations
+			foreach (Fixation f in user.CurrentTest.currentRecording.fixations)
+			{
+				dr.recordFixations(fixationpath, f);
+			}
+
+			//set highest test
+			if (user.CurrentTest.index > user.highestTestIndex)
+			{
+				user.highestTestIndex = user.CurrentTest.index;
+			}
+
 			WebcamViewer.StopRecording();
 			endts = _mainWindow.stopwatch.ElapsedMilliseconds;
-			WebcamViewer.StopPreview();
 			string[] video = Directory.GetFiles(WebcamViewer.VideoDirectory, "*.wmv");
 			File.Move(video[0], user.CurrentTest.DataDir + "//Subject" + _mainWindow.currentUser.Id  + "QPCstart" + startts + "end" + endts + ".wmv");
 		}
 
 		private void FinishTest_Click(object sender, RoutedEventArgs e)
 		{
+			if(_mainWindow.State == MainWindow.EState.Streaming)
+			{
+				stopStreaming();
+			}
 			user.CurrentTest.testComplete();
 			TestCompleted();
 		}
 
 		private void Stream_Click(object sender, RoutedEventArgs e)
 		{
-			user.CurrentTest.addNewRecording(user);
-			user.CurrentTest.dataRecorder.readStreams(false);
-			WebcamViewer.StartPreview();
-			Streaming();
+			if (_mainWindow.State == MainWindow.EState.Ready)
+			{
+				startStreaming();
+				record.IsEnabled = true;
+				stream.Content = "Stop Streaming";
+
+			}
+			else if (_mainWindow.State == MainWindow.EState.Streaming)
+			{
+				stopStreaming();
+				record.IsEnabled = false;
+				stream.Content = "Stream";
+
+			}
+
 		}
 
 		private void Record_Click(object sender, RoutedEventArgs e)
 		{
-			if(_mainWindow.State == MainWindow.EState.Recording)
-			{
-				String dataPath = user.CurrentTest.currentRecording.dataDir;
-				DataProcessing.StreamReader dr = user.CurrentTest.dataRecorder;
-				dr.stopRecording();
-				dr.closeLslStreams();
-				stopRecording();
-
-				user.CurrentTest.currentRecording.fixations = dr.getFixations();
-
-				//gen cleaned fixation file pathname
-				String testDir = dataPath;
-				String uid = user.Id;
-				int test = user.CurrentTest.index;
-				DateTime time = DateTime.Now;
-				Int32 unixts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-				String rawPath = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts + "_EYETRACKER_cleanFixationData.csv";
-
-				//write fixations
-				foreach (Fixation f in user.CurrentTest.currentRecording.fixations)
-				{
-					dr.recordFixations(rawPath, f);
-				}
-
-				//set highest test
-				if (user.CurrentTest.index > user.highestTestIndex)
-				{
-					user.highestTestIndex = user.CurrentTest.index;
-				}
-				((Button)e.Source).Content = "Start Recording";
-				_mainWindow.State = MainWindow.EState.Ready;
-
-			}
-			else if(_mainWindow.State == MainWindow.EState.Streaming)
+			if (_mainWindow.State == MainWindow.EState.Streaming)
 			{
 				startRecording();
+				stream.IsEnabled = false;
+				finishTest.IsEnabled = false;
 				((Button)e.Source).Content = "Stop Recording";
 				_mainWindow.State = MainWindow.EState.Recording;
+
+			}
+			else if (_mainWindow.State == MainWindow.EState.Recording)
+			{
+
+				stopRecording();
+				stream.IsEnabled = true;
+				finishTest.IsEnabled = true;
+				((Button)e.Source).Content = "Start Recording";
+				_mainWindow.State = MainWindow.EState.Streaming;
 			}
 		}
 

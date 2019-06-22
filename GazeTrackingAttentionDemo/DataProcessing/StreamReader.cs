@@ -48,6 +48,13 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		public liblsl.StreamInfo fixationEndInfo;
 		public liblsl.StreamOutlet fixationEndOutlet;
 
+		//filepaths
+		string metaData;
+		string fixationRawPath;
+		string fixationCleanPath;
+		string gazeRawPath;
+		string eegRawPath;
+
 
 
 		public StreamReader()
@@ -191,36 +198,8 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 				});
 		}
 
-		public void readStreams(bool customFile, string customFileDir="")
+		public void readStreams()
 		{
-			String testDir;
-			String uid = _mainWindow.currentUser.Id;
-			int test;
-			DateTime time = DateTime.Now;
-			Int32 unixts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-
-			String test_metadata;
-			String fixationRawPath;
-			String gazeRawPath;
-			String eegRawPath;
-
-			if (customFile)
-			{
-				test_metadata = customFileDir + "//EEG_Baseline_" + uid + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
-			} else
-			{
-				testDir = _mainWindow.currentUser.CurrentTest.currentRecording.dataDir;
-				test = _mainWindow.currentUser.CurrentTest.index;
-				test_metadata = testDir + "//" + uid + "_test_" + test + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
-			}
-
-			//create test paths
-			fixationRawPath = test_metadata + "_EYETRACKER_rawFixationData.csv ";
-			gazeRawPath = test_metadata + "_EYETRACKER_rawGazeData.csv";
-			eegRawPath = test_metadata + "_EEG_rawEEGData.csv";
-
-
-			//record data
 			if (_lslFixationDataStream.eyeTrackerPresent) {
 				Console.WriteLine("reading streams");
 				_lslFixationDataStream
@@ -338,6 +317,40 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			}
 		}
 
+		//set recording directories
+		public void setRecordingPaths(bool customFile, string customFilePath="")
+		{
+			//current user
+			User user = _mainWindow.currentUser;
+			Test test = user.CurrentTest;
+
+
+			DateTime time = DateTime.Now;
+			Int32 unixts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+
+			if (customFile)
+			{
+				metaData = customFilePath + "//EEG_Baseline_" + user.Id + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
+			}
+			else
+			{
+				string testDir = test.currentRecording.dataDir;
+				int testNum = test.index;
+				metaData = testDir + "//" + user.Id + "_test_" + testNum + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
+			}
+
+			//create test paths
+			fixationRawPath = metaData + "_EYETRACKER_rawFixationData.csv ";
+			fixationCleanPath = metaData + "_EYETRACKER_cleanFixationData.csv";
+			gazeRawPath = metaData + "_EYETRACKER_rawGazeData.csv";
+			eegRawPath = metaData + "_EEG_rawEEGData.csv";
+		}
+
+		public string getCleanFixationPath()
+		{
+			return fixationCleanPath;
+		}
+
 		public void recordFixations(String rawPath, Fixation fixation)
 		{
 			if (!File.Exists(rawPath))
@@ -445,7 +458,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			_record = false;
 		}
 
-		public void closeLslStreams()
+		public void closeAllLslStreams()
 		{
 			Console.WriteLine("Closing lsl streams...");
 			_lslHost.closeStream(_lslFixationDataStream);

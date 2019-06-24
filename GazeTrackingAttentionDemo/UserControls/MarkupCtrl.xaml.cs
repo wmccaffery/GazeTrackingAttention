@@ -34,6 +34,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 		AOI aoi;
 		Recording recording;
 
+		double startTime;
+
 		int effort;
 		int attentiveness;
 		int interest;
@@ -127,16 +129,17 @@ namespace GazeTrackingAttentionDemo.UserControls
 				if (test.currentRecording.fixations.Count > 0)
 				{
 					DisplaySlider.Maximum = recording.fixations[test.currentRecording.fixations.Count - 1].endPos.timestamp;
-					DisplaySlider.Minimum = recording.fixations[0].startPos.timestamp;
+					startTime = DisplaySlider.Minimum = recording.fixations[0].startPos.timestamp;
 				}
 				else
 				{
-					DisplaySlider.Maximum = 0;
+					startTime = DisplaySlider.Maximum = 0;
 					DisplaySlider.Minimum = 0;
 				}
 
 				DisplaySlider.HigherValue = DisplaySlider.Maximum;
 				DisplaySlider.LowerValue = DisplaySlider.Minimum;
+
 			} 
 			if(this.aoi != null)
 			{
@@ -214,6 +217,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 					writeToJSON(aoi);
 				}
 			}
+			TimeRange_Start.Text = String.Format("{0:0}",("" + (DisplaySlider.LowerValue - startTime)));
 		}
 
 		private void DisplaySlider_HigherValueChanged(object sender, RoutedEventArgs e)
@@ -230,6 +234,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 					writeToJSON(aoi);
 				}
 			}
+			TimeRange_End.Text = String.Format("{0:0}", ("" + (DisplaySlider.HigherValue - startTime)));
 		}
 
 		private void RadioBtn_Checked(object sender, RoutedEventArgs e)

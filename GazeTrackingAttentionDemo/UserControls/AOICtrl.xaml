@@ -44,7 +44,7 @@
                 <Button x:Name="drawAoi" Width="150" FontSize="20"  Margin="0,0,5,5" Click="DrawAoi_Click">Add New AOI</Button>
                 <Button x:Name="clearAoi" Width="150" FontSize="20"  Margin="0,0,5,5" IsEnabled="False"> Clear Current</Button>
             </StackPanel>
-            <Button x:Name="delAOI" HorizontalAlignment="Left" Width="150" FontSize="20">Remove AOI</Button>
+            <Button x:Name="removeAOI" HorizontalAlignment="Left" Width="150" FontSize="20" Click="RemoveAOI_Click">Remove AOI</Button>
         </StackPanel>
     </Grid>
 </UserControl>

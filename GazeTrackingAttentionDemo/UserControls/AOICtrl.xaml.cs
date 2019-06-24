@@ -108,6 +108,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 			if (SelectedRecording != null)
 			{
 				StartSelection();
+				drawAoi.IsEnabled = false;
+				removeAOI.IsEnabled = false;
 			}
 		}
 
@@ -125,6 +127,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 				a.p.Stroke = new SolidColorBrush(Color.FromRgb(255, 250, 205));
 				_mainWin.SelectionCanvas.Children.Add(a.p);
 			}
+			drawAoi.IsEnabled = true;
+			removeAOI.IsEnabled = true;
 		}
 
 		private void TestList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -221,6 +225,11 @@ namespace GazeTrackingAttentionDemo.UserControls
 			//	aoiList.ItemsSource = new List<AOI>() { dummyAOI };
 			//	aoiList.Items.Refresh();
 			//}
+		}
+
+		private void RemoveAOI_Click(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 }

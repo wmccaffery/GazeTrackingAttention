@@ -135,7 +135,7 @@
                         <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top"  Click="CheckBox_Clicked" IsChecked="True"  />
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
-                        <CheckBox x:Name="Aoi_CheckBox" Content="AOI" Click="Aoi_CheckBox_Click" />
+                        <CheckBox x:Name="Aoi_CheckBox" Content="AOI" Click="Aoi_CheckBox_Click" IsChecked="True" />
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
                         <CheckBox x:Name="All_CheckBox" Content="All" Click="CheckBox_Clicked" />

@@ -171,7 +171,7 @@
     <Compile Include="Models\Saccade.cs" />
     <Compile Include="Models\Test.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="DataProcessing\StreamReader.cs" />
+    <Compile Include="DataProcessing\DataRecorder.cs" />
     <Compile Include="UserControls\CalibrationCtrl.xaml.cs">
       <DependentUpon>CalibrationCtrl.xaml</DependentUpon>
     </Compile>

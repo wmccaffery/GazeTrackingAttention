@@ -90,7 +90,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			if((medium = stimuliMedium.SelectedItem.ToString()) != "Select medium")
 			{
 				Test test = (Test)testList.SelectedItem;
-				test.dataRecorder = new DataProcessing.StreamReader();
+				test.dataRecorder = new DataProcessing.DataRecorder();
 				test.setMedium(medium);
 				test.dataRecorder.initLSLProviders();
 				test.dataRecorder.feedStreamsToLSL();
@@ -114,14 +114,14 @@ namespace GazeTrackingAttentionDemo.UserControls
 		}
 
 		Boolean eegrecord;
-		DataProcessing.StreamReader eegDataRecorder;
+		DataProcessing.DataRecorder eegDataRecorder;
 
 
 		private void RecordEEG_Click(object sender, RoutedEventArgs e)
 		{
 			if (!eegrecord)
 			{
-				eegDataRecorder = new DataProcessing.StreamReader();
+				eegDataRecorder = new DataProcessing.DataRecorder();
 				eegDataRecorder.resolveEEGStream();
 				eegDataRecorder.setRecordingPaths(true, user.DirPath + @"\");
 				eegDataRecorder.readStreams();

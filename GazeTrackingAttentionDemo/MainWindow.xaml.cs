@@ -360,7 +360,7 @@ namespace GazeTrackingAttentionDemo
 
 			Test t = currentUser.testList[0];
 			t.setMedium("SCREEN");
-			t.dataRecorder = new DataProcessing.StreamReader();
+			t.dataRecorder = new DataProcessing.DataRecorder();
 			//currentUser.testList.Add(t);
 			String dataPath = t.TestDir + "Recording_0";
 

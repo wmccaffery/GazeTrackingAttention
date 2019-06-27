@@ -37,7 +37,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		{
 			if (stream != null)
 			{
-				stream.gazeStream.Abort();
+				stream.gazeStream.Join();
 				stream.gazeDataInlet.close_stream();
 			}
 
@@ -47,9 +47,9 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 			//close threads
 			if (stream != null)
 			{
-				stream.fixationBeginStream.Abort();
-				stream.fixationDataStream.Abort();
-				stream.fixationEndStream.Abort();
+				stream.fixationBeginStream.Join();
+				stream.fixationDataStream.Join();
+				stream.fixationEndStream.Join();
 
 				//close lsl streams
 				stream.fixationBeginInlet.close_stream();
@@ -61,7 +61,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		{
 			if (stream.eegDataStream != null)
 			{
-				stream.eegDataStream.Abort();
+				stream.eegDataStream.Join();
 			}
 			if (stream.eegDataInlet != null)
 			{

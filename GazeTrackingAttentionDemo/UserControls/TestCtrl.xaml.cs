@@ -113,7 +113,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 		public void stopRecording()
 		{
 			String dataPath = user.CurrentTest.currentRecording.dataDir;
-			DataProcessing.StreamReader dr = user.CurrentTest.dataRecorder;
+			DataProcessing.DataRecorder dr = user.CurrentTest.dataRecorder;
 			dr.stopRecording();
 
 			user.CurrentTest.currentRecording.fixations = dr.getFixations();

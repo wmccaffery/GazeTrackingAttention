@@ -42,7 +42,8 @@ namespace GazeTrackingAttentionDemo.Models
 			String[] points = new String[p.Points.Count];
 			for(int i = 0; i < p.Points.Count; i++)
 			{
-				points[i] = "X " + p.Points[i].X + " Y " + p.Points[i]; 
+				Point sp = p.PointToScreen(p.Points[i]);
+				points[i] = "X " + sp.X + " Y " + sp.Y; 
 			}
 			this.points = points;
 		}

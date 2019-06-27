@@ -14,7 +14,7 @@ using GazeTrackingAttentionDemo.Models;
 
 namespace GazeTrackingAttentionDemo.DataProcessing
 {
-	public class StreamReader : IDisposable
+	public class DataRecorder : IDisposable
 	{
 		//read directly from device
 		private readonly Host _host;
@@ -57,7 +57,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 
 
-		public StreamReader()
+		public DataRecorder()
 		{
 			MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow;
 			//Device

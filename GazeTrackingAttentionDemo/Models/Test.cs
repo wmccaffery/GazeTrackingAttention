@@ -17,7 +17,7 @@ namespace GazeTrackingAttentionDemo.Models
 		private string _testName;
 		private string _recordingDir;
 		private int _recordingNum;
-		public DataProcessing.StreamReader dataRecorder;
+		public DataProcessing.DataRecorder dataRecorder;
 		public Boolean isPaper;
 		public String infoPath;
 		public int index;

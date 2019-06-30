@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using LSL;
 
 namespace GazeTrackingAttentionDemo.LSLInteraction
@@ -15,21 +16,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		public Thread gazeStream;
 		public Boolean eyeTrackerPresent;
 
-		public LSLGazeDataStream()
-		{
-			//gazeDataResultsInfo = liblsl.resolve_stream("name", "GazeData",1,1);
-
-			//if (gazeDataResultsInfo.Length < 1)
-			//{
-			//	Console.WriteLine("WARNING: NO EYE TRACKER PRESENT");
-			//	eyeTrackerPresent = false;
-			//} else
-			//{
-			//	eyeTrackerPresent = true;
-			//	gazeDataInlet = new liblsl.StreamInlet(gazeDataResultsInfo[0]);
-			//}
-
-		}
+		private MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow;
 
 
 		//attempt to resolve stream on request
@@ -53,7 +40,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 
 		private void getDataFromLSL(Action<double, double, double, double> action)
 		{
-			while (true)
+			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isRecording())
 			{
 				float[] sample = new float[3];
 				double timestamp;

@@ -447,7 +447,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			return (!float.IsNaN(val.x) && !float.IsNaN(val.y));
 		}
 
-		public void recordStreams()
+		public void startRecording()
 		{
 			_record = true;
 		}
@@ -455,6 +455,11 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		public void stopRecording()
 		{
 			_record = false;
+		}
+
+		public bool isRecording()
+		{
+			return _record;
 		}
 
 		public void closeAllLslStreams()

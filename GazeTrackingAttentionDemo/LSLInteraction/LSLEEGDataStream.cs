@@ -41,7 +41,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		private void getDataFromLSL(Action<double, double, double, double, double, double, double, double, double> action)
 		{
 			eegDataInlet.open_stream();
-			while (true)
+			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isRecording())
 			{
 				float[] sample = new float[8];
 				double timestamp;

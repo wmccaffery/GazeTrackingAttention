@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GazeTrackingAttentionDemo.LSLInteraction
 {
@@ -24,6 +25,9 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		public Thread fixationDataStream;
 
 		public Boolean eyeTrackerPresent;
+
+		private MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow;
+
 
 		public LSLFixationDataStream()
 		{
@@ -102,7 +106,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		
 		private void getBeginFromLSL(Action<double, double, double, double> action)
 		{
-			while (true)
+			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isRecording())
 			{
 				float[] sample = new float[3];
 				double timestamp;
@@ -116,7 +120,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		}
 		private void getDataFromLSL(Action<double, double, double, double> action)
 		{
-			while (true)
+			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isRecording())
 			{
 				float[] sample = new float[3];
 				double timestamp;
@@ -130,7 +134,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		}
 		private void getEndFromLSL(Action<double, double, double, double> action)
 		{
-			while (true)
+			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isRecording())
 			{
 				float[] sample = new float[3];
 				double timestamp;

@@ -105,7 +105,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			user.CurrentTest.addNewRecording(user);
 			user.CurrentTest.dataRecorder.setRecordingPaths(false);
-			user.CurrentTest.dataRecorder.recordStreams();
+			user.CurrentTest.dataRecorder.startRecording();
 			WebcamViewer.StartRecording();
 			startts = _mainWindow.stopwatch.ElapsedMilliseconds;
 			ustartts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;

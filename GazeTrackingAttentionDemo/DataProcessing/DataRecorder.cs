@@ -335,8 +335,8 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			else
 			{
 				string testDir = test.currentRecording.dataDir;
-				int testNum = test.index;
-				metaData = testDir + "//" + user.Id + "_test_" + testNum + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
+				String dirName = Path.GetFileName(testDir);
+				metaData = testDir + "//" + dirName + "--" + time.ToString("HH-mm-ss") + "_U" + unixts;
 			}
 
 			//create test paths

@@ -374,7 +374,7 @@ namespace GazeTrackingAttentionDemo
 			string videopath = @"C:\MMAD\DummyData\postTermUser21_Group_TestGroup_30-05-2019--09-15-17\postTermUser21_test0rtf30-05-2019--09-15-22\SubjectpostTermUser21QPCstart29355end35130.wmv";
 			File.Copy(videopath, (currentUser.testList[0].currentRecording.dataDir + "\\SubjectpostTermUser21QPCstart29355end35130.wmv"));
 			string filepath = @"C:\MMAD\DummyData\postTermUser21_Group_TestGroup_30-05-2019--09-15-17\postTermUser21_test0rtf30-05-2019--09-15-22\_test_030-05-2019--09-15-40_U1559204140_EYETRACKER_cleanFixationData.csv";
-			System.IO.StreamReader file = new System.IO.StreamReader(filepath);
+			StreamReader file = new StreamReader(filepath);
 			string line;
 			Fixation f = new Fixation();
 			f.dataPos = new List<DataPoint>();

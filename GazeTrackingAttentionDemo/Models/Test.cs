@@ -59,9 +59,8 @@ namespace GazeTrackingAttentionDemo.Models
 		public void addNewRecording(User user)
 		{
 			DateTime dateTime = DateTime.Now;
-			Console.WriteLine("TESTDIR " + TestDir);
 			DataDir = "";
-			DataDir = TestDir + "\\Recording_" + (++_recordingNum) + "_" + dateTime.ToString("HH-mm-ss");
+			DataDir = TestDir + "\\" + Path.GetFileName(TestDir) + "_recording" + (++_recordingNum);
 			DirectoryInfo di = Directory.CreateDirectory(DataDir);
 			InfoPath = DataDir + "\\meta.txt";
 			currentRecording = new Recording(_recordingNum, isPaper, this);

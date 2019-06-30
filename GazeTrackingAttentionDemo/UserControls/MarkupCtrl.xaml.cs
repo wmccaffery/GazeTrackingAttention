@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -15,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace GazeTrackingAttentionDemo.UserControls
 {
@@ -40,20 +43,75 @@ namespace GazeTrackingAttentionDemo.UserControls
 		int attentiveness;
 		int interest;
 
+		private bool mediaPlayerIsPlaying = false;
+		private bool userIsDraggingSlider = false;
+
+
 		public MarkupCtrl()
 		{
 			InitializeComponent();
 
 			this.DataContext = this;
 
-			//Render.IsEnabled = false;
-			//Begin.IsEnabled = true;
-			//End.IsEnabled = false;
-			//Test_Callibration.IsEnabled = true;
-			//Callibrate.IsEnabled = true;
-			//Reset.IsEnabled = true;
-			//mainCanvas.Children.Clear();
+			DispatcherTimer timer = new DispatcherTimer();
+			timer.Interval = TimeSpan.FromMilliseconds(1);
+			timer.Tick += timer_Tick;
+			timer.Start();
+
 		}
+
+		#region adapted from https://wpf-tutorial.com/audio-video/how-to-creating-a-complete-audio-video-player/
+		private void timer_Tick(object sender, EventArgs e)
+		{
+			if ((player.Source != null) && (player.NaturalDuration.HasTimeSpan) && (!userIsDraggingSlider))
+			{
+				sliProgress.Minimum = 0;
+				sliProgress.Maximum = player.NaturalDuration.TimeSpan.TotalMilliseconds;
+				sliProgress.Value = player.Position.TotalMilliseconds;
+			}
+		}
+
+		private void btnPlay_Click(object sender, RoutedEventArgs e)
+		{
+			player.Play();
+			mediaPlayerIsPlaying = true;
+		}
+
+		private void btnPause_Click(object sender, RoutedEventArgs e)
+		{
+			player.Pause();
+		}
+
+		private void btnStop_Click(object sender, RoutedEventArgs e)
+		{
+			player.Stop();
+			mediaPlayerIsPlaying = false;
+		}
+
+		private void sliProgress_DragStarted(object sender, DragStartedEventArgs e)
+		{
+			userIsDraggingSlider = true;
+			player.Pause();
+		}
+
+		private void sliProgress_DragDelta(object sender, DragDeltaEventArgs e)
+		{
+			player.Position = TimeSpan.FromMilliseconds(sliProgress.Value);
+		}
+
+		private void sliProgress_DragCompleted(object sender, DragCompletedEventArgs e)
+		{
+			userIsDraggingSlider = false;
+			player.Position = TimeSpan.FromMilliseconds(sliProgress.Value);
+			player.Play();
+		}
+
+		private void sliProgress_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		{
+			lblProgressStatus.Text = TimeSpan.FromMilliseconds(sliProgress.Value).ToString(@"mm\:ss\.fff");
+		}
+
+		#endregion
 
 		public void onLoad(object sender, RoutedEventArgs e)
 		{
@@ -147,6 +205,17 @@ namespace GazeTrackingAttentionDemo.UserControls
 			}
 			aoi = null;
 			markup_group.IsEnabled = false;
+		}
+
+		public void getVideoStartQPC(String videoPath)
+		{
+			String videoName = System.IO.Path.GetFileNameWithoutExtension(videoPath);
+
+
+		}
+
+		public void getVideoEndQPC(String videoPath)
+		{
 
 		}
 
@@ -162,22 +231,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 			timeline_group.IsEnabled = false;
 			visualisation_group.IsEnabled = false;
 
-		}
-
-		private void btnPlay_Click(object sender, RoutedEventArgs e)
-		{
-
-			player.Play();
-		}
-
-		private void btnPause_Click(object sender, RoutedEventArgs e)
-		{
-			player.Pause();
-		}
-
-		private void btnStop_Click(object sender, RoutedEventArgs e)
-		{
-			player.Stop();
 		}
 
 		private void All_CheckBox_Checked(object sender, RoutedEventArgs e)

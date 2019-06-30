@@ -35,6 +35,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		private double startts;
 		private double endts;
+		private double ustartts;
 
 		public delegate void TestCompletedHandler();
 		public event TestCompletedHandler TestCompleted;
@@ -107,6 +108,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 			user.CurrentTest.dataRecorder.recordStreams();
 			WebcamViewer.StartRecording();
 			startts = _mainWindow.stopwatch.ElapsedMilliseconds;
+			ustartts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+
 			//recordingStarted();
 		}
 
@@ -136,7 +139,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 			WebcamViewer.StopRecording();
 			endts = _mainWindow.stopwatch.ElapsedMilliseconds;
 			string[] video = Directory.GetFiles(WebcamViewer.VideoDirectory, "*.wmv");
-			File.Move(video[0], user.CurrentTest.DataDir + "//Subject" + _mainWindow.currentUser.Id  + "QPCstart" + startts + "end" + endts + ".wmv");
+			String dirdata = System.IO.Path.GetFileName(user.CurrentTest.DataDir);
+			File.Move(video[0], user.CurrentTest.DataDir + "//" + dirdata + "_U" + ustartts + "_VIDEO_" + "_Q" + startts + "_Q" + endts + ".wmv");
 		}
 
 		private void FinishTest_Click(object sender, RoutedEventArgs e)

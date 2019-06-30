@@ -79,23 +79,13 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
-                    <RowDefinition SharedSizeGroup="A"/>
-                    <RowDefinition SharedSizeGroup="A"/>
-                    <RowDefinition SharedSizeGroup="A"/>
-                    <RowDefinition SharedSizeGroup="A"/>
-                    <RowDefinition SharedSizeGroup="A"/>
-                    <RowDefinition SharedSizeGroup="A"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+
                 </Grid.RowDefinitions>
 
-                <MediaElement Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="10" LoadedBehavior="Manual" Name="player" />
-                <StackPanel Grid.Row="3" Grid.ColumnSpan="3">
-                    <WrapPanel HorizontalAlignment="Center">
-                        <Button Name="btnPlay" Click="btnPlay_Click">Play</Button>
-                        <Button Name="btnPause" Margin="5,0" Click="btnPause_Click">Pause</Button>
-                        <Button Name="btnStop" Click="btnStop_Click">Stop</Button>
-                    </WrapPanel>
-                </StackPanel>
-                <StatusBar Grid.Row="4" Grid.ColumnSpan="3">
+                <MediaElement Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="10" LoadedBehavior="Manual" Name="player" ScrubbingEnabled="True" />
+                <StatusBar Grid.Row="3" Grid.ColumnSpan="3" Background="White">
                     <StatusBar.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Grid>
@@ -104,14 +94,28 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
                             </Grid>
                         </ItemsPanelTemplate>
                     </StatusBar.ItemsPanel>
                     <StatusBarItem>
-                        <TextBlock Name="lblProgressStatus">00:00:00</TextBlock>
+                          <TextBlock Name="lblProgressStatus">00:00.000</TextBlock>
                     </StatusBarItem>
                     <StatusBarItem Grid.Column="1" HorizontalContentAlignment="Stretch">
-                        <Slider Name="sliProgress" Thumb.DragStarted="sliProgress_DragStarted"  Thumb.DragCompleted="sliProgress_DragCompleted" ValueChanged="sliProgress_ValueChanged" RenderTransformOrigin="0.5,0.5" ></Slider>
+                        <Slider Name="sliProgress" Thumb.DragStarted="sliProgress_DragStarted" Thumb.DragDelta="sliProgress_DragDelta" Thumb.DragCompleted="sliProgress_DragCompleted" ValueChanged="sliProgress_ValueChanged" RenderTransformOrigin="0.5,0.5" ></Slider>
+                    </StatusBarItem>
+                    <StatusBarItem Grid.Column="2">
+                        <TextBlock Name="lblProgressStatusEnd">00:00.000</TextBlock>
+                    </StatusBarItem>
+                    <StatusBarItem Grid.ColumnSpan="2" Grid.Row="1">
+                        <WrapPanel HorizontalAlignment="Left">
+                            <Button Name="btnPlay" Click="btnPlay_Click">Play</Button>
+                            <Button Name="btnPause" Margin="5,0" Click="btnPause_Click">Pause</Button>
+                            <Button Name="btnStop" Click="btnStop_Click">Stop</Button>
+                        </WrapPanel>
                     </StatusBarItem>
                 </StatusBar>
             </Grid>

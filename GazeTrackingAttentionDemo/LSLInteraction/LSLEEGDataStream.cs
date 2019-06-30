@@ -17,22 +17,8 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		public Thread eegDataStream;
 		public Boolean eegPresent;
 
-		private MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow; 
+		private MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow;
 
-
-		public LSLEEGDataStream()
-		{
-				//eegDataResultsInfo = liblsl.resolve_stream("type", "EEG", 1, 1);
-				//if(eegDataResultsInfo.Length < 1)
-				//{
-				//Console.WriteLine("WARNING: NO EEG PRESENT");
-				//eegPresent = false;
-				//} else
-				//{
-				//	eegPresent = true;
-				//	eegDataInlet = new liblsl.StreamInlet(eegDataResultsInfo[0]);
-				//}
-		}
 
 		public bool tryResolveStreams()
 		{
@@ -63,6 +49,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 				timestamp = eegDataInlet.pull_sample(sample);
 				correction = eegDataInlet.time_correction();
 				action(sample[0], sample[1], sample[2], sample[3], sample[4], sample[5], sample[6], sample[7], timestamp + correction + _mainWindow.stopwatch.ElapsedMilliseconds);
+
 			}
 		}
 	}

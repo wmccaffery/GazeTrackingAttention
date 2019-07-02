@@ -318,7 +318,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		}
 
 		//set recording directories
-		public void setRecordingPaths(bool customFile, string customFilePath="")
+		public void setRecordingPaths(bool customFile, string customFilePath="", int baselinecount = 0)
 		{
 			//current user
 			User user = _mainWindow.currentUser;
@@ -330,13 +330,14 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 			if (customFile)
 			{
-				metaData = customFilePath + "//EEG_Baseline_" + user.Id + time.ToString("dd-MM-yyyy--HH-mm-ss") + "_U" + unixts;
+				String userDir = Path.GetFileName(user.DirPath);
+				metaData = customFilePath + "//" + userDir + "_U" + unixts + "_baseline" + baselinecount;
 			}
 			else
 			{
 				string testDir = test.currentRecording.dataDir;
 				String dirName = Path.GetFileName(testDir);
-				metaData = testDir + "//" + dirName + "--" + time.ToString("HH-mm-ss") + "_U" + unixts;
+				metaData = testDir + "//" + dirName + "_U" + unixts;
 			}
 
 			//create test paths

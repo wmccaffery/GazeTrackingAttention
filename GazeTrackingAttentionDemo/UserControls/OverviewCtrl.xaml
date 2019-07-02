@@ -18,15 +18,19 @@
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
     <Label FontSize="30">Tests in Group</Label>
-        <ListBox x:Name="testList" FontSize="18" Grid.Row="1" Grid.ColumnSpan="2" SelectionChanged="TestList_SelectionChanged">
+        <ListBox x:Name="testList" FontSize="18" Grid.Row="1" Grid.ColumnSpan="2" SelectionChanged="TestList_SelectionChanged" Grid.IsSharedSizeScope="True">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Name}" />
-                        <TextBlock Text="   "/>
-                        <TextBlock Text="{Binding RecordingNumDisp}" />
-                        <TextBlock Text=" Recordings"/>
-                    </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="name"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Name, StringFormat={}{0}}" />
+                        <TextBlock Grid.Column="1" Text="   " />
+                        <TextBlock Grid.Column="2" Text="{Binding RecordingNumDisp, StringFormat={}{0} Recordings}"/>
+                    </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

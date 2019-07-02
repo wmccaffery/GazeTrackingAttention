@@ -116,14 +116,14 @@ namespace GazeTrackingAttentionDemo.UserControls
 		Boolean eegrecord;
 		DataProcessing.DataRecorder eegDataRecorder;
 
-
+		private int baselinecount = 0;
 		private void RecordEEG_Click(object sender, RoutedEventArgs e)
 		{
 			if (!eegrecord)
 			{
 				eegDataRecorder = new DataProcessing.DataRecorder();
 				eegDataRecorder.resolveEEGStream();
-				eegDataRecorder.setRecordingPaths(true, user.DirPath + @"\");
+				eegDataRecorder.setRecordingPaths(true, user.DirPath + @"\", baselinecount);
 				eegDataRecorder.readStreams();
 				eegDataRecorder.startRecording();
 				((Button)e.Source).Content = "Stop Recording";
@@ -141,6 +141,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 				nextBtn.IsEnabled = true;
 				stimuliMedium.IsEnabled = true;
 				eegrecord = false;
+				baselinecount++;
 
 			}
 

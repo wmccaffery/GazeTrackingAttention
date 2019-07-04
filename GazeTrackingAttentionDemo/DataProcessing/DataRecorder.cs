@@ -34,7 +34,10 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		private Boolean _record;
 		private Boolean _stream;
 
-		public List<Tuple<string, DataPoint>> rawFixationPoints = new List<Tuple<string, DataPoint>>();
+		public List<Tuple<string, DataPoint>> rawFixationBegPoints = new List<Tuple<string, DataPoint>>();
+		public List<Tuple<string, DataPoint>> rawFixationDatPoints = new List<Tuple<string, DataPoint>>();
+		public List<Tuple<string, DataPoint>> rawFixationEndPoints = new List<Tuple<string, DataPoint>>();
+
 
 		//LSL output streams
 		public liblsl.StreamInfo gazeDataInfo;
@@ -51,7 +54,10 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 		//filepaths
 		string metaData;
-		string fixationRawPath;
+		string fixationRawBegPath;
+		string fixationRawDatPath;
+		string fixationRawEndPath;
+
 		string fixationCleanPath;
 		string gazeRawPath;
 		string eegRawPath;
@@ -228,7 +234,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 						if (_record)
 						{
-							recordStream(fixationRawPath, "Fixation", "Begin", header, data, timestamp);
+							recordStream(fixationRawBegPath, "Fixation", "Begin", header, data, timestamp);
 						}
 					})
 					.Data((x, y, tobiits, timestamp) =>
@@ -241,7 +247,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 						if (_record)
 						{
-							recordStream(fixationRawPath, "Fixation", "Data", header, data, timestamp);
+							recordStream(fixationRawDatPath, "Fixation", "Data", header, data, timestamp);
 						}
 
 					})
@@ -255,7 +261,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 						if (_record)
 						{
-							recordStream(fixationRawPath, "Fixation", "End", header, data, timestamp);
+							recordStream(fixationRawEndPath, "Fixation", "End", header, data, timestamp);
 						}
 					});
 
@@ -302,6 +308,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 					File.WriteAllText(rawPath, fileHeader);
 				}
 
+				double uts = (TimeSpan.FromMilliseconds(timestamp).Seconds + _mainWindow.unixStartTime);
 				string datastr = "";
 
 				if(streamType == "Fixation")
@@ -314,10 +321,21 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 					{
 						datastr += (d + ",");
 					}
-					datastr += (timestamp + "," + (TimeSpan.FromMilliseconds(timestamp).Seconds + _mainWindow.unixStartTime) +  Environment.NewLine);
+					datastr += (timestamp + "," + uts  +  Environment.NewLine);
 
 					//store in program for cleaning and assigning
-					rawFixationPoints.Add(Tuple.Create(dataType, new DataPoint((float)data[0], (float)data[1], (float)timestamp)));
+					switch (dataType)
+					{
+						case "Begin":
+							rawFixationBegPoints.Add(Tuple.Create(dataType, new DataPoint((float)data[0], (float)data[1], (float)timestamp)));
+							break;
+						case "Data":
+							rawFixationDatPoints.Add(Tuple.Create(dataType, new DataPoint((float)data[0], (float)data[1], (float)timestamp)));
+							break;
+						case "End":
+							rawFixationEndPoints.Add(Tuple.Create(dataType, new DataPoint((float)data[0], (float)data[1], (float)timestamp)));
+							break;
+					}
 				}
 				else
 				{
@@ -358,7 +376,14 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			}
 
 			//create test paths
-			fixationRawPath = metaData + "_EYETRACKER_rawFixationData.csv ";
+
+			//fixationRawPath = metaData + "_EYETRACKER_rawFixationBeg.csv ";
+
+
+			fixationRawBegPath = metaData + "_EYETRACKER_rawFixationBeg.csv ";
+			fixationRawDatPath = metaData + "_EYETRACKER_rawFixationDat.csv ";
+			fixationRawEndPath = metaData + "_EYETRACKER_rawFixationEnd.csv ";
+
 			fixationCleanPath = metaData + "_EYETRACKER_cleanFixationData.csv";
 			gazeRawPath = metaData + "_EYETRACKER_rawGazeData.csv";
 			eegRawPath = metaData + "_EEG_rawEEGData.csv";
@@ -396,7 +421,31 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 			//build valid fixations
 			int i = 0;
-			foreach(Tuple<string, DataPoint> t in rawFixationPoints)
+
+			List<Tuple<string, DataPoint>> rawFixationPoints = new List<Tuple<string, DataPoint>>();
+			foreach (Tuple<string, DataPoint> bd in rawFixationBegPoints)
+			{
+				rawFixationPoints.Add(bd);
+			}
+			foreach (Tuple<string, DataPoint> dd in rawFixationDatPoints)
+			{
+				rawFixationPoints.Add(dd);
+			}
+			foreach (Tuple<string, DataPoint> ed in rawFixationEndPoints)
+			{
+				rawFixationPoints.Add(ed);
+			}
+
+			rawFixationPoints.Sort((Tuple<string, DataPoint> a, Tuple<string, DataPoint> b) =>
+			{
+				//sort files into order based on number in title
+				double a_num = a.Item2.timestamp;
+				double b_num = b.Item2.timestamp;
+				return a_num.CompareTo(b_num);
+			});
+
+
+			foreach (Tuple<string, DataPoint> t in rawFixationPoints)
 			{
 				if (fixationStart && isValid(t.Item2)) { //continue fixation
 					if (t.Item1 == "Begin") //discard malformed fixation and start a new fixation

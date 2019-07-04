@@ -135,7 +135,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 				dr.recordFixations(fixationpath, f);
 			}
 
-			//set highest test
+			////set highest test
 			if (user.CurrentTest.index > user.highestTestIndex)
 			{
 				user.highestTestIndex = user.CurrentTest.index;

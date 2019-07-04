@@ -67,7 +67,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 			if ((player.Source != null) && (player.NaturalDuration.HasTimeSpan) && (!userIsDraggingSlider) && player.IsEnabled)
 			{
 				sliProgress.Minimum = 0;
-				sliProgress.Maximum = player.NaturalDuration.TimeSpan.TotalMilliseconds; // DisplaySlider.HigherValue - startTime
+				//sliProgress.Maximum = player.NaturalDuration.TimeSpan.TotalMilliseconds;
+				sliProgress.Maximum = DisplaySlider.HigherValue - startTime;
 				sliProgress.Value = player.Position.TotalMilliseconds;
 			}
 		}

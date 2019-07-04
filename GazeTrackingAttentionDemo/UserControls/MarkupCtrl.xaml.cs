@@ -38,6 +38,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 		Recording recording;
 
 		double startTime;
+		double endTime;
 
 		int effort;
 		int attentiveness;
@@ -63,7 +64,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 		#region adapted from https://wpf-tutorial.com/audio-video/how-to-creating-a-complete-audio-video-player/
 		private void timer_Tick(object sender, EventArgs e)
 		{
-			if ((player.Source != null) && (player.NaturalDuration.HasTimeSpan) && (!userIsDraggingSlider))
+			if ((player.Source != null) && (player.NaturalDuration.HasTimeSpan) && (!userIsDraggingSlider) && player.IsEnabled)
 			{
 				sliProgress.Minimum = 0;
 				sliProgress.Maximum = player.NaturalDuration.TimeSpan.TotalMilliseconds; // DisplaySlider.HigherValue - startTime
@@ -183,18 +184,18 @@ namespace GazeTrackingAttentionDemo.UserControls
 					playback_group.IsEnabled = true;
 				}
 
-				//resolveTimes();
+				resolveTimes();
 
-				if (test.currentRecording.fixations.Count > 0)
-				{
-					DisplaySlider.Maximum = recording.fixations[test.currentRecording.fixations.Count - 1].endPos.timestamp;
-					startTime = DisplaySlider.Minimum = recording.fixations[0].startPos.timestamp;
-				}
-				else
-				{
-					startTime = DisplaySlider.Maximum = 0;
-					DisplaySlider.Minimum = 0;
-				}
+				//if (test.currentRecording.fixations.Count > 0)
+				//{
+				//	DisplaySlider.Maximum = recording.fixations[test.currentRecording.fixations.Count - 1].endPos.timestamp;
+				//	startTime = DisplaySlider.Minimum = recording.fixations[0].startPos.timestamp;
+				//}
+				//else
+				//{
+				//	startTime = DisplaySlider.Maximum = 0;
+				//	DisplaySlider.Minimum = 0;
+				//}
 
 				DisplaySlider.HigherValue = DisplaySlider.Maximum;
 				DisplaySlider.LowerValue = DisplaySlider.Minimum;
@@ -213,26 +214,29 @@ namespace GazeTrackingAttentionDemo.UserControls
 			double fet = recording.fixations[test.currentRecording.fixations.Count - 1].endPos.timestamp;
 			double vet = recording.videoQpcEndTime;
 
+			
+
 			//set displayslider, rounding is performed as large decimals make the slider unusable, and does not affect the ability to select data.
 			if (fst < vst)
 			{
-				DisplaySlider.Minimum = fst; 
+				startTime = fst; 
 			}
 			else
 			{
-				DisplaySlider.Minimum = vst;
+				startTime = vst;
 			}
+
+
 			if (fet > vet)
 			{
-				DisplaySlider.Maximum = fet;
+				endTime = fet;
 			} else
 			{
-				DisplaySlider.Maximum = vet;
+				endTime = vet;
 			}
-			startTime = DisplaySlider.Minimum;
 
-			//set video
-
+			DisplaySlider.Minimum = startTime;
+			DisplaySlider.Maximum = endTime;
 
 
 		}
@@ -358,8 +362,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 			if (aoi != null)
 			{
 				//set values
-				aoi.timeRangeStart = DisplaySlider.LowerValue + startTime;
-				aoi.timeRangeEnd = DisplaySlider.HigherValue + startTime;
+				aoi.timeRangeStart = DisplaySlider.LowerValue;
+				aoi.timeRangeEnd = DisplaySlider.HigherValue;
 				aoi.Interest = interest;
 				aoi.Attentiveness = attentiveness;
 				aoi.Effort = effort;

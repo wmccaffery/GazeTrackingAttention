@@ -114,7 +114,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 		}
 
 		Boolean eegrecord;
-		DataProcessing.DataRecorder eegDataRecorder;
+		public DataProcessing.DataRecorder eegDataRecorder;
 
 		private int baselinecount = 0;
 		private void RecordEEG_Click(object sender, RoutedEventArgs e)

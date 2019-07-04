@@ -1,4 +1,5 @@
-﻿using LSL;
+﻿using GazeTrackingAttentionDemo.UserControls;
+using LSL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,15 +42,32 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		private void getDataFromLSL(Action<double, double, double, double, double, double, double, double, double> action)
 		{
 			eegDataInlet.open_stream();
-			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isRecording())
+			if (_mainWindow.currentUser.CurrentTest == null || _mainWindow.currentUser.CurrentTest.dataRecorder == null)
 			{
-				float[] sample = new float[8];
-				double timestamp;
-				double correction;
-				timestamp = eegDataInlet.pull_sample(sample);
-				correction = eegDataInlet.time_correction();
-				action(sample[0], sample[1], sample[2], sample[3], sample[4], sample[5], sample[6], sample[7], timestamp + correction + _mainWindow.stopwatch.ElapsedMilliseconds);
+				OverviewCtrl oc = (OverviewCtrl)_mainWindow.ctrlwin.controller.Content;
+				while (oc.eegDataRecorder.isRecording())
+				{
+					float[] sample = new float[8];
+					double timestamp;
+					double correction;
+					timestamp = eegDataInlet.pull_sample(sample);
+					correction = eegDataInlet.time_correction();
+					action(sample[0], sample[1], sample[2], sample[3], sample[4], sample[5], sample[6], sample[7], timestamp + correction + _mainWindow.stopwatch.ElapsedMilliseconds);
 
+				}
+			}
+			else
+			{
+				while (_mainWindow.currentUser.CurrentTest.dataRecorder.isRecording())
+				{
+					float[] sample = new float[8];
+					double timestamp;
+					double correction;
+					timestamp = eegDataInlet.pull_sample(sample);
+					correction = eegDataInlet.time_correction();
+					action(sample[0], sample[1], sample[2], sample[3], sample[4], sample[5], sample[6], sample[7], timestamp + correction + _mainWindow.stopwatch.ElapsedMilliseconds);
+
+				}
 			}
 		}
 	}

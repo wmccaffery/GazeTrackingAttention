@@ -331,13 +331,13 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			if (customFile)
 			{
 				String userDir = Path.GetFileName(user.DirPath);
-				metaData = customFilePath + "//" + userDir + "_U" + unixts + "_baseline" + baselinecount;
+				metaData = customFilePath + userDir + "_U" + unixts + "_baseline" + baselinecount;
 			}
 			else
 			{
 				string testDir = test.currentRecording.dataDir;
 				String dirName = Path.GetFileName(testDir);
-				metaData = testDir + "//" + dirName + "_U" + unixts;
+				metaData = testDir + dirName + "_U" + unixts;
 			}
 
 			//create test paths

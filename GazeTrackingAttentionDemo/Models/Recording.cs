@@ -17,6 +17,8 @@ namespace GazeTrackingAttentionDemo.Models
 		public String dataDir;
 		public String user;
 		public String testName;
+		public double videoQpcStartTime;
+		public double videoQpcEndTime;
 
 		List<AOI> _aois;
 		public List<AOI> Aois { get => _aois; set => _aois = value; }

@@ -117,10 +117,15 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			String dataPath = user.CurrentTest.currentRecording.dataDir;
 			DataProcessing.DataRecorder dr = user.CurrentTest.dataRecorder;
+
 			dr.stopRecording();
+			WebcamViewer.StopRecording();
+			endts = _mainWindow.stopwatch.ElapsedMilliseconds;
 
 			user.CurrentTest.currentRecording.fixations = dr.getFixations();
 			user.CurrentTest.currentRecording.saccades = dr.getSaccades(user.CurrentTest.currentRecording.fixations);
+			user.CurrentTest.currentRecording.videoQpcStartTime = startts;
+			user.CurrentTest.currentRecording.videoQpcEndTime = endts;
 
 			String fixationpath = dr.getCleanFixationPath();
 
@@ -136,8 +141,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 				user.highestTestIndex = user.CurrentTest.index;
 			}
 
-			WebcamViewer.StopRecording();
-			endts = _mainWindow.stopwatch.ElapsedMilliseconds;
+
 			string[] video = Directory.GetFiles(WebcamViewer.VideoDirectory, "*.wmv");
 			String dirdata = System.IO.Path.GetFileName(user.CurrentTest.DataDir);
 			File.Move(video[0], user.CurrentTest.DataDir + "//" + dirdata + "_U" + ustartts + "_VIDEO_" + "_Q" + startts + "_Q" + endts + ".wmv");

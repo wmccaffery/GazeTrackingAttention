@@ -183,6 +183,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 					playback_group.IsEnabled = true;
 				}
 
+				//resolveTimes();
+
 				if (test.currentRecording.fixations.Count > 0)
 				{
 					DisplaySlider.Maximum = recording.fixations[test.currentRecording.fixations.Count - 1].endPos.timestamp;
@@ -202,17 +204,40 @@ namespace GazeTrackingAttentionDemo.UserControls
 			markup_group.IsEnabled = false;
 		}
 
-		public void getVideoStartQPC(String videoPath)
+		//decides to use video or fixation recording start and end times to account for small differences
+		private void resolveTimes()
 		{
-			String videoName = System.IO.Path.GetFileNameWithoutExtension(videoPath);
+			double fst = DisplaySlider.Minimum = recording.fixations[0].startPos.timestamp;
+			double vst = recording.videoQpcStartTime;
+
+			double fet = recording.fixations[test.currentRecording.fixations.Count - 1].endPos.timestamp;
+			double vet = recording.videoQpcEndTime;
+
+			//set displayslider, rounding is performed as large decimals make the slider unusable, and does not affect the ability to select data.
+			if (fst < vst)
+			{
+				DisplaySlider.Minimum = fst; 
+			}
+			else
+			{
+				DisplaySlider.Minimum = vst;
+			}
+			if (fet > vet)
+			{
+				DisplaySlider.Maximum = fet;
+			} else
+			{
+				DisplaySlider.Maximum = vet;
+			}
+			startTime = DisplaySlider.Minimum;
+
+			//set video
+
 
 
 		}
 
-		public void getVideoEndQPC(String videoPath)
-		{
 
-		}
 
 		public void onTestChanged(Test test)
 		{

@@ -25,11 +25,11 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		{
 			eegDataResultsInfo = liblsl.resolve_stream("type", "EEG", 1, 1);
 			bool resolved;
-			if(resolved = !(eegDataResultsInfo.Length < 1))
+			if(!(resolved = eegDataResultsInfo.Length < 1))
 			{
 				eegDataInlet = new liblsl.StreamInlet(eegDataResultsInfo[0]);
 			}
-			return eegPresent = resolved;
+			return eegPresent = !resolved;
 		}
 
 		public LSLEEGDataStream EEGData(Action<double, double, double, double, double, double, double, double, double> action)
@@ -46,7 +46,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 			{
 				OverviewCtrl oc = null;
 				(_mainWindow.ctrlwin.controller).Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => { oc = (OverviewCtrl)_mainWindow.ctrlwin.controller.Content; }));
-				while (oc.eegDataRecorder.isStreaming())
+				while (oc.eegDataRecorder.isRecording())
 				{
 					float[] sample = new float[8];
 					double timestamp;
@@ -59,7 +59,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 			}
 			else
 			{
-				while (_mainWindow.currentUser.CurrentTest.dataRecorder.isStreaming())
+				while (_mainWindow.currentUser.CurrentTest.dataRecorder.isRecording())
 				{
 					float[] sample = new float[8];
 					double timestamp;

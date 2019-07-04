@@ -32,7 +32,6 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		private MainWindow _mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
 
 		private Boolean _record;
-		private Boolean _stream;
 
 		public List<Tuple<string, DataPoint>> rawFixationPoints = new List<Tuple<string, DataPoint>>();
 
@@ -92,9 +91,6 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			if (!(resolved = _lslGazeDataStream.tryResolveStreams()))
 			{
 				Console.WriteLine("WARNING: Fixation Stream not found");
-			} else
-			{
-				Console.WriteLine("Fixation Stream found");
 			}
 			return resolved; 
 		}
@@ -106,10 +102,6 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			{
 				Console.WriteLine("WARNING: Gaze Stream not found");
 			}
-			else
-			{
-				Console.WriteLine("Gaze Stream found");
-			}
 			return resolved;
 		}
 
@@ -119,10 +111,6 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			if (!(resolved = _lslEEGDataStream.tryResolveStreams()))
 			{
 				Console.WriteLine("WARNING: EEG Stream not found");
-			}
-			else
-			{
-				Console.WriteLine("EEG Stream found");
 			}
 			return resolved;
 		}
@@ -214,7 +202,6 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 		public void readStreams()
 		{
-			_stream = true;
 			if (_lslFixationDataStream.eyeTrackerPresent) {
 				Console.WriteLine("Starting eyetraker stream");
 				_lslFixationDataStream
@@ -480,14 +467,8 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			return _record;
 		}
 
-		public bool isStreaming()
-		{
-			return _stream;
-		}
-
 		public void closeAllLslStreams()
 		{
-			_stream = false;
 			Console.WriteLine("Closing lsl streams...");
 			_lslHost.closeStream(_lslFixationDataStream);
 			_lslHost.closeStream(_lslGazeDataStream);

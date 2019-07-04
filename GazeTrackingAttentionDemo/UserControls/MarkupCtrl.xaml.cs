@@ -238,7 +238,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 			DisplaySlider.Minimum = startTime;
 			DisplaySlider.Maximum = endTime;
 
-
 		}
 
 

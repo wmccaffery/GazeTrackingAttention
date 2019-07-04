@@ -369,6 +369,10 @@ namespace GazeTrackingAttentionDemo
 			currentUser.testList[0].addNewRecording(currentUser);
 			currentUser.testList[0].currentRecording.fixations = new List<Fixation>();
 			currentUser.testList[0].currentRecording.saccades = new List<Saccade>();
+			currentUser.testList[0].currentRecording.videoQpcStartTime = 29355;
+			currentUser.testList[0].currentRecording.videoQpcEndTime = 35130;
+
+
 
 
 			//read from very old log file

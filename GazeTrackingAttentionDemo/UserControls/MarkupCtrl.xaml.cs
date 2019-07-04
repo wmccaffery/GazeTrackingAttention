@@ -66,7 +66,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			if ((player.Source != null) && (player.NaturalDuration.HasTimeSpan) && (!userIsDraggingSlider))
 			{
 				sliProgress.Minimum = 0;
-				sliProgress.Maximum = player.NaturalDuration.TimeSpan.TotalMilliseconds;
+				sliProgress.Maximum = player.NaturalDuration.TimeSpan.TotalMilliseconds; // DisplaySlider.HigherValue - startTime
 				sliProgress.Value = player.Position.TotalMilliseconds;
 			}
 		}
@@ -358,12 +358,11 @@ namespace GazeTrackingAttentionDemo.UserControls
 			if (aoi != null)
 			{
 				//set values
-				aoi.timeRangeStart = DisplaySlider.LowerValue;
-				aoi.timeRangeEnd = DisplaySlider.HigherValue;
+				aoi.timeRangeStart = DisplaySlider.LowerValue + startTime;
+				aoi.timeRangeEnd = DisplaySlider.HigherValue + startTime;
 				aoi.Interest = interest;
 				aoi.Attentiveness = attentiveness;
 				aoi.Effort = effort;
-
 
 				aoi.convertPolygon();
 

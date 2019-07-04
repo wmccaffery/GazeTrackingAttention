@@ -215,10 +215,10 @@
                         <ScaleTransform ScaleX="2" ScaleY="2" CenterX="0.5" CenterY="0.5"/>
                     </xctk:RangeSlider.LayoutTransform>-->
                 </xctk:RangeSlider>
-                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                    <TextBox x:Name="TimeRange_Start" Grid.Row="1"  HorizontalAlignment="Left" Text="0" VerticalAlignment="Bottom" TextWrapping="Wrap" Height="24" Width="auto" BorderThickness="0"/>
-                    <TextBox Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" TextWrapping="Wrap" Height="24" Width="auto" BorderThickness="0">-</TextBox>
-                    <TextBox x:Name="TimeRange_End" Grid.Row="1"  HorizontalAlignment="Right" Text="0"  VerticalAlignment="Bottom" TextWrapping="Wrap" Height="24" Width="auto" BorderThickness="0"/>
+                <StackPanel Grid.Row="1"  HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                    <TextBox x:Name="TimeRange_Start" Grid.Row="1"  HorizontalAlignment="Center" Text="0" VerticalAlignment="Bottom" TextWrapping="Wrap" Height="24" Width="auto" BorderThickness="0"/>
+                    <!--<TextBox Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" TextWrapping="Wrap" Height="24" Width="auto" BorderThickness="0">-</TextBox>-->
+                    <TextBox x:Name="TimeRange_End" Grid.Row="1"  HorizontalAlignment="Center" Text="0"  VerticalAlignment="Bottom" TextWrapping="Wrap" Height="24" Width="auto" TextAlignment="Center" BorderThickness="0"/>
                 </StackPanel>
 
                 <!--Text="{Binding Value, ElementName=DisplaySlider}"-->

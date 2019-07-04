@@ -157,7 +157,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataVisualization\GazePlot.cs" />
-    <Compile Include="DataVisualization\GazeScatter.cs" />
     <Compile Include="LSL.cs" />
     <Compile Include="LSLInteraction\LSLEEGDataStream.cs" />
     <Compile Include="LSLInteraction\LSLFixationDataStream.cs" />

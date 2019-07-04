@@ -225,18 +225,22 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		}
 
-		private void All_CheckBox_Checked(object sender, RoutedEventArgs e)
+		private void All_CheckBox_Checked(object sender, RoutedEventArgs e) //all of the checkboxes should be written to properly use this
 		{
 			Saccade_CheckBox.IsChecked = true;
 			Fixation_CheckBox.IsChecked = true;
-			Gaze_CheckBox.IsChecked = true;
+			Aoi_CheckBox.IsChecked = true;
+			_mainWindow.SelectionCanvas.Visibility = Visibility.Visible;
+
 		}
 
 		private void All_CheckBox_Unchecked(object sender, RoutedEventArgs e)
 		{
 			Saccade_CheckBox.IsChecked = false;
 			Fixation_CheckBox.IsChecked = false;
-			Gaze_CheckBox.IsChecked = false;
+			Aoi_CheckBox.IsChecked = false;
+			_mainWindow.SelectionCanvas.Visibility = Visibility.Hidden;
+
 		}
 
 		//re-render gaze plot if checkbox or slider changed

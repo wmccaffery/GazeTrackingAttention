@@ -22,7 +22,7 @@
                             <BulletDecorator Grid.Column="0" Background="Transparent" >
                                 <BulletDecorator.Bullet>
                                     <Grid Width="45" Height="45" >
-                                        <Ellipse x:Name="Border" Fill="Transparent" StrokeThickness="2" Stroke="Black" />
+                                        <Ellipse x:Name="Border" Fill="Transparent" StrokeThickness="1" Stroke="Black" />
                                         <Ellipse x:Name="CheckMark" Margin="4" Fill="Black"/>
                                     </Grid>
                                 </BulletDecorator.Bullet>
@@ -127,10 +127,7 @@
                 <StackPanel Orientation="Vertical">
                     <Label>Display</Label>
                     <Viewbox Height="30" HorizontalAlignment="Left">
-                        <CheckBox x:Name="Gaze_CheckBox" Content="Gaze Stream" Click="CheckBox_Clicked"/>
-                    </Viewbox>
-                    <Viewbox Height="30" HorizontalAlignment="Left">
-                        <CheckBox x:Name="Fixation_CheckBox" Content="Fixation Stream" Click="CheckBox_Clicked" IsChecked="True" />
+                        <CheckBox x:Name="Fixation_CheckBox" Content="Gaze Plot" Click="CheckBox_Clicked" IsChecked="True" />
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
                         <CheckBox x:Name="Saccade_CheckBox" Content="Saccades" VerticalAlignment="Top"  Click="CheckBox_Clicked" IsChecked="True"  />
@@ -139,7 +136,7 @@
                         <CheckBox x:Name="Aoi_CheckBox" Content="AOI" Click="Aoi_CheckBox_Click" IsChecked="True" />
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
-                        <CheckBox x:Name="All_CheckBox" Content="All" Click="CheckBox_Clicked" />
+                        <CheckBox x:Name="All_CheckBox" Content="All" Click="CheckBox_CheckBox_Click" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked"/>
                     </Viewbox>
                     <!--<Button Height="30" FontSize="20" Margin="60,5,60,0" Click="Button_Click">Render</Button>-->
                 </StackPanel>

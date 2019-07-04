@@ -357,15 +357,15 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			if (!File.Exists(rawPath))
 				{
 					File.WriteAllText(rawPath, "");
-					File.WriteAllText(rawPath, "Stream,X,Y,Timestamp" + Environment.NewLine);
+					File.WriteAllText(rawPath, "Stream,X,Y,LSLTimestamp,AdjustedUnix" + Environment.NewLine);
 				}
 
-				File.AppendAllText(rawPath, "Begin," + fixation.startPos.x + "," + fixation.startPos.y + "," + fixation.startPos.timestamp + Environment.NewLine);
+				File.AppendAllText(rawPath, "Begin," + fixation.startPos.x + "," + fixation.startPos.y + "," + fixation.startPos.timestamp + "," + (TimeSpan.FromMilliseconds(fixation.startPos.timestamp).Seconds + _mainWindow.unixStartTime) + Environment.NewLine);
 				foreach(DataPoint d in fixation.dataPos)
 				{
-					File.AppendAllText(rawPath, "Data," + d.x + "," + d.y + "," + d.timestamp + Environment.NewLine);
+					File.AppendAllText(rawPath, "Data," + d.x + "," + d.y + "," + d.timestamp + "," + (TimeSpan.FromMilliseconds(d.timestamp).Seconds + _mainWindow.unixStartTime) +  Environment.NewLine);
 				}
-				File.AppendAllText(rawPath, "End," + fixation.endPos.x + "," + fixation.endPos.y + "," + fixation.endPos.timestamp + Environment.NewLine);
+				File.AppendAllText(rawPath, "End," + fixation.endPos.x + "," + fixation.endPos.y + "," + fixation.endPos.timestamp + "," + (TimeSpan.FromMilliseconds(fixation.endPos.timestamp).Seconds + _mainWindow.unixStartTime) + Environment.NewLine);
 		}
 
 		public List<Fixation> getFixations()

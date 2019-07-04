@@ -44,7 +44,8 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 			eegDataInlet.open_stream();
 			if (_mainWindow.currentUser.CurrentTest == null || _mainWindow.currentUser.CurrentTest.dataRecorder == null)
 			{
-				OverviewCtrl oc = (OverviewCtrl)_mainWindow.ctrlwin.controller.Content;
+				OverviewCtrl oc = null;
+				((OverviewCtrl)_mainWindow.ctrlwin.controller).Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => { oc = (OverviewCtrl)_mainWindow.ctrlwin.controller.Content; }));
 				while (oc.eegDataRecorder.isRecording())
 				{
 					float[] sample = new float[8];

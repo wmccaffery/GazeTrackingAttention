@@ -106,7 +106,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		
 		private void getBeginFromLSL(Action<double, double, double, double> action)
 		{
-			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isRecording())
+			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isStreaming())
 			{
 				float[] sample = new float[3];
 				double timestamp;
@@ -120,7 +120,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		}
 		private void getDataFromLSL(Action<double, double, double, double> action)
 		{
-			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isRecording())
+			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isStreaming())
 			{
 				float[] sample = new float[3];
 				double timestamp;
@@ -134,7 +134,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		}
 		private void getEndFromLSL(Action<double, double, double, double> action)
 		{
-			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isRecording())
+			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isStreaming())
 			{
 				float[] sample = new float[3];
 				double timestamp;

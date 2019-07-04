@@ -163,10 +163,12 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		//read from gaze streams in parallel
 		public void feedStreamsToLSL()
 		{
-			Console.WriteLine("reading streams");
+			Console.WriteLine("Init threads for feeding streams");
 
 			Thread gazeBeginStream = new Thread(() => streamGazeData());
 			Thread fixationBeginStream = new Thread(() => streamFixationData());
+
+			Console.WriteLine("Starting threads for feeding streams");
 
 			fixationBeginStream.Start();
 			gazeBeginStream.Start();
@@ -176,6 +178,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		{
 			_gazePointDataStream.GazePoint((x, y, timestamp) =>
 			{
+				Console.WriteLine("here");
 				sendGazeToLSL(gazeDataOutlet, x, y, timestamp);
 			});
 		}
@@ -201,7 +204,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		public void readStreams()
 		{
 			if (_lslFixationDataStream.eyeTrackerPresent) {
-				Console.WriteLine("reading streams");
+				Console.WriteLine("Starting eyetraker stream");
 				_lslFixationDataStream
 					.Begin((x, y, tobiits, timestamp) =>
 					{
@@ -261,6 +264,8 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 			if (_lslEEGDataStream.eegPresent)
 			{
+				Console.WriteLine("Starting eeg stream");
+
 				_lslEEGDataStream.EEGData((c0, c1, c2, c3, c4, c5, c6, c7, timestamp) =>
 				{
 					Console.WriteLine("EEG\tCHANNEL1 {0}\tCHANNEL2 {1}\tCHANNEL3 {2}\tCHANNEL4 {3}\tCHANNEL5 {4}\tCHANNEL6 {5}\tCHANNEL7 {6}\tCHANNEL8 {7}\ttimestamp {2}", c0, c1, c2, c3, c4, c5, c6, c7, timestamp);

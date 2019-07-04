@@ -108,6 +108,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		{
 			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isStreaming())
 			{
+				Console.WriteLine("getBeginFromLSL");
 				float[] sample = new float[3];
 				double timestamp;
 				double correction;
@@ -122,6 +123,7 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		{
 			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isStreaming())
 			{
+				Console.WriteLine("getDataFromLSL");
 				float[] sample = new float[3];
 				double timestamp;
 				double correction;
@@ -136,6 +138,8 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		{
 			while (_mainWindow.currentUser.CurrentTest.dataRecorder.isStreaming())
 			{
+				Console.WriteLine("getEndFromLSL");
+
 				float[] sample = new float[3];
 				double timestamp;
 				double correction;

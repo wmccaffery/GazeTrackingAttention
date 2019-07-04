@@ -1,7 +1,9 @@
 ﻿using GazeTrackingAttentionDemo.DataVisualization;
 using GazeTrackingAttentionDemo.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -74,6 +76,12 @@ namespace GazeTrackingAttentionDemo.UserControls
 			}
 		}
 
+		List<String> _paragraphNames;
+		List<String> ParagraphNames
+		{
+			get { return _paragraphNames; }
+			set { _paragraphNames = value; }
+		}
 
 		public AoiCtrl()
 		{
@@ -115,10 +123,31 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void endSelection(Polygon p)
 		{
+			//create new aoi
 			AOI aoi = new AOI(SelectedRecording.testName, SelectedRecording.user);
+			aoi.Name = paragraphBox.SelectedItem.ToString();
 			aoi.p = p;
-			aoi.Name = "AOI_" + SelectedRecording.Aois.Count;
-			SelectedRecording.Aois.Add(aoi);
+
+			//check if aoi for this paragraph already exists
+			bool nameExists = false;
+			int existingIndex = 0;
+			foreach (AOI a in SelectedRecording.Aois)
+			{
+				if (Equals(a.Name, aoi.Name))
+				{
+					nameExists = true;
+					existingIndex = SelectedRecording.Aois.IndexOf(a);
+					break;
+				}
+			}
+			if (!nameExists)
+			{
+				SelectedRecording.Aois.Add(aoi);
+			} else
+			{
+				SelectedRecording.Aois[existingIndex] = aoi; 
+			}
+
 			aoiList.Items.Refresh();
 
 			foreach (AOI a in SelectedRecording.Aois)
@@ -129,6 +158,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 			}
 			drawAoi.IsEnabled = true;
 			removeAOI.IsEnabled = true;
+			((MarkupCtrl)_mainWin.rightView.Content).writeToJSON(aoi);
+
 		}
 
 		private void TestList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -139,7 +170,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 			SelectedTest = (Test)((ListBox)e.Source).SelectedItem;
 
-			//render text
+			//losf text
 			if (SelectedTest != null)
 			{
 				((DocumentCtrl)_mainWin.centerView.Content).loadText(user.GroupPath + "\\" + SelectedTest.Name + ".rtf");
@@ -151,6 +182,26 @@ namespace GazeTrackingAttentionDemo.UserControls
 				recordingList.ItemsSource = null;
 				recordingList.Items.Refresh();
 			}
+
+			//foreach (var block in ((DocumentCtrl)_mainWin.centerView.Content).PageText.Document.Blocks)
+			//{
+			//	Console.WriteLine(new TextRange(block.ContentStart, block.ContentEnd).Text);
+			//}
+			paragraphBox.IsEnabled = true;
+			paragraphBox.SelectedItem = null;
+			drawAoi.IsEnabled = false;
+
+			ParagraphNames = new List<String>();
+			int numParagraphs = ((DocumentCtrl)_mainWin.centerView.Content).numParagraphs;
+			for (int i = 0; i < numParagraphs; i++)
+			{
+				ParagraphNames.Add("Paragraph " + i);
+			}
+			paragraphBox.ItemsSource = ParagraphNames;
+			paragraphBox.Items.Refresh();
+
+			drawAoi.IsEnabled = false;
+
 
 			aoiList.ItemsSource = null;
 			aoiList.Items.Refresh();
@@ -180,9 +231,10 @@ namespace GazeTrackingAttentionDemo.UserControls
 						a.p.Stroke = new SolidColorBrush(Color.FromRgb(211, 211, 211));
 					}
 					_mainWin.SelectionCanvas.Children.Add(a.p);
-
+					
 				}
 			}
+			removeAOI.IsEnabled = true;
 		}
 
 		private void RecordingList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -205,31 +257,83 @@ namespace GazeTrackingAttentionDemo.UserControls
 				aoiList.Items.Refresh();
 
 				//render areas of interest
-				_mainWin.SelectionCanvas.Children.Clear();
-				foreach (AOI a in SelectedRecording.Aois)
-				{
-					a.p.Fill = new SolidColorBrush(Color.FromArgb(100, 255, 250, 205));
-					a.p.Stroke = new SolidColorBrush(Color.FromRgb(255, 250, 205));
-					_mainWin.SelectionCanvas.Children.Add(a.p);
-				}
+				renderAOIS();
 
 				//render gaze plot
 				SelectedRecording.gp = new GazePlot(SelectedRecording.fixations, SelectedRecording.saccades, _mainWin.MainCanvas);
 				SelectedRecording.gp.renderPlot(true, true, true, 0, 999999999);
 			}
-			//else
-			//{
-			//	//if for some reason test data is missing for a file provide an error message
-			//	AOI dummyAOI = new AOI(SelectedRecording);
-			//	dummyAOI.Name = "WARNING: No test data found for this file!";
-			//	aoiList.ItemsSource = new List<AOI>() { dummyAOI };
-			//	aoiList.Items.Refresh();
-			//}
+		}
+
+		private void renderAOIS()
+		{
+			_mainWin.SelectionCanvas.Children.Clear();
+			foreach (AOI a in SelectedRecording.Aois)
+			{
+				a.p.Fill = new SolidColorBrush(Color.FromArgb(100, 255, 250, 205));
+				a.p.Stroke = new SolidColorBrush(Color.FromRgb(255, 250, 205));
+				_mainWin.SelectionCanvas.Children.Add(a.p);
+				renderAOIS();
+			}
 		}
 
 		private void RemoveAOI_Click(object sender, RoutedEventArgs e)
 		{
 
+			AOI aoitoremove = (AOI)aoiList.SelectedItem;
+			aoiList.SelectedItem = null;
+			removeFromJSON(aoitoremove);
+			SelectedRecording.Aois.Remove(aoitoremove);
+			aoiList.Items.Refresh();
+			removeAOI.IsEnabled = false;
+		}
+
+		public void removeFromJSON(AOI aoi) //adapted from https://stackoverflow.com/questions/20626849/how-to-append-a-json-file-without-disturbing-the-formatting
+		{
+			if (aoi != null)
+			{
+				//set values
+				string filePath = _selectedRecording.dataDir + "\\annotations.json";
+				List<AOI> aoiList;
+				String jsonData;
+
+				// Read existing json data
+				if (!File.Exists(filePath))
+				{
+					File.WriteAllText(filePath, "");
+					aoiList = new List<AOI>();
+				}
+				else
+				{
+
+					jsonData = File.ReadAllText(filePath);
+
+					// De-serialize to object or create new list
+					aoiList = JsonConvert.DeserializeObject<List<AOI>>(jsonData)
+						  ?? new List<AOI>();
+				}
+
+				// remove aoi
+				AOI aoitoremove = null;
+				foreach(AOI a in aoiList) //since deserialized object wont be the same object
+				{
+					if(Equals(a.Name, aoi.Name))
+					{
+						aoitoremove = a;
+					}
+				}
+				aoiList.Remove(aoitoremove);
+
+				// Update json data string
+				jsonData = JsonConvert.SerializeObject(aoiList);
+
+				System.IO.File.WriteAllText(filePath, jsonData);
+			}
+		}
+
+		private void ParagraphBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			drawAoi.IsEnabled = true;
 		}
 	}
 }

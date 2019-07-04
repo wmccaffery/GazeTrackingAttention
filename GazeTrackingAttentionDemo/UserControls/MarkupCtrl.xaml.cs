@@ -154,10 +154,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void onAOIChanged(AOI aoi)
 		{
-			if(this.aoi != null)
-			{
-				writeToJSON(this.aoi);
-			}
 			if (aoi != null)
 			{
 				this.aoi = aoi;
@@ -166,6 +162,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 				interest = aoi.Interest;
 				setCheckBoxes();
 				markup_group.IsEnabled = true;
+			} else
+			{
+				markup_group.IsEnabled = false;
 			}
 
 		}
@@ -199,10 +198,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 				DisplaySlider.LowerValue = DisplaySlider.Minimum;
 
 			} 
-			if(this.aoi != null)
-			{
-				writeToJSON(aoi);
-			}
 			aoi = null;
 			markup_group.IsEnabled = false;
 		}
@@ -223,9 +218,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			this.test = test;
 			if (this.aoi != null)
-			{
-				writeToJSON(aoi);
-			}
 			this.aoi = null;
 			markup_group.IsEnabled = false;
 			timeline_group.IsEnabled = false;
@@ -398,10 +390,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void exit()
 		{
-			if(aoi != null)
-			{
-				writeToJSON(aoi);
-			}
 			endMarkup();
 		}
 

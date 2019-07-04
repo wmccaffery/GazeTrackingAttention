@@ -304,26 +304,7 @@ namespace GazeTrackingAttentionDemo
 		{
 			if (drawingAOI)
 			{
-				Point mp = Mouse.GetPosition(this);
-				aoi.Points.Add(mp);
 
-				Ellipse ellipse = new Ellipse();
-				ellipse.Fill = Brushes.Yellow;
-				ellipse.Stroke = Brushes.Black;
-				ellipse.Width = ellipse.Height = 25;
-
-				//set ellipse position
-				Canvas.SetLeft(ellipse, mp.X - (ellipse.Width / 2));
-				Canvas.SetTop(ellipse, mp.Y - (ellipse.Height / 2));
-
-
-				if(ellipseCount == 0)
-				{
-					ellipse.Stroke = Brushes.Red;
-					PointOfOrigin = ellipse;
-				}
-
-				ellipseCount++;
 				if (Type.Equals(e.OriginalSource, PointOfOrigin))
 				{
 					drawingAOI = false;
@@ -332,6 +313,26 @@ namespace GazeTrackingAttentionDemo
 				}
 				else
 				{
+					Point mp = Mouse.GetPosition(this);
+					aoi.Points.Add(mp);
+
+					Ellipse ellipse = new Ellipse();
+					ellipse.Fill = Brushes.Yellow;
+					ellipse.Stroke = Brushes.Black;
+					ellipse.Width = ellipse.Height = 25;
+
+					//set ellipse position
+					Canvas.SetLeft(ellipse, mp.X - (ellipse.Width / 2));
+					Canvas.SetTop(ellipse, mp.Y - (ellipse.Height / 2));
+
+
+					if (ellipseCount == 0)
+					{
+						ellipse.Stroke = Brushes.Red;
+						PointOfOrigin = ellipse;
+					}
+
+					ellipseCount++;
 					SelectionCanvas.Children.Add(ellipse);
 				}
 

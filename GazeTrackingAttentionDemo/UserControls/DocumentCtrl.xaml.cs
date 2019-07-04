@@ -17,8 +17,10 @@ namespace GazeTrackingAttentionDemo.UserControls
 	{
 
 
-		public delegate void numParagraphsFoundHandler(int numParagraphs);
-		public event numParagraphsFoundHandler numParagraphsFound;
+		//public delegate void numParagraphsFoundHandler(int numParagraphs);
+		//public event numParagraphsFoundHandler numParagraphsFound;
+
+		public int numParagraphs;
 
 		public DocumentCtrl()
 		{
@@ -68,21 +70,29 @@ namespace GazeTrackingAttentionDemo.UserControls
 		//	numParagraphsFound(numParagraphs);
 		//}
 
-		public void loadText(String text)
+		public void loadText(String _fileName)
 		{
 			clearText();
-			FileStream fs = new FileStream(text, FileMode.Open);
-			PageText.Selection.Load(fs, DataFormats.Rtf);
-			fs.Close();
+			//FileStream fs = new FileStream(text, FileMode.Open);
+			//PageText.Selection.Load(fs, DataFormats.Rtf);
+			//fs.Close();
+			TextRange range;
+			FileStream fStream;
+			if (File.Exists(_fileName))
+			{
+				range = new TextRange(PageText.Document.ContentStart, PageText.Document.ContentEnd);
+				fStream = new FileStream(_fileName, FileMode.OpenOrCreate);
+				range.Load(fStream, DataFormats.Rtf);
+				fStream.Close();
+			}
 			PageText.FontSize = 17.85;
 			PageText.FontFamily = new FontFamily("Calibri");
 
-			int numParagraphs = 0;
-			foreach (var paragraph in PageText.Document.Paragraphs())
-			{
-				numParagraphs++;
-			}
+			numParagraphs = PageText.Document.Paragraphs().Count();
+			Console.WriteLine("Loaded " + numParagraphs + " paragraphs");
+
 		}
+
 
 		public void clearText()
 		{
@@ -114,7 +124,14 @@ namespace GazeTrackingAttentionDemo.UserControls
 			public double DocumentHeight { get => _documentHeight;}
 			public double DocumentMarginWidth { get => _documentMarginWidth;}
 			public double DocumentMarginHeight { get => _documentMarginHeight;}
+
 	}
+
+	//CODE BLOCK TAKEN FROM https://stackoverflow.com/questions/27716601/c-sharp-read-paragraph-from-rich-text-box
+	//Author DBC
+	//Originally posted December 31st 2014
+	//Edited January 3rd 2015
+	//Accessed 30th May 2019
 
 	public static class FlowDocumentExtensions
 	{
@@ -123,12 +140,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 			return doc.Descendants().OfType<Paragraph>();
 		}
 	}
-
-	//CODE BLOCK TAKEN FROM https://stackoverflow.com/questions/27716601/c-sharp-read-paragraph-from-rich-text-box
-	//Author DBC
-	//Originally posted December 31st 2014
-	//Edited January 3rd 2015
-	//Accessed 30th May 2019
 
 	public static class DependencyObjectExtensions
 	{

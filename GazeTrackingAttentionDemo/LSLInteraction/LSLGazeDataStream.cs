@@ -24,11 +24,11 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 		{
 			gazeDataResultsInfo = liblsl.resolve_stream("name", "GazeData", 1, 1);
 			bool resolved;
-			if (!(resolved = gazeDataResultsInfo.Length < 1))
+			if (resolved = !(gazeDataResultsInfo.Length < 1))
 			{
 				gazeDataInlet = new liblsl.StreamInlet(gazeDataResultsInfo[0]);
 			}
-			return eyeTrackerPresent = !resolved;
+			return eyeTrackerPresent = resolved;
 
 		}
 

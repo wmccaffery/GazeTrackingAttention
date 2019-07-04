@@ -178,7 +178,6 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 		{
 			_gazePointDataStream.GazePoint((x, y, timestamp) =>
 			{
-				Console.WriteLine("here");
 				sendGazeToLSL(gazeDataOutlet, x, y, timestamp);
 			});
 		}

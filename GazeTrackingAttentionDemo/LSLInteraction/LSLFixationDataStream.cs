@@ -56,13 +56,13 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 			fixationDataResultsInfo = liblsl.resolve_stream("name", "FixationData", 1, 1);
 			fixationEndResultsInfo = liblsl.resolve_stream("name", "FixationEnd", 1, 1);
 			bool resolved;
-			if (!(resolved = fixationBeginResultsInfo.Length < 1 && fixationDataResultsInfo.Length < 1 && fixationEndResultsInfo.Length < 1))
+			if ((resolved = !(fixationBeginResultsInfo.Length < 1 && fixationDataResultsInfo.Length < 1 && fixationEndResultsInfo.Length < 1)))
 			{
 				fixationDataInlet = new liblsl.StreamInlet(fixationDataResultsInfo[0]);
 				fixationBeginInlet = new liblsl.StreamInlet(fixationBeginResultsInfo[0]);
 				fixationEndInlet = new liblsl.StreamInlet(fixationEndResultsInfo[0]);
 			}
-			return eyeTrackerPresent = !resolved;
+			return eyeTrackerPresent = resolved;
 		}
 
 		public LSLFixationDataStream Begin(Action<double, double, double, double> action)

@@ -136,7 +136,7 @@
                         <CheckBox x:Name="Aoi_CheckBox" Content="AOI" Click="Aoi_CheckBox_Click" IsChecked="True" />
                     </Viewbox>
                     <Viewbox Height="30" HorizontalAlignment="Left">
-                        <CheckBox x:Name="All_CheckBox" Content="All" Click="CheckBox_CheckBox_Click" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked"/>
+                        <CheckBox x:Name="All_CheckBox" Content="All" Click="CheckBox_Clicked" Checked="All_CheckBox_Checked" Unchecked="All_CheckBox_Unchecked" IsChecked="True"/>
                     </Viewbox>
                     <!--<Button Height="30" FontSize="20" Margin="60,5,60,0" Click="Button_Click">Render</Button>-->
                 </StackPanel>

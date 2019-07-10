@@ -23,7 +23,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 
 		//read from LSL
-		private readonly LSLStreamInteractionHost _lslHost;
+		private readonly LSLInteractionHost _lslHost;
 		private readonly LSLFixationDataStream _lslFixationDataStream;
 		private readonly LSLGazeDataStream _lslGazeDataStream;
 		private readonly LSLEEGDataStream _lslEEGDataStream;
@@ -76,7 +76,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			_gazePointDataStream = _host.Streams.CreateGazePointDataStream();
 
 			//init lslinteractionhost
-			_lslHost = new LSLStreamInteractionHost();
+			_lslHost = new LSLInteractionHost();
 
 
 			//init lsl streams, without outlets and inlets
@@ -87,276 +87,285 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 
 
-		public bool resolveAllStreams()
-		{
-			return resolveFixationStream() && resolveGazeStream() && resolveEEGStream();
-		}
+		//public bool resolveAllStreams()
+		//{
+		//	return resolveFixationStream() && resolveGazeStream() && resolveEEGStream();
+		//}
 
-		public bool resolveFixationStream()
-		{
-			bool resolved;
-			if (!(resolved = _lslGazeDataStream.tryResolveStreams()))
-			{
-				Console.WriteLine("WARNING: Fixation Stream not found");
-			} else
-			{
-				Console.WriteLine("Fixation Stream found");
-			}
-			return resolved; 
-		}
+		//public bool resolveFixationStream()
+		//{
+		//	bool resolved;
+		//	if (!(resolved = _lslGazeDataStream.tryResolveStreams()))
+		//	{
+		//		Console.WriteLine("WARNING: Fixation Stream not found");
+		//	} else
+		//	{
+		//		Console.WriteLine("Fixation Stream found");
+		//	}
+		//	return resolved; 
+		//}
 
-		public bool resolveGazeStream()
-		{
-			bool resolved;
-			if (!(resolved = _lslFixationDataStream.tryResolveStreams()))
-			{
-				Console.WriteLine("WARNING: Gaze Stream not found");
-			}
-			else
-			{
-				Console.WriteLine("Gaze Stream found");
-			}
-			return resolved;
-		}
+		//public bool resolveGazeStream()
+		//{
+		//	bool resolved;
+		//	if (!(resolved = _lslFixationDataStream.tryResolveStreams()))
+		//	{
+		//		Console.WriteLine("WARNING: Gaze Stream not found");
+		//	}
+		//	else
+		//	{
+		//		Console.WriteLine("Gaze Stream found");
+		//	}
+		//	return resolved;
+		//}
 
-		public bool resolveEEGStream()
-		{
-			bool resolved;
-			if (!(resolved = _lslEEGDataStream.tryResolveStreams()))
-			{
-				Console.WriteLine("WARNING: EEG Stream not found");
-			}
-			else
-			{
-				Console.WriteLine("EEG Stream found");
-			}
-			return resolved;
-		}
-
-
-		public void initLSLProviders()
-		{
-			//provider
-			gazeDataInfo = new liblsl.StreamInfo("GazeData", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
-			gazeDataOutlet = new liblsl.StreamOutlet(gazeDataInfo);
-
-			fixationBeginInfo = new liblsl.StreamInfo("FixationBegin", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
-			fixationBeginOutlet = new liblsl.StreamOutlet(fixationBeginInfo);
-
-			fixationDataInfo = new liblsl.StreamInfo("FixationData", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
-			fixationDataOutlet = new liblsl.StreamOutlet(fixationDataInfo);
-
-			fixationEndInfo = new liblsl.StreamInfo("FixationEnd", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
-			fixationEndOutlet = new liblsl.StreamOutlet(fixationEndInfo);
-
-			Console.WriteLine("LSL providers intialized");
+		//public bool resolveEEGStream()
+		//{
+		//	bool resolved;
+		//	if (!(resolved = _lslEEGDataStream.tryResolveStreams()))
+		//	{
+		//		Console.WriteLine("WARNING: EEG Stream not found");
+		//	}
+		//	else
+		//	{
+		//		Console.WriteLine("EEG Stream found");
+		//	}
+		//	return resolved;
+		//}
 
 
-		}
+		//public void initLSLProviders()
+		//{
+		//	//provider
+		//	gazeDataInfo = new liblsl.StreamInfo("GazeData", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+		//	gazeDataOutlet = new liblsl.StreamOutlet(gazeDataInfo);
+
+		//	fixationBeginInfo = new liblsl.StreamInfo("FixationBegin", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+		//	fixationBeginOutlet = new liblsl.StreamOutlet(fixationBeginInfo);
+
+		//	fixationDataInfo = new liblsl.StreamInfo("FixationData", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+		//	fixationDataOutlet = new liblsl.StreamOutlet(fixationDataInfo);
+
+		//	fixationEndInfo = new liblsl.StreamInfo("FixationEnd", "Gaze", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+		//	fixationEndOutlet = new liblsl.StreamOutlet(fixationEndInfo);
+
+		//	Console.WriteLine("LSL providers intialized");
+
+
+		//}
 
 		//send data to LSL
-		public void sendGazeToLSL(liblsl.StreamOutlet outlet, double x, double y, double ts)
-		{
-			double[] data = { x, y, ts };
-			outlet.push_sample(data);
-		}
+		//public void sendGazeToLSL(liblsl.StreamOutlet outlet, double x, double y, double ts)
+		//{
+		//	double[] data = { x, y, ts };
+		//	outlet.push_sample(data);
+		//}
 
 		//calibrate eye tracker
 		public void calibrate()
 		{
-			_host.Context.LaunchConfigurationTool(Tobii.Interaction.Framework.ConfigurationTool.Recalibrate, (data) => { });
-
-
-			//this code was attempting to trigger an event when calibration was complete
-
-			//EngineStateProvider engineStateProvider = new EngineStateProvider(_host.Context);
-
-			//EngineStateObserver<EyeTrackingDeviceStatus> _engineStateObserverTrackerState = engineStateProvider.CreateEyeTrackingDeviceStatusObserver();
-
-			//_engineStateObserverTrackerState.Changed += _mainWindow.onDeviceCalibration;
-
 			Console.WriteLine("Calibrating eye tracker");
+
+			_host.Context.LaunchConfigurationTool(Tobii.Interaction.Framework.ConfigurationTool.Recalibrate, (data) => { });
 		}
 
 		//read from gaze streams in parallel
-		public void feedStreamsToLSL()
-		{
-			Console.WriteLine("Init threads for feeding streams");
+		//public void feedStreamsToLSL()
+		//{
+		//	Console.WriteLine("Init threads for feeding streams");
 
-			Thread gazeBeginStream = new Thread(() => streamGazeData());
-			Thread fixationBeginStream = new Thread(() => streamFixationData());
+		//	Thread gazeBeginStream = new Thread(() => streamGazeData());
+		//	Thread fixationBeginStream = new Thread(() => streamFixationData());
 
-			Console.WriteLine("Starting threads for feeding streams");
+		//	Console.WriteLine("Starting threads for feeding streams");
 
-			fixationBeginStream.Start();
-			gazeBeginStream.Start();
-		}
+		//	fixationBeginStream.Start();
+		//	gazeBeginStream.Start();
+		//}
 
-		public void streamGazeData()
-		{
-			_gazePointDataStream.GazePoint((x, y, timestamp) =>
-			{
-				sendGazeToLSL(gazeDataOutlet, x, y, timestamp);
-			});
-		}
+		//public void streamGazeData()
+		//{
+		//	_gazePointDataStream.GazePoint((x, y, timestamp) =>
+		//	{
+		//		sendGazeToLSL(gazeDataOutlet, x, y, timestamp);
+		//	});
+		//}
 
-		public void streamFixationData()
-		{
-			_fixationDataStream
-				.Begin((x, y, timestamp) =>
-				{
-					sendGazeToLSL(fixationBeginOutlet, x, y, timestamp);
-				})
-				 .Data((x, y, timestamp) =>
-				 {
-					 sendGazeToLSL(fixationDataOutlet, x, y, timestamp);
+		//public void streamFixationData()
+		//{
+		//	_fixationDataStream
+		//		.Begin((x, y, timestamp) =>
+		//		{
+		//			sendGazeToLSL(fixationBeginOutlet, x, y, timestamp);
+		//		})
+		//		 .Data((x, y, timestamp) =>
+		//		 {
+		//			 sendGazeToLSL(fixationDataOutlet, x, y, timestamp);
 
-				 })
-				.End((x, y, timestamp) =>
-				{
-					sendGazeToLSL(fixationEndOutlet, x, y, timestamp);
-				});
-		}
+		//		 })
+		//		.End((x, y, timestamp) =>
+		//		{
+		//			sendGazeToLSL(fixationEndOutlet, x, y, timestamp);
+		//		});
+		//}
 
-		public void readStreams()
-		{
-			_stream = true;
-			if (_lslFixationDataStream.eyeTrackerPresent) {
-				Console.WriteLine("Starting eyetraker stream");
-				_lslFixationDataStream
-					.Begin((x, y, tobiits, timestamp) =>
-					{
-						timestamp = timestamp * 1000;
-						timestamp += _lslHost.offset;
-						Console.WriteLine("Fixation Begin\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
-						string header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
-						double[] data = { x, y, tobiits };
+		//public void readStreams()
+		//{
+		//	_stream = true;
+		//	if (_lslFixationDataStream.eyeTrackerPresent)
+		//	{
+		//		Console.WriteLine("Starting eyetraker stream");
+		//		_lslFixationDataStream
+		//			.Begin((x, y, tobiits, timestamp) =>
+		//			{
+		//				timestamp = timestamp * 1000;
+		//				timestamp += _lslHost.offset;
+		//				Console.WriteLine("Fixation Begin\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
+		//				string header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
+		//				double[] data = { x, y, tobiits };
 
-						if (_record)
-						{
-							recordStream(fixationRawBegPath, "Fixation", "Begin", header, data, timestamp);
-						}
-					})
-					.Data((x, y, tobiits, timestamp) =>
-					{
-						timestamp = timestamp * 1000;
-						timestamp += _lslHost.offset;
-						Console.WriteLine("Fixation Data\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
-						string header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
-						double[] data = { x, y, tobiits };
+		//				if (_record)
+		//				{
+		//					recordStream(fixationRawBegPath, "Fixation", "Begin", header, data, timestamp);
+		//				}
+		//			})
+		//			.Data((x, y, tobiits, timestamp) =>
+		//			{
+		//				timestamp = timestamp * 1000;
+		//				timestamp += _lslHost.offset;
+		//				Console.WriteLine("Fixation Data\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
+		//				string header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
+		//				double[] data = { x, y, tobiits };
 
-						if (_record)
-						{
-							recordStream(fixationRawDatPath, "Fixation", "Data", header, data, timestamp);
-						}
+		//				if (_record)
+		//				{
+		//					recordStream(fixationRawDatPath, "Fixation", "Data", header, data, timestamp);
+		//				}
 
-					})
-					.End((x, y, tobiits, timestamp) =>
-					{
-						timestamp = timestamp * 1000;
-						timestamp += _lslHost.offset;
-						Console.WriteLine("Fixation End\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
-						string header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
-						double[] data = { x, y, tobiits };
+		//			})
+		//			.End((x, y, tobiits, timestamp) =>
+		//			{
+		//				timestamp = timestamp * 1000;
+		//				timestamp += _lslHost.offset;
+		//				Console.WriteLine("Fixation End\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
+		//				string header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
+		//				double[] data = { x, y, tobiits };
 
-						if (_record)
-						{
-							recordStream(fixationRawEndPath, "Fixation", "End", header, data, timestamp);
-						}
-					});
+		//				if (_record)
+		//				{
+		//					recordStream(fixationRawEndPath, "Fixation", "End", header, data, timestamp);
+		//				}
+		//			});
 
-				_lslGazeDataStream.GazeData((x, y, tobiits, timestamp) =>
-				{
-					timestamp = timestamp * 1000;
-					timestamp += _lslHost.offset;
-					Console.WriteLine("Gaze\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
-					string header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
-					double[] data = { x, y, tobiits };
+		//		_lslGazeDataStream.GazeData((x, y, tobiits, timestamp) =>
+		//		{
+		//			timestamp = timestamp * 1000;
+		//			timestamp += _lslHost.offset;
+		//			Console.WriteLine("Gaze\tX {0}\tY {1}\ttimestamp {2}", x, y, timestamp);
+		//			string header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
+		//			double[] data = { x, y, tobiits };
 
-					if (_record)
-					{
-						recordStream(gazeRawPath, "Gaze", "", header, data, timestamp);
-					}
-				});
-			}
+		//			if (_record)
+		//			{
+		//				recordStream(gazeRawPath, "Gaze", "", header, data, timestamp);
+		//			}
+		//		});
+		//	}
 
-			if (_lslEEGDataStream.eegPresent)
-			{
-				Console.WriteLine("Starting eeg stream");
+		//	if (_lslEEGDataStream.eegPresent)
+		//	{
+		//		Console.WriteLine("Starting eeg stream");
 
-				_lslEEGDataStream.EEGData((c0, c1, c2, c3, c4, c5, c6, c7, timestamp) =>
-				{
-					Console.WriteLine("EEG\tCHANNEL1 {0}\tCHANNEL2 {1}\tCHANNEL3 {2}\tCHANNEL4 {3}\tCHANNEL5 {4}\tCHANNEL6 {5}\tCHANNEL7 {6}\tCHANNEL8 {7}\ttimestamp {2}", c0, c1, c2, c3, c4, c5, c6, c7, timestamp);
-					string header = "C1,C2,C3,C4,C5,C6,C7,C8,Timestamp, AdjustedUnix" + Environment.NewLine;
-					double[] data = { c0, c1, c2, c3, c4, c5, c6, c7 };
+		//		_lslEEGDataStream.EEGData((c0, c1, c2, c3, c4, c5, c6, c7, timestamp) =>
+		//		{
+		//			Console.WriteLine("EEG\tCHANNEL1 {0}\tCHANNEL2 {1}\tCHANNEL3 {2}\tCHANNEL4 {3}\tCHANNEL5 {4}\tCHANNEL6 {5}\tCHANNEL7 {6}\tCHANNEL8 {7}\ttimestamp {2}", c0, c1, c2, c3, c4, c5, c6, c7, timestamp);
+		//			string header = "C1,C2,C3,C4,C5,C6,C7,C8,Timestamp, AdjustedUnix" + Environment.NewLine;
+		//			double[] data = { c0, c1, c2, c3, c4, c5, c6, c7 };
 
-					if (_record)
-					{
-						recordStream(eegRawPath, "EEG", "", header, data, timestamp);
-					}
-				});
-			}
+		//			if (_record)
+		//			{
+		//				recordStream(eegRawPath, "EEG", "", header, data, timestamp);
+		//			}
+		//		});
+		//	}
 
-		}
-		public void recordStream(String rawPath, String streamType, String dataType, String fileHeader, double[] data, double timestamp)
-		{
-			if (_record)
-			{
-				if (!File.Exists(rawPath))
-				{
-					File.WriteAllText(rawPath, "");
-					File.WriteAllText(rawPath, fileHeader);
-				}
+		//}
 
-				double uts = (TimeSpan.FromMilliseconds(timestamp).Seconds + _mainWindow.unixStartTime);
-				string datastr = "";
+			//private void streamData(CancellationToken ct)
+			//{
+			//	while (true)
+			//	{
+			//		ct.ThrowIfCancellationRequested();
+			//		pullSampleFromLSL(fixationBeginInlet);
 
-				if(streamType == "Fixation")
-				{
-					//append data into a single csv line
-					//of the form "Begin," + x + "," + y + "," + timestamp + Environment.NewLine;
+			//		ReaderWriterLock
+			//		start writing to file if requested
+			//		if (_isRecording)
+			//			{
+			//				writeToFile()
+			//		}
 
-					datastr += dataType + ",";
-					foreach(double d in data)
-					{
-						datastr += (d + ",");
-					}
-					datastr += (timestamp + "," + uts  +  Environment.NewLine);
+			//	}
 
-					//store in program for cleaning and assigning
-					switch (dataType)
-					{
-						case "Begin":
-							rawFixationBegPoints.Add(Tuple.Create(dataType, new DataPoint((float)data[0], (float)data[1], (float)timestamp)));
-							break;
-						case "Data":
-							rawFixationDatPoints.Add(Tuple.Create(dataType, new DataPoint((float)data[0], (float)data[1], (float)timestamp)));
-							break;
-						case "End":
-							rawFixationEndPoints.Add(Tuple.Create(dataType, new DataPoint((float)data[0], (float)data[1], (float)timestamp)));
-							break;
-					}
-				}
-				else
-				{
-					foreach (double d in data)
-					{
-						datastr += (d + ",");
-					}
-					datastr += (timestamp + "," + (TimeSpan.FromMilliseconds(timestamp).Seconds + _mainWindow.unixStartTime) +  Environment.NewLine);
-				}
+		//public void recordStream(String rawPath, String streamType, String dataType, String fileHeader, double[] data, double timestamp)
+		//{
+		//	if (_record)
+		//	{
+		//		if (!File.Exists(rawPath))
+		//		{
+		//			File.WriteAllText(rawPath, "");
+		//			File.WriteAllText(rawPath, fileHeader);
+		//		}
 
-				//write csv line to file
-				File.AppendAllText(rawPath, datastr);
+		//		double uts = (TimeSpan.FromMilliseconds(timestamp).Seconds + _mainWindow.unixStartTime);
+		//		string datastr = "";
 
-			}
-		}
+		//		if(streamType == "Fixation")
+		//		{
+		//			//append data into a single csv line
+		//			//of the form "Begin," + x + "," + y + "," + timestamp + Environment.NewLine;
+
+		//			datastr += dataType + ",";
+		//			foreach(double d in data)
+		//			{
+		//				datastr += (d + ",");
+		//			}
+		//			datastr += (timestamp + "," + uts  +  Environment.NewLine);
+
+		//			//store in program for cleaning and assigning
+		//			switch (dataType)
+		//			{
+		//				case "Begin":
+		//					rawFixationBegPoints.Add(Tuple.Create(dataType, new DataPoint((float)data[0], (float)data[1], (float)timestamp)));
+		//					break;
+		//				case "Data":
+		//					rawFixationDatPoints.Add(Tuple.Create(dataType, new DataPoint((float)data[0], (float)data[1], (float)timestamp)));
+		//					break;
+		//				case "End":
+		//					rawFixationEndPoints.Add(Tuple.Create(dataType, new DataPoint((float)data[0], (float)data[1], (float)timestamp)));
+		//					break;
+		//			}
+		//		}
+		//		else
+		//		{
+		//			foreach (double d in data)
+		//			{
+		//				datastr += (d + ",");
+		//			}
+		//			datastr += (timestamp + "," + (TimeSpan.FromMilliseconds(timestamp).Seconds + _mainWindow.unixStartTime) +  Environment.NewLine);
+		//		}
+
+		//		//write csv line to file
+		//		File.AppendAllText(rawPath, datastr);
+
+		//	}
+		//}
 
 		//set recording directories
 		public void setRecordingPaths(bool customFile, string customFilePath="", int baselinecount = 0)
 		{
 			//current user
-			User user = _mainWindow.currentUser;
+			Session user = _mainWindow.currentUser;
 			Test test = user.CurrentTest;
 
 
@@ -514,44 +523,58 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			return (!float.IsNaN(val.x) && !float.IsNaN(val.y));
 		}
 
-		public void startRecording()
-		{
-			_record = true;
-		}
+		//public void startRecording()
+		//{
+		//	_record = true;
+		//}
 
-		public void stopRecording()
-		{
-			_record = false;
-		}
+		//public void stopRecording()
+		//{
+		//	_record = false;
+		//}
 
-		public bool isRecording()
-		{
-			return _record;
-		}
+		//public bool isRecording()
+		//{
+		//	return _record;
+		//}
 
-		public bool isStreaming()
-		{
-			return _stream;
-		}
+		//public bool isStreaming()
+		//{
+		//	return _stream;
+		//}
 
-		public void closeAllLslStreams()
-		{
-			_stream = false;
-			Console.WriteLine("Closing lsl streams...");
-			_lslHost.closeStream(_lslFixationDataStream);
-			_lslHost.closeStream(_lslGazeDataStream);
-			_lslHost.closeStream(_lslEEGDataStream);
-			Console.WriteLine("Done");
+		//public void closeAllLslStreams()
+		//{
+		//	_stream = false;
+		//	Console.WriteLine("Closing lsl streams...");
+		//	_lslHost.closeStream(_lslFixationDataStream);
+		//	_lslHost.closeStream(_lslGazeDataStream);
+		//	_lslHost.closeStream(_lslEEGDataStream);
+		//	Console.WriteLine("Done");
 
-		}
+		//}
 
-		public void closeLslEEGStream()
-		{
-			Console.WriteLine("Closing lsl streams...");
-			_lslHost.closeStream(_lslEEGDataStream);
-			Console.WriteLine("Done");
+		//public void closeLslEEGStream()
+		//{
+		//	Console.WriteLine("Closing lsl streams...");
+		//	_lslHost.closeStream(_lslEEGDataStream);
+		//	Console.WriteLine("Done");
 
-		}
+		//}
+
+
+
+
+
+
+
+
+
+	//OLDER CODE	
+
+
+
+
 
 
 		//read fixations from eye tracker stream

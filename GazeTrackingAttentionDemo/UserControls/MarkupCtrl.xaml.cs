@@ -154,6 +154,45 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		}
 
+		public void onAOICreated(AOI aoi)
+		{
+			if (this.aoi != null) //suggest previous values
+			{
+				aoi.Interest = this.aoi.Interest;
+				aoi.Effort = this.aoi.Effort;
+				aoi.Attentiveness = this.aoi.Interest;
+
+				//aoi.timeRangeStart = this.aoi.timeRangeStart;
+				//aoi.timeRangeEnd = this.aoi.timeRangeEnd;
+
+				aoi.timeRangeStart = DisplaySlider.LowerValue;
+				aoi.timeRangeEnd = DisplaySlider.HigherValue;
+
+
+			}
+			else //set default values
+			{
+				aoi.Interest = 1;
+				aoi.Effort = 1;
+				aoi.Attentiveness = 1;
+
+				//aoi.timeRangeStart = 0;
+				//aoi.timeRangeEnd = DisplaySlider.Maximum;
+
+				aoi.timeRangeStart = DisplaySlider.LowerValue;
+				aoi.timeRangeEnd = DisplaySlider.HigherValue;
+			}
+
+			writeToJSON(aoi);
+
+
+		}
+
+		public void onAOIRemoved()
+		{
+			this.aoi = null;
+		}
+
 		public void onAOIChanged(AOI aoi)
 		{
 			if (aoi != null)
@@ -162,11 +201,15 @@ namespace GazeTrackingAttentionDemo.UserControls
 				effort = aoi.Effort;
 				attentiveness = aoi.Attentiveness;
 				interest = aoi.Interest;
+				DisplaySlider.LowerValue = aoi.timeRangeStart;
+				//Console.WriteLine("TRE " + aoi.timeRangeEnd);
+				DisplaySlider.HigherValue = aoi.timeRangeEnd;
 				setCheckBoxes();
 				markup_group.IsEnabled = true;
 			} else
 			{
 				markup_group.IsEnabled = false;
+				this.aoi = null;
 			}
 
 		}
@@ -289,13 +332,13 @@ namespace GazeTrackingAttentionDemo.UserControls
 				{
 					test.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
 				}
-				if (aoi != null)
-				{
-					aoi.timeRangeStart = ((Xceed.Wpf.Toolkit.RangeSlider)e.Source).LowerValue;
-					writeToJSON(aoi);
-				}
+				//if (aoi != null)
+				//{
+				//	aoi.timeRangeStart = DisplaySlider.LowerValue;
+				//	writeToJSON(aoi);
+				//}
 			}
-			TimeRange_Start.Text = String.Format("{0:0}",("" + (DisplaySlider.LowerValue - startTime)));
+			TimeRange_Start.Text = String.Format("{0:0}", ("" + (DisplaySlider.LowerValue - startTime)));
 		}
 
 		private void DisplaySlider_HigherValueChanged(object sender, RoutedEventArgs e)
@@ -306,11 +349,11 @@ namespace GazeTrackingAttentionDemo.UserControls
 				{
 					test.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
 				}
-				if (aoi != null)
-				{
-					aoi.timeRangeEnd = ((Xceed.Wpf.Toolkit.RangeSlider)e.Source).HigherValue;
-					writeToJSON(aoi);
-				}
+				//if (aoi != null)
+				//{
+				//	aoi.timeRangeEnd = DisplaySlider.HigherValue;
+				//	writeToJSON(aoi);
+				//}
 			}
 			TimeRange_End.Text = String.Format("{0:0}", ("" + (DisplaySlider.HigherValue - startTime)));
 		}
@@ -322,13 +365,13 @@ namespace GazeTrackingAttentionDemo.UserControls
 			switch (group)
 			{
 				case "Interest":
-					interest = val;
+					aoi.Interest = val;
 					break;
 				case "Attentiveness":
-					attentiveness = val;
+					aoi.Attentiveness = val;
 					break;
 				case "Effort":
-					effort = val;
+					aoi.Effort = val;
 					break;
 			}
 			writeToJSON(aoi);
@@ -361,12 +404,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			if (aoi != null)
 			{
-				//set values
-				aoi.timeRangeStart = DisplaySlider.LowerValue;
-				aoi.timeRangeEnd = DisplaySlider.HigherValue;
-				aoi.Interest = interest;
-				aoi.Attentiveness = attentiveness;
-				aoi.Effort = effort;
+				Console.WriteLine("Writing to AOI");
 
 				aoi.convertPolygon();
 

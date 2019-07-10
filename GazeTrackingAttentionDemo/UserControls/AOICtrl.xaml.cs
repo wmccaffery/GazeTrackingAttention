@@ -41,6 +41,12 @@ namespace GazeTrackingAttentionDemo.UserControls
 		public delegate void SelectedAOIChangeHandler(AOI aoi);
 		public event SelectedAOIChangeHandler selectedAOIChanged;
 
+		public delegate void AOICreatedHandler(AOI aoi);
+		public event AOICreatedHandler aoiCreated;
+
+		public delegate void AOIRemovedHandler();
+		public event AOIRemovedHandler aoiRemoved;
+
 
 
 		private MainWindow _mainWin = (MainWindow)Application.Current.MainWindow;
@@ -108,6 +114,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 			selectedTestChanged += new SelectedTestChangeHandler(((MarkupCtrl)_mainWin.rightView.Content).onTestChanged);
 			selectedRecordingChanged += new SelectedRecordingChangeHandler(((MarkupCtrl)_mainWin.rightView.Content).onRecordingChanged);
 			selectedAOIChanged += new SelectedAOIChangeHandler(((MarkupCtrl)_mainWin.rightView.Content).onAOIChanged);
+			aoiCreated += new AOICreatedHandler(((MarkupCtrl)_mainWin.rightView.Content).onAOICreated);
+			aoiRemoved += new AOIRemovedHandler(((MarkupCtrl)_mainWin.rightView.Content).onAOIRemoved);
+
 
 		}
 
@@ -148,7 +157,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 				SelectedRecording.Aois[existingIndex] = aoi; 
 			}
 
-			aoiList.Items.Refresh();
 
 			foreach (AOI a in SelectedRecording.Aois)
 			{
@@ -158,7 +166,12 @@ namespace GazeTrackingAttentionDemo.UserControls
 			}
 			drawAoi.IsEnabled = true;
 			removeAOI.IsEnabled = true;
-			((MarkupCtrl)_mainWin.rightView.Content).writeToJSON(aoi);
+
+			aoiCreated(aoi);
+
+			aoiList.SelectedItem = aoi;
+			aoiList.Items.Refresh();
+
 
 		}
 
@@ -273,7 +286,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 				a.p.Fill = new SolidColorBrush(Color.FromArgb(100, 255, 250, 205));
 				a.p.Stroke = new SolidColorBrush(Color.FromRgb(255, 250, 205));
 				_mainWin.SelectionCanvas.Children.Add(a.p);
-				renderAOIS();
+				//renderAOIS();
 			}
 		}
 
@@ -282,9 +295,11 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 			AOI aoitoremove = (AOI)aoiList.SelectedItem;
 			aoiList.SelectedItem = null;
+			aoiRemoved();
 			removeFromJSON(aoitoremove);
 			SelectedRecording.Aois.Remove(aoitoremove);
 			aoiList.Items.Refresh();
+			renderAOIS();
 			removeAOI.IsEnabled = false;
 		}
 

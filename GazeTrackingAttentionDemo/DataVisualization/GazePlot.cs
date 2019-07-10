@@ -109,6 +109,7 @@ namespace GazeTrackingAttentionDemo.DataVisualization
 		public void renderPlot(bool showAll, bool showFixations, bool showSaccades, double startRange, double endRange)
 		{
 			c.Children.Clear();
+			Console.WriteLine("Rendering Gaze Plot from " + startRange + " to " + endRange);
 
 			if (noData)
 			{
@@ -117,7 +118,6 @@ namespace GazeTrackingAttentionDemo.DataVisualization
 			if (showFixations) {
 				foreach (Tuple<Ellipse, TextBlock, float, float> t in fixationPoints)
 				{
-					Console.WriteLine(t.Item4 + " TO END " + endRange );
 					if (t.Item4 > endRange || t.Item3 < startRange)
 					{
 						t.Item1.Fill = new SolidColorBrush(Color.FromArgb(100, 211, 211, 211));

@@ -1,4 +1,5 @@
 ﻿using GazeTrackingAttentionDemo.DataVisualization;
+using GazeTrackingAttentionDemo.DeviceInteraction;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +18,7 @@ namespace GazeTrackingAttentionDemo.Models
 		private string _testName;
 		private string _recordingDir;
 		private int _recordingNum;
-		public DataProcessing.DataRecorder dataRecorder;
+		public DeviceInteractionHost dataRecorder;
 		public Boolean isPaper;
 		public String infoPath;
 		public int index;

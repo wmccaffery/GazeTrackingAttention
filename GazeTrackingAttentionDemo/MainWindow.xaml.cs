@@ -1,6 +1,6 @@
 ﻿
 using GazeTrackingAttentionDemo.DataVisualization;
-using GazeTrackingAttentionDemo.LSLInteraction;
+using GazeTrackingAttentionDemo.DeviceInteraction;
 using GazeTrackingAttentionDemo.Models;
 using GazeTrackingAttentionDemo.UserControls;
 using LSL;
@@ -361,7 +361,7 @@ namespace GazeTrackingAttentionDemo
 
 			Test t = currentUser.testList[0];
 			t.setMedium("SCREEN");
-			t.dataRecorder = new DataProcessing.DataRecorder();
+			t.dataRecorder = new DeviceInteraction.DeviceInteractionHost();
 			//currentUser.testList.Add(t);
 			String dataPath = t.TestDir + "Recording_0";
 

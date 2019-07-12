@@ -1,4 +1,4 @@
-﻿using GazeTrackingAttentionDemo.LSLInteraction;
+﻿using GazeTrackingAttentionDemo.DeviceInteraction;
 using LSL;
 using System;
 using System.Collections.Generic;
@@ -12,9 +12,9 @@ using Tobii.Interaction;
 using Tobii.Interaction.Framework;
 using GazeTrackingAttentionDemo.Models;
 
-namespace GazeTrackingAttentionDemo.DataProcessing
+namespace GazeTrackingAttentionDemo.DeviceInteraction
 {
-	public class DataRecorder : IDisposable
+	public class DeviceInteractionHost : IDisposable
 	{
 		//read directly from device
 		private readonly Host _host;
@@ -76,7 +76,7 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 
 
-		public DataRecorder()
+		public DeviceInteractionHost()
 		{
 			MainWindow _mainWindow = (MainWindow)Application.Current.MainWindow;
 			//Device
@@ -256,13 +256,20 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 		public void createThreads()
 		{
-			foreach(LSLDevice d in _lslDevices)
+			Console.WriteLine("Creating tasks");
+			foreach (LSLDevice d in _lslDevices)
 			{
+				if(d.Streams.Length == 0)
+				{
+					Console.WriteLine("No streamsfound for device " + d.Type + ". No tasks were created");
+				}
 				foreach(LSLStream s in d.Streams)
 				{
+					Console.WriteLine("task created for stream " + s.StreamInfo.name() + " from device " + s.StreamInfo.type());
 					_tasks.Add(new Task(() => stream(s)));
 				}
 			}
+			Console.Write("Done");
 		}
 
 		private void stream(LSLStream s)
@@ -295,9 +302,9 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 			}
 		}
 
-
 		public void startStreaming()
 		{
+			//Console.WriteLine()
 			foreach(var task in _tasks)
 			{
 				task.Start();
@@ -306,7 +313,44 @@ namespace GazeTrackingAttentionDemo.DataProcessing
 
 		public void stopStreaming()
 		{
-			_source.Cancel();
+			int threadcount = _tasks.Count;
+			int cancelled = 0;
+			try
+			{
+				_source.Cancel();
+
+			}
+			catch (AggregateException ae)
+			{
+				foreach (Exception e in ae.InnerExceptions)
+				{
+					if (e is TaskCanceledException)
+					{
+						Console.WriteLine("Streaming stopped: " + ((TaskCanceledException)e).Message);
+						cancelled++;
+					}
+					else
+					{
+						Console.WriteLine("Exception: " + e.GetType().Name);
+					}
+				}
+			}
+			finally
+			{
+				if(threadcount == 0)
+				{
+					Console.WriteLine("WARNING: No tasks to cancel");
+				}
+				else if(cancelled == threadcount)
+				{
+					Console.WriteLine("All tasks have stopped");
+				}
+				else
+				{
+					Console.WriteLine("WARNING: Not all tasks have stopped");
+				}
+				//source.Dispose();
+			}
 		}
 
 		public void startRecording()

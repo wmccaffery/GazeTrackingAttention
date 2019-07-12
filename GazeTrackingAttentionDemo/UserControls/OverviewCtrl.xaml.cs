@@ -1,4 +1,4 @@
-﻿using GazeTrackingAttentionDemo.LSLInteraction;
+﻿using GazeTrackingAttentionDemo.DeviceInteraction;
 using GazeTrackingAttentionDemo.Models;
 using System;
 using System.Collections.Generic;
@@ -91,7 +91,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			if((medium = stimuliMedium.SelectedItem.ToString()) != "Select medium")
 			{
 				Test test = (Test)testList.SelectedItem;
-				test.dataRecorder = new DataProcessing.DataRecorder();
+				test.dataRecorder = new DeviceInteraction.DeviceInteractionHost();
 				test.setMedium(medium);
 				test.dataRecorder.initLSLProviders();
 				test.dataRecorder.feedStreamsToLSL();
@@ -117,14 +117,14 @@ namespace GazeTrackingAttentionDemo.UserControls
 		}
 
 		Boolean eegrecord;
-		public DataProcessing.DataRecorder eegDataRecorder;
+		public DeviceInteraction.DeviceInteractionHost eegDataRecorder;
 
 		private int baselinecount = 0;
 		private void RecordEEG_Click(object sender, RoutedEventArgs e)
 		{
 			if (!eegrecord)
 			{
-				eegDataRecorder = new DataProcessing.DataRecorder();
+				eegDataRecorder = new DeviceInteraction.DeviceInteractionHost();
 				eegDataRecorder.RegisterLSLDevice(new LSLDevice("EEG", true));
 				//DEBUG
 				//eegDataRecorder.initLSLProviders();

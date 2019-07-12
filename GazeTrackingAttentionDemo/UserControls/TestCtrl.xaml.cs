@@ -116,7 +116,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 		public void stopRecording()
 		{
 			String dataPath = user.CurrentTest.currentRecording.dataDir;
-			DataProcessing.DataRecorder dr = user.CurrentTest.dataRecorder;
+			DeviceInteraction.DeviceInteractionHost dr = user.CurrentTest.dataRecorder;
 
 			dr.stopRecording();
 			WebcamViewer.StopRecording();

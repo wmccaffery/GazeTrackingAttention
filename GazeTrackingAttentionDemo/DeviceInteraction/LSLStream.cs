@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using static LSL.liblsl;
 
-namespace GazeTrackingAttentionDemo.LSLInteraction
+namespace GazeTrackingAttentionDemo.DeviceInteraction
 {
 	public class LSLStream
 	{
@@ -53,6 +53,11 @@ namespace GazeTrackingAttentionDemo.LSLInteraction
 					filename = "GazeData";
 					datatype = "EYETRACKER";
 					header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
+					break;
+				case "Debug":
+					filename = "DebugData";
+					datatype = "DEBUG";
+					header = "VAL, Timestamp" + Environment.NewLine;
 					break;
 				default:
 					filename = "EEGData";

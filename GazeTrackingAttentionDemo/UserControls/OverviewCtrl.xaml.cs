@@ -1,4 +1,5 @@
-﻿using GazeTrackingAttentionDemo.Models;
+﻿using GazeTrackingAttentionDemo.LSLInteraction;
+using GazeTrackingAttentionDemo.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -94,7 +95,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 				test.setMedium(medium);
 				test.dataRecorder.initLSLProviders();
 				test.dataRecorder.feedStreamsToLSL();
-				test.dataRecorder.resolveAllStreams();
+				test.dataRecorder.RegisterLSLDevice(new LSLDevice("EEG", true));
+				test.dataRecorder.RegisterLSLDevice(new LSLDevice("Gaze", false));
+				test.dataRecorder.resolveStreams();
 				user.CurrentTest = test;
 				Console.WriteLine("Test Loaded!");
 				
@@ -122,9 +125,16 @@ namespace GazeTrackingAttentionDemo.UserControls
 			if (!eegrecord)
 			{
 				eegDataRecorder = new DataProcessing.DataRecorder();
-				eegDataRecorder.resolveEEGStream();
+				eegDataRecorder.RegisterLSLDevice(new LSLDevice("EEG", true));
+				//DEBUG
+				//eegDataRecorder.initLSLProviders();
+				//eegDataRecorder.feedDebugData();
+				//eegDataRecorder.RegisterLSLDevice(new LSLDevice("Debug", true));
+				//DEBUG
+				eegDataRecorder.resolveStreams();
 				eegDataRecorder.setRecordingPaths(true, user.DirPath + @"\", baselinecount);
-				eegDataRecorder.readStreams();
+				eegDataRecorder.createThreads();
+				eegDataRecorder.startStreaming();
 				eegDataRecorder.startRecording();
 				((Button)e.Source).Content = "Stop Recording";
 				startMarkup.IsEnabled = false;
@@ -134,7 +144,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			} else
 			{
 				eegDataRecorder.stopRecording();
-				eegDataRecorder.closeLslEEGStream();
+				eegDataRecorder.stopStreaming();
 				eegDataRecorder.Dispose();
 				((Button)e.Source).Content = "Record EEG";
 				startMarkup.IsEnabled = true;

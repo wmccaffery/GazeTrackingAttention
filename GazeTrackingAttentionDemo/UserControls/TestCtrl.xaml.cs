@@ -89,14 +89,14 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void startStreaming()
 		{
-			user.CurrentTest.dataRecorder.readStreams();
+			user.CurrentTest.dataRecorder.startStreaming();
 			WebcamViewer.StartPreview();
 			Streaming();
 		}
 
 		public void stopStreaming()
 		{
-			user.CurrentTest.dataRecorder.closeAllLslStreams();
+			user.CurrentTest.dataRecorder.stopStreaming();
 			WebcamViewer.StopPreview();
 			NotStreaming();
 		}
@@ -122,7 +122,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			WebcamViewer.StopRecording();
 			endts = _mainWindow.stopwatch.ElapsedMilliseconds;
 
-			user.CurrentTest.currentRecording.fixations = dr.getFixations();
+			user.CurrentTest.currentRecording.fixations = dr.getCleanFixations();
 			user.CurrentTest.currentRecording.saccades = dr.getSaccades(user.CurrentTest.currentRecording.fixations);
 			user.CurrentTest.currentRecording.videoQpcStartTime = startts;
 			user.CurrentTest.currentRecording.videoQpcEndTime = endts;
@@ -132,7 +132,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			//write fixations
 			foreach (Fixation f in user.CurrentTest.currentRecording.fixations)
 			{
-				dr.recordFixations(fixationpath, f);
+				dr.writeCleanFixationsToFile(fixationpath, f);
 			}
 
 			////set highest test

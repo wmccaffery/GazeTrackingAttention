@@ -71,10 +71,11 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 		{
 			double[] data = new double[StreamInfo.channel_count() + 1];
 			double[] sample = new double[StreamInfo.channel_count()];
-			sample.CopyTo(data, 0);
 
 			double timestamp = streamInlet.pull_sample(sample);
 			timestamp += streamInlet.time_correction();
+
+			sample.CopyTo(data, 0);
 
 			if (customts)
 			{

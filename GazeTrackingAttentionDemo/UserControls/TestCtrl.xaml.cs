@@ -1,4 +1,5 @@
-﻿using GazeTrackingAttentionDemo.Models;
+﻿using GazeTrackingAttentionDemo.DeviceInteraction;
+using GazeTrackingAttentionDemo.Models;
 using Microsoft.Expression.Encoder.Devices;
 using System;
 using System.Collections.Generic;
@@ -89,7 +90,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void startStreaming()
 		{
-			user.CurrentTest.dataRecorder.startStreaming();
+			DeviceInteractionHost d = user.CurrentTest.dataRecorder;
+			d.startStreaming();
 			WebcamViewer.StartPreview();
 			Streaming();
 		}
@@ -149,10 +151,11 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		private void FinishTest_Click(object sender, RoutedEventArgs e)
 		{
-			if(_mainWindow.State == MainWindow.EState.Streaming)
-			{
-				stopStreaming();
-			}
+			//if(_mainWindow.State == MainWindow.EState.Streaming)
+			//{
+			//	stopStreaming();
+			//}
+			user.CurrentTest.dataRecorder.exitThreads();
 			user.CurrentTest.testComplete();
 			TestCompleted();
 		}

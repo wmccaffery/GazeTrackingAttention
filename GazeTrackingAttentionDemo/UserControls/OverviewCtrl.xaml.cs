@@ -92,12 +92,18 @@ namespace GazeTrackingAttentionDemo.UserControls
 			{
 				Test test = (Test)testList.SelectedItem;
 				test.dataRecorder = new DeviceInteraction.DeviceInteractionHost();
-				test.setMedium(medium);
 				test.dataRecorder.initLSLProviders();
 				test.dataRecorder.feedStreamsToLSL();
 				test.dataRecorder.RegisterLSLDevice(new LSLDevice("EEG", true));
 				test.dataRecorder.RegisterLSLDevice(new LSLDevice("Gaze", false));
+				//DEBUG
+				test.dataRecorder.feedDebugData();
+				test.dataRecorder.RegisterLSLDevice(new LSLDevice("Debug", false));
+				//DEBUG
 				test.dataRecorder.resolveStreams();
+				test.dataRecorder.createThreads();
+
+				test.setMedium(medium);
 				user.CurrentTest = test;
 				Console.WriteLine("Test Loaded!");
 				

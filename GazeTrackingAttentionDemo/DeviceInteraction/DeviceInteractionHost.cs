@@ -60,8 +60,12 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 		//threads 
 		List<Task> _tasks;
 
+		//thread control
 		CancellationTokenSource _source;
 		CancellationToken _token;
+
+		ManualResetEvent _mre;
+		
 
 		private static ManualResetEvent mre = new ManualResetEvent(false);
 
@@ -96,6 +100,8 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 
 			_source = new CancellationTokenSource();
 			_token = _source.Token;
+
+			_mre = new ManualResetEvent(false);
 		}
 
 
@@ -115,7 +121,7 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 			fixationEndOutlet = new liblsl.StreamOutlet(fixationEndInfo);
 
 			//DEBUG
-			debugDataInfo = new liblsl.StreamInfo("Debug", "Debug", 3, 70, liblsl.channel_format_t.cf_double64, "tobiieyex");
+			debugDataInfo = new liblsl.StreamInfo("Debug", "Debug", 1, 500, liblsl.channel_format_t.cf_double64, "tobiieyex");
 			debugDataOutlet = new liblsl.StreamOutlet(debugDataInfo);
 
 			Console.WriteLine("LSL providers intialized");
@@ -152,6 +158,8 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 
 		public void streamFixationData()
 		{
+			_mre.WaitOne();
+
 			_fixationDataStream
 				.Begin((x, y, timestamp) =>
 				{
@@ -166,25 +174,41 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 				{
 					sendGazeToLSL(fixationEndOutlet, x, y, timestamp);
 				});
+
+			Console.WriteLine("HERE");
 		}
 
 		//DEBUG
-		//public void feedDebugData()
-		//{
-		//	Thread debugBeginStream = new Thread(() => streamDebugData());
-		//	debugBeginStream.Start();
-		//}
+		public void feedDebugData()
+		{
+			Thread debugBeginStream = new Thread(() => streamDebugData());
+			debugBeginStream.Start();
+		}
 
-		//public void streamDebugData()
-		//{
-		//	while (true)
-		//	{
-		//		Random rand = new Random();
-		//		float[] data = new float[1];
-		//		data[0] = rand.Next();
-		//		debugDataOutlet.push_sample(data);
-		//	}
-		//}
+		public void streamDebugData()
+		{
+			int dat = 0;
+			while(true)
+			{
+				_mre.WaitOne();
+
+
+				float[] data = new float[1];
+				data[0] = dat;
+				debugDataOutlet.push_sample(data);
+				dat++;
+
+				if (_token.IsCancellationRequested)
+				{
+					Console.WriteLine("Debug data provider cancelled");
+					//t.ThrowIfCancellationRequested(); //its not a task!
+					break;
+				}
+				Thread.Sleep(2);
+			}
+		}
+
+		//DEBUG
 
 		//calibrate eye tracker
 		public void calibrate()
@@ -266,16 +290,20 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 				foreach(LSLStream s in d.Streams)
 				{
 					Console.WriteLine("task created for stream " + s.StreamInfo.name() + " from device " + s.StreamInfo.type());
-					_tasks.Add(new Task(() => stream(s)));
+					_tasks.Add(Task.Run(() => stream(s, _token), _token));
 				}
 			}
+
 			Console.Write("Done");
 		}
 
-		private void stream(LSLStream s)
+		private void stream(LSLStream s, CancellationToken t)
 		{
 			while (true) {
-				_token.ThrowIfCancellationRequested();
+
+				_mre.WaitOne();
+
+				//t.ThrowIfCancellationRequested();
 
 				Double[] data = s.pullData();
 
@@ -299,58 +327,75 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 				{
 					writeStreamToFile(s.FilePath,s.StreamInfo.type(),s.datatype,s.header, data, timestamp);
 				}
+
+				if (t.IsCancellationRequested)
+				{
+					Console.WriteLine(s.StreamInfo.name() + " stream cancelled");
+					t.ThrowIfCancellationRequested();
+					break;
+				}
 			}
 		}
-
+		
 		public void startStreaming()
 		{
 			//Console.WriteLine()
-			foreach(var task in _tasks)
-			{
-				task.Start();
-			}
+
+			//foreach (var task in _tasks)
+			//{
+			//	task.Start();
+			//}
+
+			_mre.Set();
+		}
+
+		public void exitThreads()
+		{
+			_mre.Set();
+			_source.Cancel();
 		}
 
 		public void stopStreaming()
 		{
-			int threadcount = _tasks.Count;
-			int cancelled = 0;
-			try
-			{
-				_source.Cancel();
+			_mre.Reset();
+			//int cancelledCounter = 0;
+			//try
+			//{
+			//	_source.Cancel();
 
-			}
-			catch (AggregateException ae)
-			{
-				foreach (Exception e in ae.InnerExceptions)
-				{
-					if (e is TaskCanceledException)
-					{
-						Console.WriteLine("Streaming stopped: " + ((TaskCanceledException)e).Message);
-						cancelled++;
-					}
-					else
-					{
-						Console.WriteLine("Exception: " + e.GetType().Name);
-					}
-				}
-			}
-			finally
-			{
-				if(threadcount == 0)
-				{
-					Console.WriteLine("WARNING: No tasks to cancel");
-				}
-				else if(cancelled == threadcount)
-				{
-					Console.WriteLine("All tasks have stopped");
-				}
-				else
-				{
-					Console.WriteLine("WARNING: Not all tasks have stopped");
-				}
-				//source.Dispose();
-			}
+			//}
+			//catch (AggregateException ae)
+			//{
+			//	foreach (Exception e in ae.InnerExceptions)
+			//	{
+			//		if (e is OperationCanceledException)
+			//		{
+			//			Console.WriteLine("Streaming stopped for thread " + e.Source.ToString() + ": " + ((TaskCanceledException)e).Message);
+			//			cancelledCounter++;
+			//			if (checkComplete(cancelledCounter))
+			//			{
+			//				Console.WriteLine("All tasks stopped");
+			//			}
+			//		}
+			//		else
+			//		{
+			//			Console.WriteLine("Exception: " + e.GetType().Name);
+			//		}
+			//	}
+			//}
+			//finally
+			//{
+			//	//terminate lsl providers
+			//	//_fixationDataStream.IsEnabled = false;
+			//	//_gazePointDataStream.IsEnabled = false;
+			//}
+		}
+
+		private bool checkComplete(int counter)
+		{
+			int threadcount = _tasks.Count;
+			return counter == threadcount;
+
 		}
 
 		public void startRecording()

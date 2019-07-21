@@ -298,7 +298,7 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 			{
 				foreach (LSLStream s in d.Streams)
 				{
-					s.FilePath = metaData + "_" + s.datatype + "_raw" + s.filename + ".csv";
+					s.FilePath = metaData + "_" + s.datasource + "_raw" + s.filename + ".csv";
 				}
 			}
 

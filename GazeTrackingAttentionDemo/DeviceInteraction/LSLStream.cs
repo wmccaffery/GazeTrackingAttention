@@ -21,6 +21,7 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 
 		public bool customts;
 		public string filename;
+		public string datasource;
 		public string datatype;
 		public string header;
 
@@ -36,36 +37,43 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 			{
 				case "FixationBegin":
 					filename = "FixationBeg";
-					datatype = "EYETRACKER";
+					datasource = "EYETRACKER";
+					datatype = "Begin";
 					header = "DataType,X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
 					break;
 				case "FixationData":
 					filename = "FixationDat";
-					datatype = "EYETRACKER";
+					datasource = "EYETRACKER";
+					datatype = "Data";
 					header = "DataType,X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
 					break;
 				case "FixationEnd":
 					filename = "FixationEnd";
-					datatype = "EYETRACKER";
+					datasource = "EYETRACKER";
+					datatype = "End";
 					header = "DataType,X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
 					break;
 				case "GazeData":
 					filename = "GazeData";
-					datatype = "EYETRACKER";
+					datasource = "EYETRACKER";
+					datatype = "Gaze";
 					header = "X,Y,DeviceTimestamp, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
 					break;
 				case "Debug":
 					filename = "DebugData";
-					datatype = "DEBUG";
+					datasource = "DEBUG";
+					datatype = "Debug";
 					header = "VAL, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
 					break;
 				case "Debug2":
 					filename = "Debug2Data";
-					datatype = "DEBUG2";
+					datasource = "DEBUG2";
+					datatype = "Debug";
 					header = "VAL, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
 					break;
 				default:
 					filename = "EEGData";
+					datasource = "EEG";
 					datatype = "EEG";
 					header = "C1,C2,C3,C4,C5,C6,C7,C8,Timestamp, AdjustedUnix" + Environment.NewLine;
 					break;

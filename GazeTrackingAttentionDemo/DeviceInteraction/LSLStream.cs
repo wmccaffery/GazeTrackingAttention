@@ -57,7 +57,12 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 				case "Debug":
 					filename = "DebugData";
 					datatype = "DEBUG";
-					header = "VAL, Timestamp" + Environment.NewLine;
+					header = "VAL, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
+					break;
+				case "Debug2":
+					filename = "Debug2Data";
+					datatype = "DEBUG2";
+					header = "VAL, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
 					break;
 				default:
 					filename = "EEGData";

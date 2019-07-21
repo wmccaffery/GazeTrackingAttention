@@ -97,8 +97,10 @@ namespace GazeTrackingAttentionDemo.UserControls
 				test.dataRecorder.RegisterLSLDevice(new LSLDevice("EEG", true));
 				test.dataRecorder.RegisterLSLDevice(new LSLDevice("Gaze", false));
 				//DEBUG
-				test.dataRecorder.feedDebugData();
-				test.dataRecorder.RegisterLSLDevice(new LSLDevice("Debug", false));
+				//test.dataRecorder.feedDebugData();
+				//test.dataRecorder.feedDebug2Data();
+				//test.dataRecorder.RegisterLSLDevice(new LSLDevice("Debug", false));
+				//test.dataRecorder.RegisterLSLDevice(new LSLDevice("Debug2", false));
 				//DEBUG
 				test.dataRecorder.resolveStreams();
 				test.dataRecorder.createThreads();

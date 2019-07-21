@@ -52,6 +52,9 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 		public liblsl.StreamInfo debugDataInfo;
 		public liblsl.StreamOutlet debugDataOutlet;
 
+		public liblsl.StreamInfo debug2DataInfo;
+		public liblsl.StreamOutlet debug2DataOutlet;
+
 		double lsloffset;
 
 		//devices
@@ -121,8 +124,11 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 			fixationEndOutlet = new liblsl.StreamOutlet(fixationEndInfo);
 
 			//DEBUG
-			debugDataInfo = new liblsl.StreamInfo("Debug", "Debug", 1, 500, liblsl.channel_format_t.cf_double64, "tobiieyex");
+			debugDataInfo = new liblsl.StreamInfo("Debug", "Debug", 1, 500, liblsl.channel_format_t.cf_double64, "debug");
 			debugDataOutlet = new liblsl.StreamOutlet(debugDataInfo);
+
+			debug2DataInfo = new liblsl.StreamInfo("Debug2", "Debug2", 1, 500, liblsl.channel_format_t.cf_double64, "debug2");
+			debug2DataOutlet = new liblsl.StreamOutlet(debug2DataInfo);
 
 			Console.WriteLine("LSL providers intialized");
 		}
@@ -179,34 +185,61 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 		}
 
 		//DEBUG
-		public void feedDebugData()
-		{
-			Thread debugBeginStream = new Thread(() => streamDebugData());
-			debugBeginStream.Start();
-		}
+		//public void feedDebugData()
+		//{
+		//	Thread debugBeginStream = new Thread(() => streamDebugData());
+		//	debugBeginStream.Start();
+		//}
 
-		public void streamDebugData()
-		{
-			int dat = 0;
-			while(true)
-			{
-				_mre.WaitOne();
+		//public void streamDebugData()
+		//{
+		//	int dat = 0;
+		//	while(true)
+		//	{
+		//		_mre.WaitOne();
 
 
-				float[] data = new float[1];
-				data[0] = dat;
-				debugDataOutlet.push_sample(data);
-				dat++;
+		//		float[] data = new float[1];
+		//		data[0] = dat;
+		//		debugDataOutlet.push_sample(data);
+		//		dat++;
 
-				if (_token.IsCancellationRequested)
-				{
-					Console.WriteLine("Debug data provider cancelled");
-					//t.ThrowIfCancellationRequested(); //its not a task!
-					break;
-				}
-				Thread.Sleep(2);
-			}
-		}
+		//		if (_token.IsCancellationRequested)
+		//		{
+		//			Console.WriteLine("Debug data provider cancelled");
+		//			break;
+		//		}
+		//		Thread.Sleep(2);
+		//	}
+		//}
+
+		//public void feedDebug2Data()
+		//{
+		//	Thread debug2BeginStream = new Thread(() => streamDebug2Data());
+		//	debug2BeginStream.Start();
+		//}
+
+		//public void streamDebug2Data()
+		//{
+		//	int dat = 0;
+		//	while (true)
+		//	{
+		//		_mre.WaitOne();
+
+
+		//		float[] data = new float[1];
+		//		data[0] = dat;
+		//		debug2DataOutlet.push_sample(data);
+		//		dat++;
+
+		//		if (_token.IsCancellationRequested)
+		//		{
+		//			Console.WriteLine("Debug data provider cancelled");
+		//			break;
+		//		}
+		//		Thread.Sleep(2);
+		//	}
+		//}
 
 		//DEBUG
 
@@ -260,7 +293,7 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 				metaData = testDir + "//" + dirName + "_U" + unixts;
 			}
 
-			//create test paths for each all streams for each registered device
+			//create test paths for all streams for each registered device
 			foreach (LSLDevice d in _lslDevices)
 			{
 				foreach (LSLStream s in d.Streams)
@@ -315,17 +348,20 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 					timestamp += lsloffset;
 				}
 
+				double[] dat = new double[data.Length - 1];
 				Console.Write(s.StreamInfo.type() + " " + s.StreamInfo.name() + " Timestamp:" + timestamp);
 				for(int i = 0; i < data.Length-1; i++)
 				{
 					Console.Write("," + data[i]);
+					dat[i] = data[i];
+					
 				}
 				Console.Write(Environment.NewLine);
 				
 
 				if (_recording)
 				{
-					writeStreamToFile(s.FilePath,s.StreamInfo.type(),s.datatype,s.header, data, timestamp);
+					writeStreamToFile(s.FilePath,s.StreamInfo.type(),s.datatype,s.header, dat, timestamp);
 				}
 
 				if (t.IsCancellationRequested)
@@ -452,7 +488,7 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 				{
 					datastr += (data[i] + ",");
 				}
-				datastr += (timestamp + "," + (TimeSpan.FromMilliseconds(timestamp).Seconds + _mainWindow.unixStartTime) + Environment.NewLine);
+				datastr += (timestamp + "," + uts + Environment.NewLine);
 			}
 
 			//write csv line to file

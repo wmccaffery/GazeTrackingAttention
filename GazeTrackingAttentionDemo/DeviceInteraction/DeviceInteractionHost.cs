@@ -357,11 +357,12 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 					
 				}
 				Console.Write(Environment.NewLine);
-				
+
+				Console.WriteLine("STREAMINFOTYPE " + s.StreamInfo.type());
 
 				if (_recording)
 				{
-					writeStreamToFile(s.FilePath,s.StreamInfo.type(),s.datatype,s.header, dat, timestamp);
+					writeStreamToFile(s.FilePath,s.streamtype,s.datatype,s.header, dat, timestamp);
 				}
 
 				if (_token.IsCancellationRequested)

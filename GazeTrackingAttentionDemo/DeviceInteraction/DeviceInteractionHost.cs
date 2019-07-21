@@ -388,7 +388,15 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 		public void exitThreads()
 		{
 			_mre.Set();
-			_source.Cancel();
+			try
+			{
+				_source.Cancel();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"{nameof(OperationCanceledException)} thrown with message: {e.Message}");
+			}
+			
 		}
 
 		public void stopStreaming()

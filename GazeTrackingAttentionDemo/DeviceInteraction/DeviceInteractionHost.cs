@@ -185,61 +185,61 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 		}
 
 		//DEBUG
-		//public void feedDebugData()
-		//{
-		//	Thread debugBeginStream = new Thread(() => streamDebugData());
-		//	debugBeginStream.Start();
-		//}
+		public void feedDebugData()
+		{
+			Thread debugBeginStream = new Thread(() => streamDebugData());
+			debugBeginStream.Start();
+		}
 
-		//public void streamDebugData()
-		//{
-		//	int dat = 0;
-		//	while(true)
-		//	{
-		//		_mre.WaitOne();
-
-
-		//		float[] data = new float[1];
-		//		data[0] = dat;
-		//		debugDataOutlet.push_sample(data);
-		//		dat++;
-
-		//		if (_token.IsCancellationRequested)
-		//		{
-		//			Console.WriteLine("Debug data provider cancelled");
-		//			break;
-		//		}
-		//		Thread.Sleep(2);
-		//	}
-		//}
-
-		//public void feedDebug2Data()
-		//{
-		//	Thread debug2BeginStream = new Thread(() => streamDebug2Data());
-		//	debug2BeginStream.Start();
-		//}
-
-		//public void streamDebug2Data()
-		//{
-		//	int dat = 0;
-		//	while (true)
-		//	{
-		//		_mre.WaitOne();
+		public void streamDebugData()
+		{
+			int dat = 0;
+			while (true)
+			{
+				_mre.WaitOne();
 
 
-		//		float[] data = new float[1];
-		//		data[0] = dat;
-		//		debug2DataOutlet.push_sample(data);
-		//		dat++;
+				float[] data = new float[1];
+				data[0] = dat;
+				debugDataOutlet.push_sample(data);
+				dat++;
 
-		//		if (_token.IsCancellationRequested)
-		//		{
-		//			Console.WriteLine("Debug data provider cancelled");
-		//			break;
-		//		}
-		//		Thread.Sleep(2);
-		//	}
-		//}
+				if (_token.IsCancellationRequested)
+				{
+					Console.WriteLine("Debug data provider cancelled");
+					break;
+				}
+				Thread.Sleep(2);
+			}
+		}
+
+		public void feedDebug2Data()
+		{
+			Thread debug2BeginStream = new Thread(() => streamDebug2Data());
+			debug2BeginStream.Start();
+		}
+
+		public void streamDebug2Data()
+		{
+			int dat = 0;
+			while (true)
+			{
+				_mre.WaitOne();
+
+
+				float[] data = new float[1];
+				data[0] = dat;
+				debug2DataOutlet.push_sample(data);
+				dat++;
+
+				if (_token.IsCancellationRequested)
+				{
+					Console.WriteLine("Debug data provider cancelled");
+					break;
+				}
+				Thread.Sleep(2);
+			}
+		}
 
 		//DEBUG
 
@@ -323,14 +323,14 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 				foreach(LSLStream s in d.Streams)
 				{
 					Console.WriteLine("task created for stream " + s.StreamInfo.name() + " from device " + s.StreamInfo.type());
-					_tasks.Add(Task.Run(() => stream(s, _token), _token));
+					_tasks.Add(Task.Run(() => stream(s), _token));
 				}
 			}
 
 			Console.Write("Done");
 		}
 
-		private void stream(LSLStream s, CancellationToken t)
+		private void stream(LSLStream s)
 		{
 			while (true) {
 
@@ -364,10 +364,9 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 					writeStreamToFile(s.FilePath,s.StreamInfo.type(),s.datatype,s.header, dat, timestamp);
 				}
 
-				if (t.IsCancellationRequested)
+				if (_token.IsCancellationRequested)
 				{
 					Console.WriteLine(s.StreamInfo.name() + " stream cancelled");
-					t.ThrowIfCancellationRequested();
 					break;
 				}
 			}
@@ -388,15 +387,8 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 		public void exitThreads()
 		{
 			_mre.Set();
-			try
-			{
-				_source.Cancel();
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine($"{nameof(OperationCanceledException)} thrown with message: {e.Message}");
-			}
-			
+			_source.Cancel();
+
 		}
 
 		public void stopStreaming()

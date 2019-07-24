@@ -78,6 +78,13 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 					streamtype = "Debug";
 					header = "VAL, LSLTimestamp, AdjustedUnix" + Environment.NewLine;
 					break;
+				case "Quality":
+					filename = "EEGQualityData";
+					datasource = "EEG";
+					datatype = "StreamQuality";
+					streamtype = "StreamQuality";
+					header = "C1,C2,C3,C4,C5,C6,C7,C8,Timestamp, AdjustedUnix" + Environment.NewLine;
+					break;
 				default:
 					filename = "EEGData";
 					datasource = "EEG";

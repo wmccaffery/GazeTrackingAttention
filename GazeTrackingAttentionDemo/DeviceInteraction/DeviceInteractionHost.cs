@@ -395,37 +395,6 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 		public void stopStreaming()
 		{
 			_mre.Reset();
-			//int cancelledCounter = 0;
-			//try
-			//{
-			//	_source.Cancel();
-
-			//}
-			//catch (AggregateException ae)
-			//{
-			//	foreach (Exception e in ae.InnerExceptions)
-			//	{
-			//		if (e is OperationCanceledException)
-			//		{
-			//			Console.WriteLine("Streaming stopped for thread " + e.Source.ToString() + ": " + ((TaskCanceledException)e).Message);
-			//			cancelledCounter++;
-			//			if (checkComplete(cancelledCounter))
-			//			{
-			//				Console.WriteLine("All tasks stopped");
-			//			}
-			//		}
-			//		else
-			//		{
-			//			Console.WriteLine("Exception: " + e.GetType().Name);
-			//		}
-			//	}
-			//}
-			//finally
-			//{
-			//	//terminate lsl providers
-			//	//_fixationDataStream.IsEnabled = false;
-			//	//_gazePointDataStream.IsEnabled = false;
-			//}
 		}
 
 		private bool checkComplete(int counter)
@@ -454,7 +423,7 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 					File.WriteAllText(rawPath, fileHeader);
 				}
 
-			double uts = (TimeSpan.FromMilliseconds(timestamp).Seconds + _mainWindow.unixStartTime);
+			double uts = (TimeSpan.FromMilliseconds(timestamp).Seconds + _mainWindow.unixMSStartTime);
 			string datastr = "";
 
 			if (streamType == "Fixation")
@@ -505,12 +474,12 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 					File.WriteAllText(rawPath, "Stream,X,Y,LSLTimestamp,AdjustedUnix" + Environment.NewLine);
 				}
 
-				File.AppendAllText(rawPath, "Begin," + fixation.startPos.x + "," + fixation.startPos.y + "," + fixation.startPos.timestamp + "," + (TimeSpan.FromMilliseconds(fixation.startPos.timestamp).Seconds + _mainWindow.unixStartTime) + Environment.NewLine);
+				File.AppendAllText(rawPath, "Begin," + fixation.startPos.x + "," + fixation.startPos.y + "," + fixation.startPos.timestamp + "," + (TimeSpan.FromMilliseconds(fixation.startPos.timestamp).Seconds + _mainWindow.unixMSStartTime) + Environment.NewLine);
 				foreach(DataPoint d in fixation.dataPos)
 				{
-					File.AppendAllText(rawPath, "Data," + d.x + "," + d.y + "," + d.timestamp + "," + (TimeSpan.FromMilliseconds(d.timestamp).Seconds + _mainWindow.unixStartTime) +  Environment.NewLine);
+					File.AppendAllText(rawPath, "Data," + d.x + "," + d.y + "," + d.timestamp + "," + (TimeSpan.FromMilliseconds(d.timestamp).Seconds + _mainWindow.unixMSStartTime) +  Environment.NewLine);
 				}
-				File.AppendAllText(rawPath, "End," + fixation.endPos.x + "," + fixation.endPos.y + "," + fixation.endPos.timestamp + "," + (TimeSpan.FromMilliseconds(fixation.endPos.timestamp).Seconds + _mainWindow.unixStartTime) + Environment.NewLine);
+				File.AppendAllText(rawPath, "End," + fixation.endPos.x + "," + fixation.endPos.y + "," + fixation.endPos.timestamp + "," + (TimeSpan.FromMilliseconds(fixation.endPos.timestamp).Seconds + _mainWindow.unixMSStartTime) + Environment.NewLine);
 		}
 
 		public List<Fixation> getCleanFixations()

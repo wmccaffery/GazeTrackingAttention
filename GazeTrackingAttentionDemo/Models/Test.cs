@@ -1,5 +1,6 @@
 ﻿using GazeTrackingAttentionDemo.DataVisualization;
 using GazeTrackingAttentionDemo.DeviceInteraction;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,24 +19,26 @@ namespace GazeTrackingAttentionDemo.Models
 		private string _testName;
 		private string _recordingDir;
 		private int _recordingNum;
-		public DeviceInteractionHost dataRecorder;
+        //[JsonIgnore]
+		//public DeviceInteractionHost dataRecorder;
 		public Boolean isPaper;
 		public String infoPath;
 		public int index;
 		public List<Recording> recordings;
-		public Recording currentRecording;
+        //[JsonIgnore]
+		//public Recording currentRecording;
 		//public String testName;
 
 		
 
-		public Test(User user, String testPath, int testIndex)
+		public Test(string userId, string userDir, String testPath, int testIndex)
 		{
 			DateTime dateTime = DateTime.Now;
 			this.index = testIndex;
 			StimuliPath = testPath;
 			//testName = Path.GetFileNameWithoutExtension(StimuliPath) + Environment.NewLine;
 			_testName = Path.GetFileNameWithoutExtension(_stimuliPath);
-			_userID = user.Id;
+			_userID = userId;
 			Console.WriteLine(StimuliPath);
 
 			//create new instance of data recorder
@@ -43,7 +46,7 @@ namespace GazeTrackingAttentionDemo.Models
 			
 
 			//create path for test
-			TestDir = user.DirPath + "\\" + user.Id + "_test" + testIndex + "_" + Path.GetFileNameWithoutExtension(StimuliPath) + "_" + dateTime.ToString("dd-MM-yyyy");
+			TestDir = userDir + "\\" + _userID + "_test" + testIndex + "_" + Path.GetFileNameWithoutExtension(StimuliPath) + "_" + dateTime.ToString("dd-MM-yyyy");
 
 
 
@@ -64,8 +67,8 @@ namespace GazeTrackingAttentionDemo.Models
 			DataDir = TestDir + "\\" + Path.GetFileName(TestDir) + "_recording" + (++_recordingNum);
 			DirectoryInfo di = Directory.CreateDirectory(DataDir);
 			InfoPath = DataDir + "\\meta.txt";
-			currentRecording = new Recording(_recordingNum, isPaper, this);
-			recordings.Add(currentRecording);
+			Session.currentRecording = new Recording(_recordingNum, isPaper, DataDir, Name, UserID);
+			recordings.Add(Session.currentRecording);
 
 
 			//append content
@@ -97,17 +100,16 @@ namespace GazeTrackingAttentionDemo.Models
 
 		public string Name { get => _testName; set => _testName = value; }
 		public string StimuliPath { get => _stimuliPath; set => _stimuliPath = value; }
-		public string User { get => _userID; set => _userID = value; }
+		public string UserID { get => _userID; set => _userID = value; }
 		public string TestDir { get => _testDataDir; set => _testDataDir = value; }
 		public string DataDir { get => _recordingDir; set => _recordingDir = value; }
 		public string InfoPath { get => _metaDataPath; set => _metaDataPath = value; }
 		public int RecordingNum { get => _recordingNum; set => RecordingNum = value; }
-
 		public int RecordingNumDisp { get => _recordingNum + 1; }
 
 		public void testComplete()
 		{
-			dataRecorder.Dispose();
+			Session.dataRecorder.Dispose();
 		}
 	}
 }

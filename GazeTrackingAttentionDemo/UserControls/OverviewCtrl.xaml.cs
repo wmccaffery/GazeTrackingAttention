@@ -50,17 +50,17 @@ namespace GazeTrackingAttentionDemo.UserControls
 		public void onLoad(object sender, RoutedEventArgs e)
 		{
 			parentWin = (ControlWindow)Window.GetWindow(this);
-			user = mainWin.currentUser;
+			user = Session.currentUser;
 			testPaths = user.getTestPaths();
-			if(user.testList.Count == 0)
+			if(Session.testList.Count == 0)
 			{
 				genTests();
 			}
-			testList.ItemsSource = user.testList;
+			testList.ItemsSource = Session.testList;
 			int highestTest = user.highestTestIndex;
-			if(highestTest < user.testList.Count - 1)
+			if(highestTest < Session.testList.Count - 1)
 			{
-				testList.SelectedItem = user.testList[user.highestTestIndex + 1];
+				testList.SelectedItem = Session.testList[user.highestTestIndex + 1];
 
 			}
 			mediums = new List<String> { "Select medium", "PAPER", "SCREEN" };
@@ -78,36 +78,37 @@ namespace GazeTrackingAttentionDemo.UserControls
 			int i = 0;
 			foreach (String s in testPaths)
 			{
-				user.testList.Add(new Test(user, s, i));
+				Session.testList.Add(new Test(user.Id, user.DirPath, s, i));
 				i++;
 			}
 		}
 
 
 		//load selected test
-		private void Button_Click(object sender, RoutedEventArgs e)
+		private void StartTest_Click(object sender, RoutedEventArgs e)
 		{
 			String medium; 
 			if((medium = stimuliMedium.SelectedItem.ToString()) != "Select medium")
 			{
 				Test test = (Test)testList.SelectedItem;
-				test.dataRecorder = new DeviceInteraction.DeviceInteractionHost();
-				test.dataRecorder.initLSLProviders();
-				test.dataRecorder.feedStreamsToLSL();
-				test.dataRecorder.RegisterLSLDevice(new LSLDevice("EEG", true));
-				test.dataRecorder.RegisterLSLDevice(new LSLDevice("Gaze", false));
-				test.dataRecorder.RegisterLSLDevice(new LSLDevice("Quality", false));
+                Session.dataRecorder = new DeviceInteractionHost();
+                DeviceInteractionHost dataRecorder = Session.dataRecorder;
+				dataRecorder.initLSLProviders();
+				dataRecorder.feedStreamsToLSL();
+				dataRecorder.RegisterLSLDevice(new LSLDevice("EEG", true));
+				dataRecorder.RegisterLSLDevice(new LSLDevice("Gaze", false));
+				dataRecorder.RegisterLSLDevice(new LSLDevice("Quality", false));
 				//DEBUG
-				//test.dataRecorder.feedDebugData();
-				//test.dataRecorder.feedDebug2Data();
-				//test.dataRecorder.RegisterLSLDevice(new LSLDevice("Debug", false));
-				//test.dataRecorder.RegisterLSLDevice(new LSLDevice("Debug2", false));
+				//dataRecorder.feedDebugData();
+				//dataRecorder.feedDebug2Data();
+				//dataRecorder.RegisterLSLDevice(new LSLDevice("Debug", false));
+				//dataRecorder.RegisterLSLDevice(new LSLDevice("Debug2", false));
 				//DEBUG
-				test.dataRecorder.resolveStreams();
-				test.dataRecorder.createThreads();
+				dataRecorder.resolveStreams();
+				dataRecorder.createThreads();
 
 				test.setMedium(medium);
-				user.CurrentTest = test;
+				Session.currentTest = test;
 				Console.WriteLine("Test Loaded!");
 				
 				testLoaded();

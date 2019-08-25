@@ -98,17 +98,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void onLoad(object sender, RoutedEventArgs e)
 		{
-			user = _mainWin.currentUser;
-			List<string> testPaths = user.getTestPaths();
-			List<string> testNames = new List<string>();
-
-
-			//foreach (string s in testPaths)
-			//{
-			//	testNames.Add(System.IO.Path.GetFileNameWithoutExtension(s));
-			//}
-
-			testList.ItemsSource = user.testList;
+			user = Session.currentUser;
+            //testList.ItemsSource = user.testList;
+            userList.ItemsSource = Directory.GetDirectories(@"C:\MMAD\Subjects");
 
 			StartSelection += new StartSelectionHandler(_mainWin.onAOICreation);
 			selectedTestChanged += new SelectedTestChangeHandler(((MarkupCtrl)_mainWin.rightView.Content).onTestChanged);
@@ -116,8 +108,6 @@ namespace GazeTrackingAttentionDemo.UserControls
 			selectedAOIChanged += new SelectedAOIChangeHandler(((MarkupCtrl)_mainWin.rightView.Content).onAOIChanged);
 			aoiCreated += new AOICreatedHandler(((MarkupCtrl)_mainWin.rightView.Content).onAOICreated);
 			aoiRemoved += new AOIRemovedHandler(((MarkupCtrl)_mainWin.rightView.Content).onAOIRemoved);
-
-
 		}
 
 		private void DrawAoi_Click(object sender, RoutedEventArgs e)
@@ -133,7 +123,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 		public void endSelection(Polygon p)
 		{
 			//create new aoi
-			AOI aoi = new AOI(SelectedRecording.testName, SelectedRecording.user);
+			AOI aoi = new AOI(SelectedRecording.testName, SelectedRecording.userID);
 			aoi.Name = paragraphBox.SelectedItem.ToString();
 			aoi.p = p;
 
@@ -350,7 +340,14 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			drawAoi.IsEnabled = true;
 		}
-	}
+
+        private void UserList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string userPath = ((string)userList.SelectedItem) + @"\userData.json";
+            user = ObjectManager.loadUser(userPath);
+            testList.ItemsSource = Session.testList;
+        }
+    }
 }
 
 //old

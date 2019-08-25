@@ -35,7 +35,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <Button x:Name="nextBtn" Click="Button_Click" FontSize="18">Start Test</Button>
+            <Button x:Name="nextBtn" Click="StartTest_Click" FontSize="18">Start Test</Button>
             <ComboBox x:Name="stimuliMedium" FontSize="18"></ComboBox>
         </StackPanel>
         <StackPanel HorizontalAlignment="Right" Grid.Row="2" Grid.Column="1" Orientation="Horizontal">

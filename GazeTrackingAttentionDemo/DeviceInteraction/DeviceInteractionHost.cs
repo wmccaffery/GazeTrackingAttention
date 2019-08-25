@@ -273,8 +273,8 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 		public void setRecordingPaths(bool customFile, string customFilePath = "", int baselinecount = 0)
 		{
 			//current user
-			User user = _mainWindow.currentUser;
-			Test test = user.CurrentTest;
+			User user = Session.currentUser;
+			Test test = Session.currentTest;
 
 
 			DateTime time = DateTime.Now;
@@ -288,7 +288,7 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 			}
 			else
 			{
-				string testDir = test.currentRecording.dataDir;
+				string testDir = Session.currentRecording.dataDir;
 				String dirName = Path.GetFileName(testDir);
 				metaData = testDir + "//" + dirName + "_U" + unixts;
 			}

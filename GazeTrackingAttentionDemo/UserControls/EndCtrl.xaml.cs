@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GazeTrackingAttentionDemo.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,6 +32,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		Boolean toOverview;
 		Boolean exit;
+        Boolean toSetup;
 
 		public EndCtrl()
 		{
@@ -50,13 +52,16 @@ namespace GazeTrackingAttentionDemo.UserControls
 			if (exit)
 			{
 				exitProgram();
-			}
-			if (toOverview)
+			} else if (toOverview)
 			{
 				_mainWin.State = MainWindow.EState.Overview;
-			}
+			} else if (toSetup)
+            {
+                _mainWin.State = MainWindow.EState.Setup;
+            }
 			exit = false;
 			toOverview = false;
+            toSetup = false;
 		}
 
 		private void End_Click(object sender, RoutedEventArgs e)
@@ -65,10 +70,18 @@ namespace GazeTrackingAttentionDemo.UserControls
 			endMarkup();
 		}
 
-		private void BackToOverview_Click(object sender, RoutedEventArgs e)
+		private void Back_Click(object sender, RoutedEventArgs e)
 		{
-			toOverview = true;
-			endMarkup();
+            if (Session.currentUser == null)
+            {
+                toSetup = true;
+                endMarkup();
+            }
+            else
+            {
+                toOverview = true;
+                endMarkup();
+            }
 		}
 	}
 }

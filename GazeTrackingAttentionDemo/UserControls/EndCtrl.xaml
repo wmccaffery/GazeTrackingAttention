@@ -9,8 +9,8 @@
              Loaded="onLoad">
     <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
         <StackPanel>
-            <Button x:Name="BackToOverview" Height="20"  Margin="0,0, 0,10" VerticalAlignment="Top" Click="BackToOverview_Click" >BackToOverview</Button>
-        <Button x:Name="end" Height="20" Margin="0,10, 0,0" VerticalAlignment="Top" Click="End_Click">EndSession</Button>
+            <Button x:Name="Back" Height="20"  Margin="0,0, 0,10" VerticalAlignment="Top" Click="Back_Click" >Back</Button>
+        <Button x:Name="end" Height="20" Margin="0,10, 0,0" VerticalAlignment="Top" Click="End_Click">Exit Program</Button>
         </StackPanel>
     </Grid>
 </UserControl>

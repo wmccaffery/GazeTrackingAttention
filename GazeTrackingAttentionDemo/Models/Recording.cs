@@ -15,7 +15,7 @@ namespace GazeTrackingAttentionDemo.Models
 		public Boolean isPaper;
 		public Boolean isCalibrated;
 		public String dataDir;
-		public String user;
+		public String userID;
 		public String testName;
 		public double videoQpcStartTime;
 		public double videoQpcEndTime;
@@ -23,18 +23,16 @@ namespace GazeTrackingAttentionDemo.Models
 		List<AOI> _aois;
 		public List<AOI> Aois { get => _aois; set => _aois = value; }
 
-		public Recording(int index, bool isPaper, Test t)
+		public Recording(int index, bool isPaper, string dataDir, string name, string userID)
 		{
 			Index = index;
 			this.isPaper = isPaper;
-			this.dataDir = t.DataDir;
-			this.testName = t.Name;
-			this.user = t.User;
+			this.dataDir = dataDir;
+			this.testName = name;
+			this.userID = userID;
 			//hold areas of interest
 			Aois = new List<AOI>();
 			
 		}
-
-
 	}
 }

@@ -165,11 +165,11 @@
     <Compile Include="DeviceInteraction\LSLStream.cs" />
     <Compile Include="DeviceInteraction\Old\LSLStreamInteractionHost.cs" />
     <Compile Include="Models\AOI.cs" />
-    <Compile Include="Models\AOIPoint.cs" />
     <Compile Include="Models\DataPoint.cs" />
     <Compile Include="Models\Fixation.cs" />
     <Compile Include="Models\Recording.cs" />
     <Compile Include="Models\Saccade.cs" />
+    <Compile Include="Models\Session.cs" />
     <Compile Include="Models\Test.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="DeviceInteraction\DeviceInteractionHost.cs" />
@@ -197,6 +197,7 @@
     <Compile Include="UserControls\TestCtrl.xaml.cs">
       <DependentUpon>TestCtrl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ObjectManager.cs" />
     <Page Include="ControlWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,9 +11,9 @@ namespace GazeTrackingAttentionDemo.Models
 {
 	public class User
 	{
-		public List<Test> testList;
-		public List<String> testPaths;
-		public int highestTestIndex;
+        //public List<Test> testList;
+        //public List<String> testPaths;
+        public int highestTestIndex;
 
 		public User(String id, String groupName, String groupPath)
 		{
@@ -20,18 +21,15 @@ namespace GazeTrackingAttentionDemo.Models
 			this.Id = id;
 			this.GroupName = groupName;
 			this.GroupPath = groupPath;
-			this.DirPath = "C:\\MMAD\\Subjects\\" + id + "_" + groupName + "_" + dateAndTime.ToString("dd-MM-yyyy--HH-mm-ss");
-			this.InfoPath = DirPath + "\\" + id + "Info.txt";
-			DirectoryInfo di = Directory.CreateDirectory(DirPath);
-			if (File.Exists(InfoPath)){
-				File.WriteAllText(InfoPath, "");
-			}
-			File.AppendAllText(InfoPath, id + Environment.NewLine + groupName + Environment.NewLine);
+			this.DirPath = "C:\\MMAD\\Subjects\\" + id + "_" + groupName + "_" + dateAndTime.ToString("dd-MM-yyyy");
+            //this.DirPath = "C:\\MMAD\\Subjects\\" + id + "_" + groupName + "_" + dateAndTime.ToString("dd-MM-yyyy--HH-mm-ss");
 
-			testPaths = getTestPaths();
-			testList = new List<Test>();
+            Directory.CreateDirectory(DirPath);
 
-			highestTestIndex = -1;
+            //testPaths = getTestPaths();
+            //testList = new List<Test>();
+
+            highestTestIndex = -1;
 		}
 
 
@@ -50,27 +48,18 @@ namespace GazeTrackingAttentionDemo.Models
 			return filePaths;
 		}
 
-		//public Test createTest(String testType)
-		//{
-		//	testIndex++;
-		//	tests.Add(new Test(this, testType, testPaths[testIndex], testIndex));
-		//	return tests[testIndex];
-		//	//	currentTest = currentUser.tests[testIndex];
-		//	//	State = EState.Ready;
-		//}
 
 		private String _id;
 		private String _groupName;
 		private String _groupPath;
 		private String _dirPath;
-		private String _infoPath;
-		private Test _currentTest;
+		//private Test _currentTest;
 
-		public Test CurrentTest { get => _currentTest ; set => _currentTest = value; }
-		public string Id { get => _id; set => _id = value; }
+        //[JsonIgnore]
+        //public Test CurrentTest { get => _currentTest; set => _currentTest = value; }
+        public string Id { get => _id; set => _id = value; }
 		public string GroupName { get => _groupName; set => _groupName = value; }
 		public string GroupPath { get => _groupPath; set => _groupPath = value; }
 		public string DirPath { get => _dirPath; set => _dirPath = value; }
-		public string InfoPath { get => _infoPath; set => _infoPath = value; }
 	}
 }

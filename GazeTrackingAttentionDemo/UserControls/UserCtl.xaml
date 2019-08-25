@@ -20,7 +20,9 @@
             <ComboBox x:Name="groupSelection" ItemsSource="{Binding GroupNames}" SelectedItem="{Binding UserGroup, Mode=TwoWay}">
             </ComboBox>
             <Button Margin="300,20,300,20" Click="CreateUser_Click">Create</Button>
-            <Button Margin="300,20,300,20" Click="Debug_Directload_Click">DEBUG DIRECTLOAD</Button>
+            <!--<Button Margin="300,20,300,20" Click="Debug_Directload_Click">DEBUG DIRECTLOAD</Button>-->
+            <Button x:Name="Markup" Margin="300,20,300,20" Click="Markup_Click">MARKUP</Button>
+
             <Button x:Name="exit" Margin="300,20,300,20" Click="Exit_Click">EXIT</Button>
 
         </StackPanel>

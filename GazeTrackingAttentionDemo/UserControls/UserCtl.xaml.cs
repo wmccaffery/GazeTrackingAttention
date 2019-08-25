@@ -68,16 +68,16 @@ namespace GazeTrackingAttentionDemo.UserControls
 			//define event handler in main window
 			UserCreated += new UserCreatedHandler(mainWin.onUserCreated);
 			UserCreated += new UserCreatedHandler(parentWin.onUserCreated);
-			DirectLoad += new DirectLoadHandler(mainWin.onDirectLoad);
+			//DirectLoad += new DirectLoadHandler(mainWin.onDirectLoad);
 			ExitProgram += new ExitHandler(mainWin.shutdown);
 		}
 
-
-
-
 		private void CreateUser_Click(object sender, RoutedEventArgs e)
 		{
-			UserCreated(new User(UserID, UserGroup, ("C:\\MMAD\\TestGroups\\" + UserGroup)));
+            User u;
+			UserCreated(u = new User(UserID, UserGroup, ("C:\\MMAD\\TestGroups\\" + UserGroup)));
+            Session.newSession(u);
+            ObjectManager.saveUser(u);
 		}
 
 		private void Debug_Directload_Click(object sender, RoutedEventArgs e)
@@ -89,5 +89,10 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			ExitProgram();
 		}
-	}
+
+        private void Markup_Click(object sender, RoutedEventArgs e)
+        {
+            mainWin.State = MainWindow.EState.Markup;
+        }
+    }
 }

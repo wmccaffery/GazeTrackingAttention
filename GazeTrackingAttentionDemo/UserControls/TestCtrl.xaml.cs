@@ -90,24 +90,23 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void startStreaming()
 		{
-			DeviceInteractionHost d = user.CurrentTest.dataRecorder;
-			d.startStreaming();
+			Session.dataRecorder.startStreaming();
 			WebcamViewer.StartPreview();
 			Streaming();
 		}
 
 		public void stopStreaming()
 		{
-			user.CurrentTest.dataRecorder.stopStreaming();
+			Session.dataRecorder.stopStreaming();
 			WebcamViewer.StopPreview();
 			NotStreaming();
 		}
 
 		public void startRecording()
 		{
-			user.CurrentTest.addNewRecording(user);
-			user.CurrentTest.dataRecorder.setRecordingPaths(false);
-			user.CurrentTest.dataRecorder.startRecording();
+			Session.currentTest.addNewRecording(user);
+			Session.dataRecorder.setRecordingPaths(false);
+			Session.dataRecorder.startRecording();
 			WebcamViewer.StartRecording();
 			startts = _mainWindow.stopwatch.ElapsedMilliseconds;
 			ustartts = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
@@ -117,36 +116,36 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		public void stopRecording()
 		{
-			String dataPath = user.CurrentTest.currentRecording.dataDir;
-			DeviceInteraction.DeviceInteractionHost dr = user.CurrentTest.dataRecorder;
+			DeviceInteractionHost dr = Session.dataRecorder;
+            Test currentTest = Session.currentTest;
 
 			dr.stopRecording();
 			WebcamViewer.StopRecording();
 			endts = _mainWindow.stopwatch.ElapsedMilliseconds;
 
-			user.CurrentTest.currentRecording.fixations = dr.getCleanFixations();
-			user.CurrentTest.currentRecording.saccades = dr.getSaccades(user.CurrentTest.currentRecording.fixations);
-			user.CurrentTest.currentRecording.videoQpcStartTime = startts;
-			user.CurrentTest.currentRecording.videoQpcEndTime = endts;
+			Session.currentRecording.fixations = dr.getCleanFixations();
+			Session.currentRecording.saccades = dr.getSaccades(Session.currentRecording.fixations);
+			Session.currentRecording.videoQpcStartTime = startts;
+			Session.currentRecording.videoQpcEndTime = endts;
 
 			String fixationpath = dr.getCleanFixationPath();
 
 			//write fixations
-			foreach (Fixation f in user.CurrentTest.currentRecording.fixations)
+			foreach (Fixation f in Session.currentRecording.fixations)
 			{
 				dr.writeCleanFixationsToFile(fixationpath, f);
 			}
 
 			////set highest test
-			if (user.CurrentTest.index > user.highestTestIndex)
+			if (currentTest.index > user.highestTestIndex)
 			{
-				user.highestTestIndex = user.CurrentTest.index;
+				user.highestTestIndex = currentTest.index;
 			}
 
 
 			string[] video = Directory.GetFiles(WebcamViewer.VideoDirectory, "*.wmv");
-			String dirdata = System.IO.Path.GetFileName(user.CurrentTest.DataDir);
-			File.Move(video[0], user.CurrentTest.DataDir + "//" + dirdata + "_U" + ustartts + "_VIDEO_" + "_Q" + startts + "_Q" + endts + ".wmv");
+			String dirdata = System.IO.Path.GetFileName(currentTest.DataDir);
+			File.Move(video[0], currentTest.DataDir + "//" + dirdata + "_U" + ustartts + "_VIDEO_" + "_Q" + startts + "_Q" + endts + ".wmv");
 		}
 
 		private void FinishTest_Click(object sender, RoutedEventArgs e)
@@ -155,8 +154,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 			//{
 			//	stopStreaming();
 			//}
-			user.CurrentTest.dataRecorder.exitThreads();
-			user.CurrentTest.testComplete();
+			Session.dataRecorder.exitThreads();
+			Session.currentTest.testComplete();
+            ObjectManager.saveUser(user);
 			TestCompleted();
 		}
 
@@ -203,7 +203,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 		private void StartCalibration_Click(object sender, RoutedEventArgs e)
 		{
-			user.CurrentTest.dataRecorder.calibrate();
+			Session.dataRecorder.calibrate();
 			_mainWindow.State = MainWindow.EState.Calibrating;
 		}
 

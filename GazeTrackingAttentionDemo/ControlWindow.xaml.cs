@@ -97,6 +97,9 @@ namespace GazeTrackingAttentionDemo
 				case EState.Markup:
 					controller.Content = endCtrl;
 					break;
+                case EState.Setup:
+                    controller.Content = new UserCtrl();
+                    break;
 			}
 			stateLabel.Content = state.ToString();
 
@@ -111,7 +114,7 @@ namespace GazeTrackingAttentionDemo
 
 		public void testCreated()
 		{
-			Test test = user.CurrentTest;
+			Test test = Session.currentTest;
 			if (test.isPaper)
 			{
 				currentTestMedium.Content = "Paper";

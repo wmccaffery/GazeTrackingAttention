@@ -29,7 +29,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Name, StringFormat={}{0}}" />
                         <TextBlock Grid.Column="1" Text="   " />
-                        <TextBlock Grid.Column="2" Text="{Binding RecordingNumDisp, StringFormat={}{0} Recordings}"/>
+                        <TextBlock Grid.Column="2" Text="{Binding numRecordings, StringFormat={}{0} Recordings}"/>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>

@@ -178,7 +178,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			{
 				((DocumentCtrl)_mainWin.centerView.Content).loadText(user.GroupPath + "\\" + SelectedTest.Name + ".rtf");
 
-				recordingList.ItemsSource = SelectedTest.recordings;
+				recordingList.ItemsSource = ObjectManager.loadRecordings(); //load current test's recordings from file
 				recordingList.Items.Refresh();
 			} else
 			{
@@ -345,7 +345,7 @@ namespace GazeTrackingAttentionDemo.UserControls
         {
             string userPath = ((string)userList.SelectedItem) + @"\userData.json";
             user = ObjectManager.loadUser(userPath);
-            testList.ItemsSource = Session.testList;
+            testList.ItemsSource = ObjectManager.loadTests();// load tests from list
         }
     }
 }

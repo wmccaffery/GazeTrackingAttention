@@ -156,7 +156,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			//}
 			Session.dataRecorder.exitThreads();
 			Session.currentTest.testComplete();
-            ObjectManager.saveUser(user);
+            ObjectManager.saveSession();
 			TestCompleted();
 		}
 

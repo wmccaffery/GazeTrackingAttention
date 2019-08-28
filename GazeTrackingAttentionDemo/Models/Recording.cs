@@ -9,10 +9,10 @@ namespace GazeTrackingAttentionDemo.Models
 	public class Recording
 	{
 		public int Index { get; set; }
-		public List<Fixation> fixations;
-		public DataVisualization.GazePlot gp;
-		public List<Saccade> saccades;
-		public Boolean isPaper;
+        public List<Fixation> fixations;
+        public DataVisualization.GazePlot gp;
+        public List<Saccade> saccades;
+        public Boolean isPaper;
 		public Boolean isCalibrated;
 		public String dataDir;
 		public String userID;
@@ -31,7 +31,7 @@ namespace GazeTrackingAttentionDemo.Models
 			this.testName = name;
 			this.userID = userID;
 			//hold areas of interest
-			Aois = new List<AOI>();
+			//Aois = new List<AOI>();
 			
 		}
 	}

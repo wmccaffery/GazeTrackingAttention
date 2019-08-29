@@ -178,7 +178,24 @@ namespace GazeTrackingAttentionDemo.UserControls
 			{
 				((DocumentCtrl)_mainWin.centerView.Content).loadText(user.GroupPath + "\\" + SelectedTest.Name + ".rtf");
 
-				recordingList.ItemsSource = ObjectManager.loadRecordings(SelectedTest); //load current test's recordings from file
+                List<Recording> recordings = ObjectManager.loadRecordings(SelectedTest);
+                foreach(Recording r in recordings)
+                {
+                    //get files in recording dir
+                    String[] files = Directory.GetFiles(r.dataDir);
+                    //find clean fixation file
+                    foreach(String s in files)
+                    {
+                        if (s.Contains("cleanFixationData"))
+                        {
+                            r.fixations = ObjectManager.loadFixationsFromFile(s);
+                            r.saccades = ObjectManager.loadSaccades(r.fixations);
+                            break;
+                        }
+                    }
+                }
+
+                recordingList.ItemsSource = recordings;
 				recordingList.Items.Refresh();
 			} else
 			{
@@ -349,52 +366,3 @@ namespace GazeTrackingAttentionDemo.UserControls
         }
     }
 }
-
-//old
-//discover groups;
-//String groupDirPath = "C:\\MMAD\\TestGroups\\";
-//GroupPaths = new List<String>(Directory.GetDirectories(groupDirPath));
-//GroupNames = new List<String>();
-//Paragraphs = new List<string>();
-
-//String currentTestPath = _mainWin.getCurrentTest(); //TODO this should really be done through an event watching for currentTest to change
-
-//foreach (String s in GroupPaths)
-//{
-//	String dirName = System.IO.Path.GetFileName(s);
-//	Console.WriteLine(dirName + " discovered");
-//	GroupNames.Add(dirName);
-//}
-//Console.WriteLine(GroupPaths.Count + " test groups were discovered");
-
-//}
-
-//public void numParagraphsUpdated(int num)
-//{
-//	for(int i = 0; i < num; i++)
-//	{
-//		Paragraphs.Add("" + num);
-//	}
-//}
-
-
-//public void onLoad(object sender, RoutedEventArgs e)
-//{
-//	//parentWin = (Window)((ContentControl) this.Parent).Parent;
-//	//parentWin = (ControlWindow)Window.GetWindow(this);
-
-//	//define event handler in main window
-//	//UserCreated += new UserCreatedHandler(mainWin.onUserCreated);
-//	//UserCreated += new UserCreatedHandler(parentWin.onUserCreated);
-//	//_mainWin = (MainWindow)Application.Current.MainWindow;
-
-//	//((UserControls.DocumentCtrl)_mainWin.centerView).numParagraphsFound += new DocumentCtrl.numParagraphsFoundHandler(this.numParagraphsUpdated);
-
-
-//	//StartSelection += new StartSelectionHandler(_mainWin.startSelection);
-//	//EndSelection += new EndSelectionHandler(_mainWin.endSelection);
-
-//}
-
-//parentWin = (ControlWindow)Window.GetWindow(this);
-

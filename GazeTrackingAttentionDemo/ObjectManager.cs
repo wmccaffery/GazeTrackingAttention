@@ -160,5 +160,66 @@ namespace GazeTrackingAttentionDemo
             ObjectManager.saveRecording(Session.currentRecording);
         }
 
+        public static List<Fixation> loadFixationsFromFile(string filePath)
+        {
+            List<Fixation> validFixations = new List<Fixation>();
+            Fixation f = new Fixation();
+            f.dataPos = new List<DataPoint>();
+            
+
+            string line;
+            StreamReader file = new StreamReader(filePath);
+            while ((line = file.ReadLine()) != null)
+            {
+                string[] vals = line.Split(',');
+                DataPoint dp = new DataPoint(float.Parse(vals[1]), float.Parse(vals[2]), float.Parse(vals[3]));
+                //add val to list
+                if (vals[0].Equals("Beginning"))
+                {
+                    f.startPos = dp;
+                }
+                else if (vals[0].Equals("Data"))
+                {
+                    f.dataPos.Add(dp);
+                }
+                else if (vals[0].Equals("End"))
+                {
+                    f.endPos = dp;
+                    f.completeFixation(validFixations.Count);
+                    validFixations.Add(f);
+                    f = new Fixation();
+                    f.dataPos = new List<DataPoint>();
+                }
+            }
+
+            file.Close();
+           
+            return validFixations;
+        }
+
+        public static List<Saccade> loadSaccades(List<Fixation> fixations)
+        {
+            List<Saccade> saccades = new List<Saccade>();
+            Saccade s = new Saccade();
+            int i = 0;
+            foreach (Fixation f in fixations)
+            {
+                if (s.start == null)
+                {
+                    s.start = f;
+                }
+                else
+                {
+                    s.finish = f;
+                    s.completeSaccade(i);
+                    saccades.Add(s);
+                    s = new Saccade();
+                    s.start = f;
+                    i++;
+                }
+            }
+            return saccades;
+        }
+
     }
 }

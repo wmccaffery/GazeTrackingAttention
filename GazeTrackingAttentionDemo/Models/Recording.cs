@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +10,11 @@ namespace GazeTrackingAttentionDemo.Models
 	public class Recording
 	{
 		public int Index { get; set; }
+        [JsonIgnore]
         public List<Fixation> fixations;
+        [JsonIgnore]
         public DataVisualization.GazePlot gp;
+        [JsonIgnore]
         public List<Saccade> saccades;
         public Boolean isPaper;
 		public Boolean isCalibrated;
@@ -21,6 +25,7 @@ namespace GazeTrackingAttentionDemo.Models
 		public double videoQpcEndTime;
 
 		List<AOI> _aois;
+        [JsonIgnore]
 		public List<AOI> Aois { get => _aois; set => _aois = value; }
 
 		public Recording(int index, bool isPaper, string dataDir, string name, string userID)

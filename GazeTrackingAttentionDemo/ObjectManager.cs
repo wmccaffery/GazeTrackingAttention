@@ -35,10 +35,10 @@ namespace GazeTrackingAttentionDemo
         }
 
         //update test list
-        public static void saveTest(String testListPath, Test test)
+        public static void saveTest(Test test)
         {
 
-            string filePath = testListPath;
+            string filePath = Session.currentUser.DirPath + @"\testList.json";
             string jsonData;
             List<Test> testList;
 
@@ -86,10 +86,10 @@ namespace GazeTrackingAttentionDemo
         }
 
         //update test recording list
-        public static void saveRecording(String recordingListPath, Recording recording)
+        public static void saveRecording(Recording recording)
         {
 
-            string filePath = recordingListPath;
+            string filePath = Session.currentTest.DataDir + @"\recordingList.json";
             string jsonData;
             List<Recording> recordingList;
 
@@ -135,18 +135,18 @@ namespace GazeTrackingAttentionDemo
             System.IO.File.WriteAllText(filePath, jsonData);
         }
 
-        public static List<Test> loadTests()
+        public static List<Test> loadTests(User u)
         {
-            string jsonData = File.ReadAllText(Session.currentUser.DirPath + @"\testList.json");
+            string jsonData = File.ReadAllText(u.DirPath + @"\testList.json");
 
             // De-serialize to object or create new list
             return JsonConvert.DeserializeObject<List<Test>>(jsonData)
                   ?? new List<Test>();
         }
 
-        public static List<Recording> loadRecordings()
+        public static List<Recording> loadRecordings(Test t)
         {
-            string jsonData = File.ReadAllText(Session.currentUser.DirPath + @"\recordingList.json");
+            string jsonData = File.ReadAllText(t.DataDir + @"\recordingList.json");
 
             // De-serialize to object or create new list
             return JsonConvert.DeserializeObject<List<Recording>>(jsonData)
@@ -156,8 +156,8 @@ namespace GazeTrackingAttentionDemo
         public static void saveSession()
         {
             ObjectManager.saveUser(Session.currentUser);
-            ObjectManager.saveTest(Session.currentUser.DirPath + @"\testList.json", Session.currentTest);
-            ObjectManager.saveRecording(Session.currentTest.DataDir + @"\recordingList.json", Session.currentRecording);
+            ObjectManager.saveTest(Session.currentTest);
+            ObjectManager.saveRecording(Session.currentRecording);
         }
 
     }

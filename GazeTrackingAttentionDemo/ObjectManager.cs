@@ -208,8 +208,13 @@ namespace GazeTrackingAttentionDemo
             string jsonData = File.ReadAllText(r.dataDir + @"\annotations.json");
 
             // De-serialize to object or create new list
-            return JsonConvert.DeserializeObject<List<AOI>>(jsonData)
+            List<AOI> aois =  JsonConvert.DeserializeObject<List<AOI>>(jsonData)
                   ?? new List<AOI>();
+            foreach(AOI a in aois)
+            {
+                a.revertPolygon();
+            }
+            return aois;
         }
 
         public static void saveSession()
@@ -231,12 +236,18 @@ namespace GazeTrackingAttentionDemo
 
             string line;
             StreamReader file = new StreamReader(filePath);
+            bool firstline = true;
             while ((line = file.ReadLine()) != null)
             {
+                if (firstline)
+                {
+                    firstline = false;
+                    continue;
+                }
                 string[] vals = line.Split(',');
                 DataPoint dp = new DataPoint(float.Parse(vals[1]), float.Parse(vals[2]), float.Parse(vals[3]));
                 //add val to list
-                if (vals[0].Equals("Beginning"))
+                if (vals[0].Equals("Begin"))
                 {
                     f.startPos = dp;
                 }

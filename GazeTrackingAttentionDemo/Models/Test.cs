@@ -14,10 +14,8 @@ namespace GazeTrackingAttentionDemo.Models
 	{
 		private string _testDataDir;	//path to store all data collected during the test
 		private string _stimuliPath;	//path of stimuli for test
-		private string _metaDataPath;	//path to store data on test
 		private string _userID;    //string username of user taking test
 		private string _testName;
-		private string _recordingDir;
         private int _numRecordings;
 		//private int _recordingNum;
         //[JsonIgnore]
@@ -76,10 +74,6 @@ namespace GazeTrackingAttentionDemo.Models
 		public string StimuliPath { get => _stimuliPath; set => _stimuliPath = value; }
 		public string UserID { get => _userID; set => _userID = value; }
 		public string TestDir { get => _testDataDir; set => _testDataDir = value; }
-		//public string DataDir { get => _recordingDir; set => _recordingDir = value; }
-		public string InfoPath { get => _metaDataPath; set => _metaDataPath = value; }
-        //public int RecordingNum { get => _recordingNum; set => RecordingNum = value; }
-        //public int RecordingNumDisp { get => _recordingNum + 1; }
         public int numRecordings { get => _numRecordings; set => _numRecordings = value; }
 
         public void testComplete()

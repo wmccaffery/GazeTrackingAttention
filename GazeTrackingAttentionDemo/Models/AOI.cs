@@ -48,7 +48,17 @@ namespace GazeTrackingAttentionDemo.Models
 			this.points = points;
 		}
 
-		public string Name { get => _name; set => _name = value; }
+        public void revertPolygon()
+        {
+            p = new Polygon();
+            foreach(String point in points)
+            {
+                string[] data = point.Split(' ');
+                p.Points.Add(new Point(double.Parse(data[1]), double.Parse(data[3])));
+            }
+        }
+
+        public string Name { get => _name; set => _name = value; }
 		public int Interest { get => _interest; set => _interest = value; }
 		public int Attentiveness { get => _attentiveness; set => _attentiveness = value; }
 		public int Effort { get => _effort; set => _effort = value; }

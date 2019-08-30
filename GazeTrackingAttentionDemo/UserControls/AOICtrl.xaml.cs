@@ -195,6 +195,7 @@ namespace GazeTrackingAttentionDemo.UserControls
                             r.fixations = ObjectManager.loadFixationsFromFile(s);
                             r.saccades = ObjectManager.loadSaccades(r.fixations);
                             r.Aois = ObjectManager.loadAois(r);
+                            Console.WriteLine("AOISIZE " + r.Aois.Count);
                             break;
                         }
                     }

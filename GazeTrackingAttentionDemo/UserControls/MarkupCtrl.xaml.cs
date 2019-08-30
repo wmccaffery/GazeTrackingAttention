@@ -255,7 +255,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			double fst = DisplaySlider.Minimum = recording.fixations[0].startPos.timestamp;
 			double vst = recording.videoQpcStartTime;
 
-			double fet = recording.fixations[Session.currentRecording.fixations.Count - 1].endPos.timestamp;
+			double fet = recording.fixations[recording.fixations.Count - 1].endPos.timestamp;
 			double vet = recording.videoQpcEndTime;
 
 			
@@ -318,9 +318,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 		//re-render gaze plot if checkbox or slider changed
 		private void CheckBox_Clicked(object sender, RoutedEventArgs e)
 		{
-			if (Session.currentRecording.gp != null)
+			if (recording.gp != null)
 			{
-				Session.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
+				recording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
 			}
 		}
 
@@ -328,9 +328,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			if (test != null)
 			{
-				if (Session.currentRecording.gp != null)
+				if (recording.gp != null)
 				{
-					Session.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
+					recording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
 				}
 				//if (aoi != null)
 				//{
@@ -345,9 +345,9 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			if (test != null)
 			{
-				if (Session.currentRecording.gp != null)
+				if (recording.gp != null)
 				{
-					Session.currentRecording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
+					recording.gp.renderPlot((bool)All_CheckBox.IsChecked, (bool)Fixation_CheckBox.IsChecked, (bool)Saccade_CheckBox.IsChecked, DisplaySlider.LowerValue, DisplaySlider.HigherValue);
 				}
 				//if (aoi != null)
 				//{

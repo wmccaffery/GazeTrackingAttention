@@ -100,7 +100,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			user = Session.currentUser;
             //testList.ItemsSource = user.testList;
-            userList.ItemsSource = Directory.GetDirectories(@"C:\MMAD\Subjects");
+            userList.ItemsSource = ObjectManager.loadUsers();
 
 			StartSelection += new StartSelectionHandler(_mainWin.onAOICreation);
 			selectedTestChanged += new SelectedTestChangeHandler(((MarkupCtrl)_mainWin.rightView.Content).onTestChanged);
@@ -183,8 +183,12 @@ namespace GazeTrackingAttentionDemo.UserControls
                 {
                     //get files in recording dir
                     String[] files = Directory.GetFiles(r.dataDir);
+                    //init vals not stored in json
+                    r.fixations = new List<Fixation>();
+                    r.saccades = new List<Saccade>();
+                    r.Aois = new List<AOI>();
                     //find clean fixation file
-                    foreach(String s in files)
+                    foreach (String s in files)
                     {
                         if (s.Contains("cleanFixationData"))
                         {
@@ -361,9 +365,12 @@ namespace GazeTrackingAttentionDemo.UserControls
 
         private void UserList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string userPath = ((string)userList.SelectedItem) + @"\userData.json";
-            user = ObjectManager.loadUser(userPath);
+            //string userPath = ((string)userList.SelectedItem) + @"\userData.json";
+            //user = ObjectManager.loadUser(userPath);
+            //testList.ItemsSource = ObjectManager.loadTests(user);// load tests from list
+            user = (User)userList.SelectedItem;
             testList.ItemsSource = ObjectManager.loadTests(user);// load tests from list
+
         }
     }
 }

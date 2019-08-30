@@ -78,8 +78,10 @@ namespace GazeTrackingAttentionDemo.UserControls
 			int i = 0;
 			foreach (String s in testPaths)
 			{
-				Session.testList.Add(new Test(user.Id, user.DirPath, s, i));
-				i++;
+                Test t;
+				Session.testList.Add(t = new Test(Session.currentUser.Id, Session.currentUser.DirPath, s, i));
+                Directory.CreateDirectory(t.TestDir);
+                i++;
 			}
 		}
 

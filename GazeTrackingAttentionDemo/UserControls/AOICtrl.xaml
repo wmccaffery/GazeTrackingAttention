@@ -13,6 +13,13 @@
         <StackPanel Margin="50,20,50,0" Orientation="Vertical">
             <Label FontSize="20">Users</Label>
             <ListBox x:Name="userList" Height="200" Margin="0,0,0,20" SelectionChanged="UserList_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Id}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
             </ListBox>
             <Label FontSize="20">Tests</Label>
             <ListBox x:Name="testList" Height="200" Margin="0,0,0,20" SelectionChanged="TestList_SelectionChanged">

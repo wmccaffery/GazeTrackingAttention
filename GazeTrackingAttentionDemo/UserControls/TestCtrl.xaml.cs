@@ -118,6 +118,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
 			DeviceInteractionHost dr = Session.dataRecorder;
             Test currentTest = Session.currentTest;
+            Recording currentRecording = Session.currentRecording;
 
 			dr.stopRecording();
 			WebcamViewer.StopRecording();
@@ -144,8 +145,8 @@ namespace GazeTrackingAttentionDemo.UserControls
 
 
 			string[] video = Directory.GetFiles(WebcamViewer.VideoDirectory, "*.wmv");
-			String dirdata = System.IO.Path.GetFileName(currentTest.DataDir);
-			File.Move(video[0], currentTest.DataDir + "//" + dirdata + "_U" + ustartts + "_VIDEO_" + "_Q" + startts + "_Q" + endts + ".wmv");
+			String dirdata = System.IO.Path.GetFileName(currentRecording.dataDir);
+			File.Move(video[0], currentRecording.dataDir + "//" + dirdata + "_U" + ustartts + "_VIDEO_" + "_Q" + startts + "_Q" + endts + ".wmv");
 		}
 
 		private void FinishTest_Click(object sender, RoutedEventArgs e)
@@ -157,7 +158,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 			Session.dataRecorder.exitThreads();
 			Session.currentTest.testComplete();
             ObjectManager.saveSession();
-			TestCompleted();
+            TestCompleted();
 		}
 
 		private void Stream_Click(object sender, RoutedEventArgs e)

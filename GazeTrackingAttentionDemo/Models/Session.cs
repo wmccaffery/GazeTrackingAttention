@@ -16,8 +16,6 @@ namespace GazeTrackingAttentionDemo.Models
 
         public static List<Test> testList;
 
-        //move state behaviour here
-
         public static void newSession(User u)
         {
             endSession();

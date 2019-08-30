@@ -49,10 +49,6 @@ namespace GazeTrackingAttentionDemo.Models
 			TestDir = userDir + "\\" + _userID + "_test" + testIndex + "_" + Path.GetFileNameWithoutExtension(StimuliPath) + "_" + dateTime.ToString("dd-MM-yyyy");
 
 
-            //create directory and meta file for test
-            //DirectoryInfo di;
-            //di = Directory.CreateDirectory(TestDir); //this can be done later so its easier to find test data
-
             //recordings = new List<Recording>();
 
             //_recordingNum = -1;
@@ -63,11 +59,9 @@ namespace GazeTrackingAttentionDemo.Models
 		public void addNewRecording(User user)
 		{
 			DateTime dateTime = DateTime.Now;
-			DataDir = "";
-			DataDir = TestDir + "\\" + Path.GetFileName(TestDir) + "_recording" + (_numRecordings);
-			DirectoryInfo di = Directory.CreateDirectory(DataDir);
-			InfoPath = DataDir + "\\meta.txt";
-			Session.currentRecording = new Recording(_numRecordings, isPaper, DataDir, Name, UserID);
+			string dataDir = TestDir + "\\" + Path.GetFileName(TestDir) + "_recording" + (_numRecordings);
+            DirectoryInfo di = Directory.CreateDirectory(dataDir);
+            Session.currentRecording = new Recording(_numRecordings, isPaper, dataDir, Name, UserID);
             _numRecordings++;
             ObjectManager.saveSession();
 		}
@@ -82,7 +76,7 @@ namespace GazeTrackingAttentionDemo.Models
 		public string StimuliPath { get => _stimuliPath; set => _stimuliPath = value; }
 		public string UserID { get => _userID; set => _userID = value; }
 		public string TestDir { get => _testDataDir; set => _testDataDir = value; }
-		public string DataDir { get => _recordingDir; set => _recordingDir = value; }
+		//public string DataDir { get => _recordingDir; set => _recordingDir = value; }
 		public string InfoPath { get => _metaDataPath; set => _metaDataPath = value; }
         //public int RecordingNum { get => _recordingNum; set => RecordingNum = value; }
         //public int RecordingNumDisp { get => _recordingNum + 1; }

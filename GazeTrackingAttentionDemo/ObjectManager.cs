@@ -12,26 +12,76 @@ namespace GazeTrackingAttentionDemo
     class ObjectManager
     {
         public string userDir = "\\MMAD\\Subjects";
-        public static User loadUser(String filePath)
+        //public static User loadUser(String filePath)
+        //{
+        //    String jsonData = File.ReadAllText(filePath);
+        //    User u = JsonConvert.DeserializeObject<User>(jsonData);
+        //    Console.WriteLine("Loaded user " + u.Id);
+        //    return u;
+        //}
+
+        //public static void saveUser(User u)
+        //{
+        //    String filePath = u.DirPath + "\\userData.json";
+        //    String jsonData = JsonConvert.SerializeObject(u);
+        //    System.IO.File.WriteAllText(filePath, jsonData);
+        //}
+
+        public static List<User> loadUsers()
         {
-            String jsonData = File.ReadAllText(filePath);
-            User u = JsonConvert.DeserializeObject<User>(jsonData);
-            Console.WriteLine("Loaded user " + u.Id);
-            return u;
+            string jsonData = File.ReadAllText(@"C:\MMAD\Subjects\userList.json");
+
+            // De-serialize to object or create new list
+            return JsonConvert.DeserializeObject<List<User>>(jsonData)
+                  ?? new List<User>();
         }
 
-        public static void saveUser(User u)
+        public static void saveUser(User user)
         {
-            String filePath = u.DirPath + "\\userData.json";
-            String jsonData = JsonConvert.SerializeObject(u);
+            string filePath = @"C:\MMAD\Subjects\userList.json";
+            string jsonData;
+            List<User> userList;
+
+
+            // Read existing json data
+            if (!File.Exists(filePath))
+            {
+                File.WriteAllText(filePath, "");
+                userList = new List<User>();
+            }
+            else
+            {
+                jsonData = File.ReadAllText(filePath);
+
+                // De-serialize to object or create new list
+                userList = JsonConvert.DeserializeObject<List<User>>(jsonData)
+                      ?? new List<User>();
+            }
+
+            //check if already annotated
+            bool alreadyAnnotated = false;
+            int index = 0;
+            foreach (User u in userList)
+            {
+                if (Equals(user.Id, u.Id))
+                {
+                    index = userList.IndexOf(u);
+                    alreadyAnnotated = true;
+                }
+            }
+
+            if (alreadyAnnotated) //if already exists update
+            {
+                userList[index] = user;
+            }
+            else //else add to list
+            {
+                userList.Add(user);
+            }
+
+            // Update json data string and write to file
+            jsonData = JsonConvert.SerializeObject(userList);
             System.IO.File.WriteAllText(filePath, jsonData);
-        }
-
-        public static User createUser(String id, String groupName, String groupPath)
-        {
-            User u = new User(id, groupName, groupPath);
-            saveUser(u);
-            return u;
         }
 
         //update test list
@@ -82,14 +132,13 @@ namespace GazeTrackingAttentionDemo
             // Update json data string and write to file
             jsonData = JsonConvert.SerializeObject(testList);
             System.IO.File.WriteAllText(filePath, jsonData);
-
         }
 
         //update test recording list
         public static void saveRecording(Recording recording)
         {
 
-            string filePath = Session.currentTest.DataDir + @"\recordingList.json";
+            string filePath = Session.currentTest.TestDir + @"\recordingList.json";
             string jsonData;
             List<Recording> recordingList;
 
@@ -146,7 +195,7 @@ namespace GazeTrackingAttentionDemo
 
         public static List<Recording> loadRecordings(Test t)
         {
-            string jsonData = File.ReadAllText(t.DataDir + @"\recordingList.json");
+            string jsonData = File.ReadAllText(t.TestDir + @"\recordingList.json");
 
             // De-serialize to object or create new list
             return JsonConvert.DeserializeObject<List<Recording>>(jsonData)
@@ -167,7 +216,10 @@ namespace GazeTrackingAttentionDemo
         {
             ObjectManager.saveUser(Session.currentUser);
             ObjectManager.saveTest(Session.currentTest);
-            ObjectManager.saveRecording(Session.currentRecording);
+            if (Session.currentRecording != null)
+            {
+                ObjectManager.saveRecording(Session.currentRecording);
+            }
         }
 
         public static List<Fixation> loadFixationsFromFile(string filePath)

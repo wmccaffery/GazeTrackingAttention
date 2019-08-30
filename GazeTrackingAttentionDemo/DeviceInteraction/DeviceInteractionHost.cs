@@ -180,8 +180,6 @@ namespace GazeTrackingAttentionDemo.DeviceInteraction
 				{
 					sendGazeToLSL(fixationEndOutlet, x, y, timestamp);
 				});
-
-			Console.WriteLine("HERE");
 		}
 
 		//DEBUG

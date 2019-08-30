@@ -268,15 +268,13 @@ namespace GazeTrackingAttentionDemo.UserControls
 			_mainWin.MainCanvas.Children.Clear();
 			_mainWin.SelectionCanvas.Children.Clear();
 
-			//	//render text
-			//	String selected = ((ListBox)e.Source).SelectedItem.ToString();
-			//	((DocumentCtrl)_mainWin.centerView.Content).loadText(_mainWin.currentUser.GroupPath + "\\" + selected + ".rtf");
-			SelectedRecording = (Recording)((ListBox)e.Source).SelectedItem;
+			Recording sr = (Recording)((ListBox)e.Source).SelectedItem;
 
 			//render gaze plot
 
-			if (SelectedRecording != null)
+			if (sr != null && containsGazeData(sr))
 			{
+                SelectedRecording = sr;
 				//update aoi list
 				aoiList.ItemsSource = SelectedRecording.Aois;
 				aoiList.Items.Refresh();
@@ -289,6 +287,21 @@ namespace GazeTrackingAttentionDemo.UserControls
 				SelectedRecording.gp.renderPlot(true, true, true, 0, 999999999);
 			}
 		}
+
+        private bool containsGazeData(Recording r)
+        {
+            String[] files = Directory.GetFiles(r.dataDir);
+            Boolean containsdata = false;
+            foreach(String f in files)
+            {
+                if (f.Contains("cleanFixationData"))
+                {
+                    containsdata = true;
+                    break;
+                }
+            }
+            return containsdata;
+        }
 
 		private void renderAOIS()
 		{

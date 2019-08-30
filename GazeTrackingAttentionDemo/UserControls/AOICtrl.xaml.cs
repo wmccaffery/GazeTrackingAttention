@@ -365,7 +365,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 				aoiList.Remove(aoitoremove);
 
 				// Update json data string
-				jsonData = JsonConvert.SerializeObject(aoiList);
+				jsonData = JsonConvert.SerializeObject(aoiList, Formatting.Indented);
 
 				System.IO.File.WriteAllText(filePath, jsonData);
 			}

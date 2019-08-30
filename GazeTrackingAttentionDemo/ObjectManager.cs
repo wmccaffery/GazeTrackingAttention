@@ -80,7 +80,7 @@ namespace GazeTrackingAttentionDemo
             }
 
             // Update json data string and write to file
-            jsonData = JsonConvert.SerializeObject(userList);
+            jsonData = JsonConvert.SerializeObject(userList, Formatting.Indented);
             System.IO.File.WriteAllText(filePath, jsonData);
         }
 
@@ -130,7 +130,7 @@ namespace GazeTrackingAttentionDemo
             }
 
             // Update json data string and write to file
-            jsonData = JsonConvert.SerializeObject(testList);
+            jsonData = JsonConvert.SerializeObject(testList, Formatting.Indented);
             System.IO.File.WriteAllText(filePath, jsonData);
         }
 
@@ -180,7 +180,7 @@ namespace GazeTrackingAttentionDemo
             }
 
             // Update json data string and write to file
-            jsonData = JsonConvert.SerializeObject(recordingList);
+            jsonData = JsonConvert.SerializeObject(recordingList, Formatting.Indented);
             System.IO.File.WriteAllText(filePath, jsonData);
         }
 

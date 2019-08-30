@@ -23,9 +23,6 @@ namespace GazeTrackingAttentionDemo.Models
 			this.GroupPath = groupPath;
 			this.DirPath = "C:\\MMAD\\Subjects\\" + id + "_" + groupName + "_" + dateAndTime.ToString("dd-MM-yyyy");
             //this.DirPath = "C:\\MMAD\\Subjects\\" + id + "_" + groupName + "_" + dateAndTime.ToString("dd-MM-yyyy--HH-mm-ss");
-
-            Directory.CreateDirectory(DirPath);
-
             //testPaths = getTestPaths();
             //testList = new List<Test>();
 

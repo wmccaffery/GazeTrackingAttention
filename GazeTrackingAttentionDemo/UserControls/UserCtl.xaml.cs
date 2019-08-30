@@ -76,6 +76,7 @@ namespace GazeTrackingAttentionDemo.UserControls
 		{
             User u;
 			UserCreated(u = new User(UserID, UserGroup, ("C:\\MMAD\\TestGroups\\" + UserGroup)));
+            Directory.CreateDirectory(u.DirPath);
             Session.newSession(u);
             ObjectManager.saveUser(u);
 		}

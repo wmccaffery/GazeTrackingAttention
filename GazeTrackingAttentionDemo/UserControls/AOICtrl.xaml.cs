@@ -190,6 +190,7 @@ namespace GazeTrackingAttentionDemo.UserControls
                         {
                             r.fixations = ObjectManager.loadFixationsFromFile(s);
                             r.saccades = ObjectManager.loadSaccades(r.fixations);
+                            r.Aois = ObjectManager.loadAois(r);
                             break;
                         }
                     }

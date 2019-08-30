@@ -153,6 +153,16 @@ namespace GazeTrackingAttentionDemo
                   ?? new List<Recording>();
         }
 
+        //load any existing annotations
+        public static List<AOI> loadAois(Recording r)
+        {
+            string jsonData = File.ReadAllText(r.dataDir + @"\annotations.json");
+
+            // De-serialize to object or create new list
+            return JsonConvert.DeserializeObject<List<AOI>>(jsonData)
+                  ?? new List<AOI>();
+        }
+
         public static void saveSession()
         {
             ObjectManager.saveUser(Session.currentUser);
